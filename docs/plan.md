@@ -92,3 +92,5 @@ base Qwen3.6-35B-A3B one-shot: windmill 4.50, pendulum 2.25 (text-only, ~12K tok
 SFT on 12 examples trained and sampled through `tinker://` successfully.
 Note: base model's SFT loss starts low (~0.15), so round-1 SFT gains may be modest; RL with the
 renderer + critic as reward is the likely bigger lever.
+
+Tinker results (held-out, open judges): see [results_tinker.md](results_tinker.md).
