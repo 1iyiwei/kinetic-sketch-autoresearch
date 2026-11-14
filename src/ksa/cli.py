@@ -75,7 +75,7 @@ def write_reports(run_dir: Path, results: list[dict], meta: dict) -> float:
     for r in results:
         s = r["critique"]["scores"]
         traj = " → ".join(f"{x:.2f}" for x in r.get("best_score_by_round", []))
-        lines.append(f'| {r["case"]} | {r["category"]} | ' + " | ".join(f"{s[k]:.1f}" for k in keys)
+        lines.append(f'| {r["case"]} | {r["category"]} | ' + " | ".join(f"{s.get(k, 0.0):.1f}" for k in keys)
                      + f' | {r["critique"]["overall"]:.2f} | {traj} | {gen_calls(r.get("meter", {}))} '
                      f'| {tokens(r.get("meter", {}))} |')
     mean = statistics.mean(r["critique"]["overall"] for r in results) if results else 0.0
