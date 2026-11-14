@@ -144,13 +144,33 @@ pruned on the 3 val drawings, and tested on the 7 test drawings (one-shot, 3 run
   winning on 6 of 7. To make improvements stick, the next step is to put them in the model's weights rather than
   its prompt: fine-tune an open model on the programs the loop found (see "Next: distill the loop into the model").
 
-### Next: distill the loop into the model (Tinker)
+### Distilling the loop into an open model (Tinker)
 
-Every loop run leaves training data: (drawing, intent) → the best program found, plus critic scores for every
-candidate. Plan: fine-tune `Qwen/Qwen3.6-35B-A3B` with LoRA on [Tinker](https://thinkingmachines.ai/tinker/) on the
-loop's best programs for the train drawings, then compare one-shot before and after on the held-out test drawings.
-Smoke test: base Qwen3.6-35B-A3B on Tinker wrote a valid windmill program in one shot (about 4.3K tokens, 76 s),
-which the held-out judge scored 4.50, against 4.42 for `gpt-5.5` one-shot on that drawing (one sample).
+The loop's best programs became training data for an open model, so improvements live in its weights instead of
+the prompt. `gpt-5.5` loop runs on 120 generated training drawings (`benchmark/train/`, none of the benchmark subjects)
+gave 185 examples. These fine-tuned `Qwen/Qwen3.6-35B-A3B` (3B active parameters) with LoRA on Tinker, one epoch.
+OpenAI credits ran out, so every method was re-judged by open vision models on Tinker. The headline judge is
+`Qwen3.5-397B-A17B`, which is not the open loop's critic. These scores are **not comparable** to the `gpt-5.4`
+judge numbers above. Held-out: the original 10 drawings, 3 samples each.
+
+| Generator, one-shot unless noted | Judge (Qwen3.5-397B) | Valid renders | First-frame F1 | Moves |
+| --- | --- | --- | --- | --- |
+| Qwen3.6-35B-A3B, untrained | 1.92 ± 0.27 | 77% | 0.47 | 57% |
+| student, 90 drawings | 2.49 ± 0.24 | 73% | 0.64 | 67% |
+| **student, 120 drawings** | **3.27 ± 0.38** | **100%** | **0.97** | 90% |
+| open loop: student + Qwen3.6 critic (no OpenAI) | 3.51 – 3.69 | 100% | 1.00 | 100% |
+| `gpt-5.5` one-shot | 4.01 | 100% | 1.00 | 100% |
+
+- **Distillation works, and data matters more than epochs.** The student closes about two-thirds of the gap to
+  `gpt-5.5`; 90 → 120 drawings was the biggest step, while extra epochs made it worse.
+- **Self-training on the open loop's own output did not help** (round 2: 3.23; with 397B-selected data: 2.68). The
+  open critic overrates its own family's programs (4.0–4.7 vs 2.7–3.1 from the 397B judge), so it is a poor
+  selector. The gains came only from the stronger teacher.
+- **Judge self-preference is measurable:** the Qwen3.6 judge gives the open loop 4.27, the independent 397B judge 3.51.
+
+Details, limitations and commands: [`docs/results_tinker.md`](docs/results_tinker.md). A free demo:
+`KSA_GEN_MODEL=<student> uv run ksa animate drawing.svg --critic-model tinker:Qwen/Qwen3.6-35B-A3B`, or the voice UI
+`uv run python -m ksa.voice` (speak the intent and corrections; corrections are saved as preference data).
 
 ## Run
 
