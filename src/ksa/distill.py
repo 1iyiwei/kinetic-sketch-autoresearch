@@ -56,10 +56,26 @@ def export(args):
     for rd in map(Path, args.run_dirs):
         data = json.loads((rd / "results.json").read_text())
         cases = run_cases(rd, data["meta"])
+        judged = None
+        if args.judge:
+            jf = json.loads((rd / f"judge-{llm.slug(args.judge)}.json").read_text())
+            judged = {c["case"]: sum(c["overall"]) / len(c["overall"]) for c in jf["per_case"]}
         for rec in data["results"]:
             cid = rec["case"]
             if cid in blocked:
                 skipped["held_out"] += 1
+                continue
+            if judged is not None:  # select by the run's independent judge, best program only
+                score = judged.get(cid)
+                prog = Path(rec.get("program") or "")
+                if score is None or not prog.exists():
+                    skipped["missing"] += 1
+                elif score < args.min_score:
+                    skipped["low_score"] += 1
+                else:
+                    ex = example(cases[cid], prog.read_text())
+                    ex.update(score=score, source=str(prog))
+                    rows.append(ex)
                 continue
             # every node at or above the bar (best first), capped per case
             nodes = []
@@ -198,6 +214,7 @@ def main():
     e.add_argument("--out", default=str(ROOT / "data" / "sft.jsonl"))
     e.add_argument("--min-score", type=float, default=3.75)
     e.add_argument("--per-case", type=int, default=2, help="max programs kept per case")
+    e.add_argument("--judge", help="select each case's best program by this judge's judge-<model>.json instead of critic scores")
     t = sub.add_parser("train", help="LoRA SFT on Tinker")
     t.add_argument("data")
     t.add_argument("--base-model", default=llm.TINKER_BASE)
