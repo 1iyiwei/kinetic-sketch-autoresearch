@@ -1,0 +1,27 @@
+[project]
+name = "ksa"
+version = "0.1.0"
+description = "Autoresearch loop for stylized sketch animation"
+readme = "README.md"
+authors = [
+    { name = "Li-Yi Wei", email = "git@liyiwei.org" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=3.51.0",
+    "pillow>=13.0.0",
+    "playwright>=1.65.2",
+    "python-dotenv>=1.2.4",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
+
+[project.scripts]
+ksa = "ksa.cli:main"
