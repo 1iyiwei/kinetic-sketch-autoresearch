@@ -20,6 +20,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from . import critic, generate, llm
+from .paths import relativize
 from .render import Renderer
 
 
@@ -146,7 +147,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
 
     tree = {"case": case["id"], "method": method, "config": asdict(cfg), "best": best.id,
             "best_score_by_round": history, "meter": meter, "nodes": [asdict(n) for n in nodes]}
-    (cdir / "tree.json").write_text(json.dumps(tree, indent=2))
+    (cdir / "tree.json").write_text(json.dumps(relativize(tree, cdir.parent), indent=2))
     return {"case": case["id"], "category": case["category"], "method": method, "best_node": best.id,
             "critique": best.critique, "render": best.render, "best_score_by_round": history,
             "n_nodes": len(nodes), "meter": meter, "program": str(cdir / "nodes" / best.id / "program.html")}

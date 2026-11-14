@@ -22,6 +22,7 @@ import time
 from pathlib import Path
 
 from . import critic, llm
+from .paths import relativize, resolve
 from .render import Renderer
 from .search import SearchConfig, search
 
@@ -64,7 +65,8 @@ def rel(run_dir: Path, p: str | None) -> str | None:
 
 
 def write_reports(run_dir: Path, results: list[dict], meta: dict) -> float:
-    (run_dir / "results.json").write_text(json.dumps({"meta": meta, "results": results}, indent=2))
+    (run_dir / "results.json").write_text(
+        json.dumps(relativize({"meta": meta, "results": results}, run_dir), indent=2))
     keys = list(critic.RUBRIC)
     lines = [f"# Run {run_dir.name}", "", "```", json.dumps(meta, indent=2), "```", "",
              "| case | category | " + " | ".join(keys) + " | overall | by round | gen calls | tokens |",
@@ -138,8 +140,10 @@ async def judge(args):
         if not rd.get("ok"):
             return {"case": rec["case"], "overall": [0.0] * args.repeats}
         outs = await asyncio.gather(*(
-            critic.critique(cases[rec["case"]], run_dir / rec["case"] / "input.png", Path(rd["sheet"]),
-                            Path(rd["strip"]), Path(rd["frames"][-1 if cases[rec["case"]].get("anchor") == "end" else 0]), log, model=model,
+            critic.critique(cases[rec["case"]], run_dir / rec["case"] / "input.png", resolve(rd["sheet"], run_dir),
+                            resolve(rd["strip"], run_dir),
+                            resolve(rd["frames"][-1 if cases[rec["case"]].get("anchor") == "end" else 0], run_dir),
+                            log, model=model,
                             tags={"method": rec["method"], "judge": model, "repeat": i})
             for i in range(args.repeats)))
         o = [x["overall"] for x in outs]
@@ -174,7 +178,14 @@ def main():
     j.add_argument("run_dir")
     j.add_argument("--model", help="judge model (default: KSA_CRITIC_MODEL)")
     j.add_argument("--repeats", type=int, default=3)
+    c = sub.add_parser("compare", help="side-by-side page for several runs")
+    c.add_argument("run_dirs", nargs="+")
+    c.add_argument("-o", "--out", default=str(ROOT / "runs" / "compare.html"))
     args = p.parse_args()
+    if args.cmd == "compare":
+        from .compare import write_compare
+        print(write_compare([Path(d) for d in args.run_dirs], Path(args.out)))
+        return
     asyncio.run(run(args) if args.cmd == "run" else judge(args))
 
 

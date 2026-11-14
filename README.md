@@ -55,6 +55,7 @@ uv run ksa run --method bestof --k 6    # equal-compute baseline: sample 6, keep
 uv run ksa run --method loop            # k=2 samples, then 2 rounds of revising the best into 2 children
 uv run ksa run --method loop --cases fish,pendulum --rounds 3   # subset, more rounds
 uv run ksa judge runs/<run-dir> --model gpt-5.4 --repeats 3     # held-out judge, repeated
+uv run ksa compare runs/<one_shot> runs/<best_of_6> runs/<loop>   # side-by-side page -> runs/compare.html
 uv run pytest
 ```
 
