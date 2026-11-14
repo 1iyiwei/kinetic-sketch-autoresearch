@@ -16,6 +16,7 @@ Students: 3 samples per case (mean ± sd across runs).
 | student, 90 drawings, 3 epochs | 3 | 3.05 ± 0.27 | 3.39 ± 0.22 | 90% | 0.89 | 77% |
 | **student, 120 drawings, 1 epoch (`r1-e0`)** | 3 | **3.27 ± 0.38** | 3.84 ± 0.27 | 100% | 0.97 | 90% |
 | **round 2**: teacher data + 131 open-loop programs (Qwen3.6-critic ≥ 4.25), 1 epoch (`r2-e0`) | 3 | 3.23 ± 0.30 | - | 100% | 0.97 | 93% |
+| round 2b: teacher data + 19 open-loop programs selected by Qwen3.5-397B (≥ 3.75), 1 epoch (`r2b-e0`) | 3 | 2.68 ± 0.31 | 3.08 ± 0.21 | 87% | 0.81 | 83% |
 | student, 120 drawings, 2 epochs | 3 | 3.06 ± 0.29 | 3.59 ± 0.36 | 93% | 0.86 | 83% |
 | student, 120 drawings, 3 epochs | 3 | 3.19 ± 0.41 | 3.51 ± 0.43 | 97% | 0.90 | 97% |
 | **open loop**: student `r1-e2` + Qwen3.6 critic | 2 | 3.51 ± 0.03 | 4.27 ± 0.11 | 100% | 1.00 | 100% |
@@ -30,10 +31,14 @@ Findings
 - Round 2 (expert iteration with the open loop as teacher on 150 unused drawings) did not help:
   3.23 vs 3.27. Its data was selected by the Qwen3.6 critic, which overrates its own family (round-2
   loop means 4.0–4.7 by that critic), so the selection signal was weak. Self-training needs a reliable selector.
+- Round 2b re-selected that data with the independent Qwen3.5-397B judge: it rates the round-2 loop programs
+  only 2.7–3.1 (vs 4.0–4.7 from the Qwen3.6 critic), so just 19 of 150 passed, and the retrained student did not
+  improve either. Conclusion: the open loop is not yet a good enough teacher; gains came only from gpt-5.5 data.
+  Caveat: each student is a single training run, so training seed variance is unmeasured.
 - Judge self-preference is real: the critic's own model scores the open loop 4.2–4.3, but the
   independent judge gives 3.5–3.7 and still prefers gpt-5.5 one-shot. Report the independent column.
 
-Not yet done: round 2 with an independent selector (e.g. 397B critic), more teacher data (OpenAI credits),
+Not yet done: more gpt-5.5 teacher data, RL with renderer checks as reward (OpenAI credits),
 gpt-5.5 loop re-judged with the same open judges (needs the held-out loop run directory).
 
 Reproduce
