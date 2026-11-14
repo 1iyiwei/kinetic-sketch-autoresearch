@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_cartoon_bear_tuba_sway",
+    "category": "cartoon",
+    "svg": "t_cartoon_bear_tuba_sway.svg",
+    "intent": "The little bear hugs the tuba and sways left to right; the big bell gently nods with inertia while the mouthpiece puffs small rhythmic breaths.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_kite_badge_logo",
+    "category": "logo",
+    "svg": "t_logo_kite_badge_logo.svg",
+    "intent": "Logo intro: the diamond kite scales up with a soft overshoot while the tail beads pop in from the bottom one after another, then the whole mark gives a tiny wind-tug sway.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_cartoon_chef_flips_pancake",
+    "category": "cartoon",
+    "svg": "t_cartoon_chef_flips_pancake.svg",
+    "intent": "The little chef snaps the skillet upward so the pancake flips once in a high arc, then lands back in the pan with a soft squash while the chef leans into the motion.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_logo_scooter_car_turn_logo",
+    "category": "logo",
+    "svg": "t_logo_scooter_car_turn_logo.svg",
+    "intent": "Logo animation: the tiny delivery car pivots into view from a three-quarter angle, the two round wheels spin with a quick blur, and the rear cargo box overshoots then snaps square.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_logo_flower_pot_logo",
+    "category": "logo",
+    "svg": "t_logo_flower_pot_logo.svg",
+    "intent": "The pot pops up first, then five petals scale out radially around the center one after another; the whole flower gives a cheerful elastic bob.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_cartoon_pliers_crab_pinching_wire",
+    "category": "cartoon",
+    "svg": "t_cartoon_pliers_crab_pinching_wire.svg",
+    "intent": "The pliers crab sidesteps along the wire, opening and snapping its jaws once around the small loop; its eye stalks bob with a playful mechanical bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_cartoon_marionette_kicks_balloon",
+    "category": "cartoon",
+    "svg": "t_cartoon_marionette_kicks_balloon.svg",
+    "intent": "The puppet lifts one knee and kicks the balloon upward; the strings tug with a slight delay while the balloon floats away in a gentle arc.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_sketch_palm_hammock_breeze",
+    "category": "sketch",
+    "svg": "t_sketch_palm_hammock_breeze.svg",
+    "intent": "The hammock sways lazily between the two palms while the fronds flutter in staggered waves, easing back to center like a warm beach breeze.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_cargo_ship_stack_logo",
+    "category": "logo",
+    "svg": "t_logo_cargo_ship_stack_logo.svg",
+    "intent": "Logo intro: containers drop onto the deck one after another with tiny rebounds, the hull slides in beneath them, and the whole mark gives a heavy final settle.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_logo_cutting_board_knife_logo",
+    "category": "logo",
+    "svg": "t_logo_cutting_board_knife_logo.svg",
+    "intent": "Logo animation: the cutting board scales up from the counter plane, then the knife makes one clean diagonal chop with a crisp rebound and a small highlight flash on the blade.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_diagram_lake_effect_snow",
+    "category": "diagram",
+    "svg": "t_diagram_lake_effect_snow.svg",
+    "intent": "Cold wind arrows sweep across the warmer lake, rising plume curves feed the cloud band, and snow streaks appear downwind in staggered bursts.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_diagram_bus_door_linkage",
+    "category": "diagram",
+    "svg": "t_diagram_bus_door_linkage.svg",
+    "intent": "The two bus door panels fold inward on their hinges like a coupled four-bar linkage; the guide rollers trace the dashed slots and the panels ease to a crisp open stop.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_logo_piston_crank_mark",
+    "category": "logo",
+    "svg": "t_logo_piston_crank_mark.svg",
+    "intent": "Logo animation: the crank wheel turns continuously while the connecting rod pumps the piston left and right in a clean loop, with the red crank pin visibly leading the motion.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_sketch_umbrella_rain_splash",
+    "category": "sketch",
+    "svg": "t_sketch_umbrella_rain_splash.svg",
+    "intent": "The umbrella canopy rocks gently in gusts while raindrops fall diagonally and splash off the ground; the handle lags with a soft elastic sway.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_sketch_rabbit_ear_twitch",
+    "category": "sketch",
+    "svg": "t_sketch_rabbit_ear_twitch.svg",
+    "intent": "The rabbit freezes in the meadow, then one long ear twitches twice while the nose wiggles and the front paws make a tiny hop in place.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_mug_steam_swirl",
+    "category": "sketch",
+    "svg": "t_sketch_mug_steam_swirl.svg",
+    "intent": "Three wisps of steam curl upward from the coffee mug in staggered loops while the mug gives a tiny sleepy wobble on the desk.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_taxi_curb_splash",
+    "category": "sketch",
+    "svg": "t_sketch_taxi_curb_splash.svg",
+    "intent": "The taxi rolls forward from the curb with a slight body bob; both wheels spin and a small puddle splash flicks backward as it pulls away.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_diagram_orographic_rain_shadow",
+    "category": "diagram",
+    "svg": "t_diagram_orographic_rain_shadow.svg",
+    "intent": "Moist air arrows climb the windward mountain slope, the cloud swells and drops rain, then thinner dry-air arrows descend the leeward side with a quick warming shimmer.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_diagram_piano_hammer_action",
+    "category": "diagram",
+    "svg": "t_diagram_piano_hammer_action.svg",
+    "intent": "Textbook mechanism: pressing the key pivots it downward, lifting the jack so the hammer snaps up to strike the string, then rebounds while the damper hovers briefly before settling back.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_sketch_sandcastle_tide",
+    "category": "sketch",
+    "svg": "t_sketch_sandcastle_tide.svg",
+    "intent": "A foamy wave line slides up the beach toward the sandcastle, nicks the moat, then retreats leaving the little flag wobbling and the towers settling with a tiny squash.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_sketch_lever_press_stamp",
+    "category": "sketch",
+    "svg": "t_sketch_lever_press_stamp.svg",
+    "intent": "The long lever is pulled down around its left pivot, compressing the press head onto the paper, then springs back with an elastic overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_sea_breeze_cycle",
+    "category": "diagram",
+    "svg": "t_diagram_sea_breeze_cycle.svg",
+    "intent": "The arrows animate in a loop: warm air rises over the land, flows seaward aloft, cool air sinks over the water, and the near-surface breeze pushes inland with smooth circulating easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_stapler_chomp",
+    "category": "cartoon",
+    "svg": "t_cartoon_stapler_chomp.svg",
+    "intent": "The stapler character hops once, opens its top jaw wide, then snaps shut with a squashy chomp that sends a tiny paper sheet fluttering forward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_diagram_syringe_hydraulic_lift",
+    "category": "diagram",
+    "svg": "t_diagram_syringe_hydraulic_lift.svg",
+    "intent": "Pressing the small syringe plunger pushes fluid through the tube, raising the large piston and platform smoothly with a slight hydraulic lag.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_diagram_seesaw_balance_game",
+    "category": "diagram",
+    "svg": "t_diagram_seesaw_balance_game.svg",
+    "intent": "Diagram animation: the seesaw board rocks around the center pivot; the left toy block drops as the right teddy rises, overshoots, then settles into a playful back-and-forth. The dashed arcs show the ends' vertical travel.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_cartoon_frog_banjo_pluck",
+    "category": "cartoon",
+    "svg": "t_cartoon_frog_banjo_pluck.svg",
+    "intent": "The frog bobs on the stool while its right hand rapidly plucks the banjo strings; the left hand slides a little on the neck and the toes tap in time with a squashy bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_diagram_metronome_escapement",
+    "category": "diagram",
+    "svg": "t_diagram_metronome_escapement.svg",
+    "intent": "Mechanism diagram: the metronome rod ticks left and right about the lower pivot; the sliding weight rides the rod, and the escapement wheel advances one tooth on each tick with crisp stops.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_basket_slide_logo",
+    "category": "logo",
+    "svg": "t_logo_basket_slide_logo.svg",
+    "intent": "Logo animation: the slide swoosh draws on from left to right, then the basketball rolls down the curve with a tiny squash at the landing before snapping back round.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_cartoon_squirrel_pulley_hoist",
+    "category": "cartoon",
+    "svg": "t_cartoon_squirrel_pulley_hoist.svg",
+    "intent": "The squirrel scampers in place on the tiny treadmill wheel, making the pulley lift the dangling acorn with a bouncy rope stretch; the acorn sways when it reaches the top.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_cartoon_gnome_pulls_carrot",
+    "category": "cartoon",
+    "svg": "t_cartoon_gnome_pulls_carrot.svg",
+    "intent": "The gnome leans back and tugs the carrot in three elastic pulls; on the last tug the carrot pops free and the gnome hops backward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  }
+]

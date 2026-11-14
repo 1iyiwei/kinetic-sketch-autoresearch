@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_diagram_binder_clip_open",
+    "category": "diagram",
+    "svg": "t_diagram_binder_clip_open.svg",
+    "intent": "The two wire handles rotate upward about the side loops, prying the binder clip jaws open; after release the jaws clamp shut with a springy overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_basketball_free_throw",
+    "category": "sketch",
+    "svg": "t_sketch_basketball_free_throw.svg",
+    "intent": "The basketball leaves the player's hands, follows the dashed arc toward the hoop, drops through the rim, and gives the net a quick squashy flutter.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_logo_horse_horseshoe_logo",
+    "category": "logo",
+    "svg": "t_logo_horse_horseshoe_logo.svg",
+    "intent": "Logo animation: the horseshoe snaps into a near circle with a metallic-feeling overshoot, then the horse head nods forward once as the mane lags behind and catches up.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_surfboard_shore_pop",
+    "category": "sketch",
+    "svg": "t_sketch_surfboard_shore_pop.svg",
+    "intent": "The surfboard rocks up from the sand as a small shore break curls behind it; droplets pop off the nose and fall with bouncy timing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_crossed_wrenches_logo",
+    "category": "logo",
+    "svg": "t_logo_crossed_wrenches_logo.svg",
+    "intent": "The two wrenches sweep in from opposite diagonals and cross at center with elastic easing; the hub dot pops last to lock the mark together.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_cartoon_frog_lever_launch",
+    "category": "cartoon",
+    "svg": "t_cartoon_frog_lever_launch.svg",
+    "intent": "The frog stomps the left end of the lever, popping the tin-can robot upward in a springy hop; the lever rebounds with a little wobble after the launch.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_toaster_pop_up",
+    "category": "diagram",
+    "svg": "t_diagram_toaster_pop_up.svg",
+    "intent": "The toast slowly browns, then the spring-loaded carriage snaps upward with a quick bounce; crumbs flick off as the slices settle above the slots.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_logo_mixing_bowl_whisk_logo",
+    "category": "logo",
+    "svg": "t_logo_mixing_bowl_whisk_logo.svg",
+    "intent": "Logo animation: the whisk draws itself in with a quick circular stir, the bowl rocks once from the force, and the batter dot pops up then drops back into the bowl.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_belt_pulley_lift",
+    "category": "sketch",
+    "svg": "t_sketch_belt_pulley_lift.svg",
+    "intent": "The motor pulley spins and pulls the belt, making the upper wheel rotate while the hook rises smoothly with a slight swaying load.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_sketch_drill_press_descend",
+    "category": "sketch",
+    "svg": "t_sketch_drill_press_descend.svg",
+    "intent": "The drill chuck spins rapidly as the press lever is pulled down; the bit descends into the workpiece, throwing tiny curls, then springs back upward when released.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_squirrel_tail_balance",
+    "category": "diagram",
+    "svg": "t_diagram_squirrel_tail_balance.svg",
+    "intent": "Balance diagram: the squirrel leaps between branches while its large tail swings opposite the body like a counterweight, rotating around the hip pivot along the dashed guide arc.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_logo_bloom_cloud_logo",
+    "category": "logo",
+    "svg": "t_logo_bloom_cloud_logo.svg",
+    "intent": "Logo animation: the cloud puffs scale on sequentially from left to right, then the flower blooms open underneath with a gentle rotation and a fresh spring rebound.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_logo_observatory_dome_logo",
+    "category": "logo",
+    "svg": "t_logo_observatory_dome_logo.svg",
+    "intent": "Logo animation: the dome rises from the horizon, the shutter slit opens upward, and the star above twinkles with a tiny rotational pulse.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_diagram_drill_press_feed",
+    "category": "diagram",
+    "svg": "t_diagram_drill_press_feed.svg",
+    "intent": "The feed lever rotates downward around its hub, lowering the spinning drill bit into the workpiece; show the bit oscillating with a subtle vertical vibration as chips flick outward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_seesaw_torque_balance",
+    "category": "diagram",
+    "svg": "t_diagram_seesaw_torque_balance.svg",
+    "intent": "The unequal masses make the beam rock clockwise around the central pivot, then rebound once and settle toward a tilted torque-balance position.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_sketch_toy_train_chugs",
+    "category": "sketch",
+    "svg": "t_sketch_toy_train_chugs.svg",
+    "intent": "The little train chugs left to right with gentle squashy wheel rotation; the smoke puffs expand and drift upward as the cars tug with a tiny delayed bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_logo_sunset_palm_badge",
+    "category": "logo",
+    "svg": "t_logo_sunset_palm_badge.svg",
+    "intent": "Logo animation: the sun disc scales up from the horizon, the two ocean bands wipe on horizontally, and the palm leans in with elastic easing like a breezy beach sign.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_cartoon_saturn_hoop_jump",
+    "category": "cartoon",
+    "svg": "t_cartoon_saturn_hoop_jump.svg",
+    "intent": "A cheerful space bunny hops through Saturn's ring like a hula hoop; the ears trail behind, the ring wobbles around the planet, and the landing has a soft squash-and-stretch bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_logo_sawtooth_shield_logo",
+    "category": "logo",
+    "svg": "t_logo_sawtooth_shield_logo.svg",
+    "intent": "Logo build: the shield wipes upward, the saw blade slides horizontally across it with a crisp snap, and the teeth give a quick shimmering offset before settling.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_sketch_astronaut_tether_float",
+    "category": "sketch",
+    "svg": "t_sketch_astronaut_tether_float.svg",
+    "intent": "The astronaut drifts slowly upward and to the right while the tether trails behind with a delayed rubbery wave; arms and legs bob loosely as if in zero gravity.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_sketch_seesaw_jump",
+    "category": "sketch",
+    "svg": "t_sketch_seesaw_jump.svg",
+    "intent": "The left child lands on the seesaw, snapping that side down while the right child pops upward with a playful overshoot, then the plank rebounds once.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_diagram_stand_mixer_orbit",
+    "category": "diagram",
+    "svg": "t_diagram_stand_mixer_orbit.svg",
+    "intent": "The beater rotates around its own shaft while orbiting inside the bowl; show a smooth continuous sweep along the dashed circular guide as the bowl remains fixed.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_summer_window_breeze",
+    "category": "sketch",
+    "svg": "t_sketch_summer_window_breeze.svg",
+    "intent": "The curtains billow inward and outward in a warm summer breeze while the sun rays outside pulse softly; the hanging pull cord swings with a delayed arc.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_logo_simmer_pot_logo",
+    "category": "logo",
+    "svg": "t_logo_simmer_pot_logo.svg",
+    "intent": "Logo animation: the pot lands with a tiny squash, the lid tips open and clacks back, and the three steam wisps rise in staggered easing loops.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_backyard_telescope_tracking",
+    "category": "sketch",
+    "svg": "t_sketch_backyard_telescope_tracking.svg",
+    "intent": "The telescope tube tilts upward from the tripod pivot to follow the moving star, with a tiny overshoot and settle; the dashed sight line sweeps across the sky like a hand-drawn guide.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_logo_pulley_weight_logo",
+    "category": "logo",
+    "svg": "t_logo_pulley_weight_logo.svg",
+    "intent": "Logo build: the pulley wheel drops into place first, the hanging mass slides down as the opposite cord rises, and the wheel turns a quarter rotation with eased mechanical weight.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_diagram_owl_wing_flap",
+    "category": "diagram",
+    "svg": "t_diagram_owl_wing_flap.svg",
+    "intent": "Wing kinematics diagram: the owl's wings flap down and up about the shoulder hinges, following the dashed arcs with a soft ease at the top of each stroke.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_diagram_vine_tendril_grip",
+    "category": "diagram",
+    "svg": "t_diagram_vine_tendril_grip.svg",
+    "intent": "The tendril tip curls clockwise around the garden stake, tightening into a coil while the vine body sways once and then holds.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_cartoon_moonwalker_kick",
+    "category": "cartoon",
+    "svg": "t_cartoon_moonwalker_kick.svg",
+    "intent": "The little astronaut does a low-gravity soccer kick: the raised boot swings through the floating moon rock, the body drifts upward a few pixels, and the tether lags with soft elastic easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_diagram_pinball_flipper",
+    "category": "diagram",
+    "svg": "t_diagram_pinball_flipper.svg",
+    "intent": "Diagram animation: the ball rolls down the guide lane toward the flipper; when it reaches the tip, the flipper snaps upward about its pivot and knocks the ball along the dashed exit path. Use a crisp impact with quick anticipation and a small rebound of the flipper.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  }
+]

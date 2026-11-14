@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_diagram_horse_gait_levers",
+    "category": "diagram",
+    "svg": "t_diagram_horse_gait_levers.svg",
+    "intent": "Textbook gait diagram: the horse's four legs cycle through a trot, with paired diagonal legs swinging forward and back around the shoulder and hip pivots while the body glides slightly forward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_cartoon_hammer_helper_nail_tap",
+    "category": "cartoon",
+    "svg": "t_cartoon_hammer_helper_nail_tap.svg",
+    "intent": "The little hammer character hops on its handle-feet and taps the nail twice; the nail sinks slightly with squashy impact lines while the hammer rebounds with a cheerful wobble.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_cartoon_octopus_maracas_shake",
+    "category": "cartoon",
+    "svg": "t_cartoon_octopus_maracas_shake.svg",
+    "intent": "The octopus shakes all four maracas in a loose samba pattern, each arm lagging behind the body with elastic follow-through while the head squashes side to side.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_cartoon_robot_stacks_blocks",
+    "category": "cartoon",
+    "svg": "t_cartoon_robot_stacks_blocks.svg",
+    "intent": "The toy robot leans forward, grabs the top cube, and places it neatly on the stack; the claw opens and closes with mechanical easing and the antenna jiggles.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_logo_crosswalk_pin_logo",
+    "category": "logo",
+    "svg": "t_logo_crosswalk_pin_logo.svg",
+    "intent": "Logo intro: the map pin drops in with a soft overshoot, then the crosswalk bars wipe on from left to right and the pin settles with a tiny bounce.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "city street"
+  },
+  {
+    "id": "t_cartoon_bunny_kneads_dough",
+    "category": "cartoon",
+    "svg": "t_cartoon_bunny_kneads_dough.svg",
+    "intent": "The bunny presses both paws into the dough in alternating squishy beats; the dough flattens and rebounds while flour puffs outward in little arcs.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_cartoon_owl_branch_blink",
+    "category": "cartoon",
+    "svg": "t_cartoon_owl_branch_blink.svg",
+    "intent": "The owl blinks slowly, then swivels its head a few degrees left and right while the branch flexes subtly under its weight.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_logo_autumn_acorn_logo",
+    "category": "logo",
+    "svg": "t_logo_autumn_acorn_logo.svg",
+    "intent": "Logo animation: the acorn drops from above, does one cozy little bounce, and the cap tilts forward before settling back with a warm elastic ease.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_turtle_sandcastle_push",
+    "category": "cartoon",
+    "svg": "t_cartoon_turtle_sandcastle_push.svg",
+    "intent": "The turtle slowly pushes the sandcastle bucket with its front flipper, pauses, then the bucket wobbles like it might topple.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_cartoon_dog_hydrant_leash_tug",
+    "category": "cartoon",
+    "svg": "t_cartoon_dog_hydrant_leash_tug.svg",
+    "intent": "The little dog yanks forward toward the hydrant while the leash stretches taut, dragging its paws in two excited hops. Its tail wags rapidly and the body overshoots before snapping back.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_diagram_tennis_racket_collision",
+    "category": "diagram",
+    "svg": "t_diagram_tennis_racket_collision.svg",
+    "intent": "The racket sweeps upward through the contact point, compressing the ball briefly before it springs away along the outgoing guide with a fast ease-out spin.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_diagram_frog_jump_projectile",
+    "category": "diagram",
+    "svg": "t_diagram_frog_jump_projectile.svg",
+    "intent": "Projectile diagram: the frog compresses, then springs along the dashed parabolic arc to the landing pad, extending its rear legs and rotating only slightly in midair.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_logo_foggy_mountain_logo",
+    "category": "logo",
+    "svg": "t_logo_foggy_mountain_logo.svg",
+    "intent": "Logo animation: the mountain rises from a mask-like baseline while the fog bands drift sideways at different speeds, then all layers ease into a calm misty badge.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_sketch_watering_can_sprinkle",
+    "category": "sketch",
+    "svg": "t_sketch_watering_can_sprinkle.svg",
+    "intent": "The watering can tips forward from its handle and the dotted streams arc down onto the seedling; the seedling perks up with a soft squash-and-stretch bounce as droplets land.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_sketch_saxophone_sway",
+    "category": "sketch",
+    "svg": "t_sketch_saxophone_sway.svg",
+    "intent": "The saxophone rocks gently from side to side as if held by a player, its keys flicker in sequence, and short blue-note motion arcs puff from the bell.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_diagram_class_one_lever",
+    "category": "diagram",
+    "svg": "t_diagram_class_one_lever.svg",
+    "intent": "The downward effort on the left end tips the lever about the triangular fulcrum, lifting the load on the right with a smooth seesaw ease.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_guitar_string_pluck",
+    "category": "diagram",
+    "svg": "t_diagram_guitar_string_pluck.svg",
+    "intent": "Physical-process diagram: the pick pulls the string sideways and releases it, sending a traveling wave along the string between the two fixed supports with quickly fading amplitude.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_paperclip_stack_logo",
+    "category": "logo",
+    "svg": "t_logo_paperclip_stack_logo.svg",
+    "intent": "Logo animation: three paperclip bands draw themselves on in quick offsets, then the stack rotates a few degrees and snaps back with elastic easing.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_cartoon_octopus_beach_drums",
+    "category": "cartoon",
+    "svg": "t_cartoon_octopus_beach_drums.svg",
+    "intent": "The octopus taps seashell drums in a playful rhythm, each tentacle squashing and stretching as the shell heads bounce on impact.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_desk_lamp_logo",
+    "category": "logo",
+    "svg": "t_logo_desk_lamp_logo.svg",
+    "intent": "Logo animation: the lamp base lands with a soft squash, the arm hinges unfold upward in two beats, and the shade tilts down as if switching on.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_hammer_nail_strike",
+    "category": "sketch",
+    "svg": "t_sketch_hammer_nail_strike.svg",
+    "intent": "The hammer pivots down in a snappy arc to tap the nail head; the nail sinks a little into the plank and the hammer rebounds with a soft squash-and-stretch feel.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_comet_sun_sling",
+    "category": "diagram",
+    "svg": "t_diagram_comet_sun_sling.svg",
+    "intent": "The comet whips around the sun on the curved path, its tail swings to keep pointing away from the sun and stretches briefly at maximum speed near perihelion.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_sketch_goat_can_headbutt",
+    "category": "sketch",
+    "svg": "t_sketch_goat_can_headbutt.svg",
+    "intent": "The goat rears back and bumps the tin can, sending it tumbling in a wobbly little roll; its ears and beard lag behind with springy follow-through.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_logo_chef_hat_spoon_logo",
+    "category": "logo",
+    "svg": "t_logo_chef_hat_spoon_logo.svg",
+    "intent": "Logo animation: the spoon slides in from the left with a soft overshoot, then the chef hat puffs upward in three bouncy lobes and settles as one compact mark.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_diagram_goat_head_butt",
+    "category": "diagram",
+    "svg": "t_diagram_goat_head_butt.svg",
+    "intent": "Impact diagram: the goat head rotates forward about the neck joint, the horns trace the dashed path, and the body gives a tiny recoil after the imagined contact point.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_bike_courier_brake",
+    "category": "sketch",
+    "svg": "t_sketch_bike_courier_brake.svg",
+    "intent": "The bicycle courier brakes hard at the crosswalk: the front wheel grips, the rear frame tips forward a few degrees, and the messenger bag swings past the rider then settles back.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_sketch_taxi_door_pop",
+    "category": "sketch",
+    "svg": "t_sketch_taxi_door_pop.svg",
+    "intent": "The taxi rolls a few pixels to a stop, then the rear door swings open on its hinge with a rubbery ease-out while the roof sign gives a tiny wobble.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_cartoon_skater_kickflip",
+    "category": "cartoon",
+    "svg": "t_cartoon_skater_kickflip.svg",
+    "intent": "The cartoon skater rolls forward, pops the board into a quick flip under their feet, then lands with bent knees and a tiny squash-and-stretch bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_logo_corner_cafe_awning_logo",
+    "category": "logo",
+    "svg": "t_logo_corner_cafe_awning_logo.svg",
+    "intent": "The striped awning unfurls downward with elastic easing, the door swings open a crack, and the whole storefront gives a friendly little nod.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_sketch_lab_pulley_bucket",
+    "category": "sketch",
+    "svg": "t_sketch_lab_pulley_bucket.svg",
+    "intent": "The hanging bucket drops a short distance with ease-in gravity while the wheel spins and the cart rolls right; the rope stays taut with a tiny elastic bounce at the stop.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  }
+]

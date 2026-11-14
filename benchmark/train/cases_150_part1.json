@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_sketch_soccer_goal_kick",
+    "category": "sketch",
+    "svg": "t_sketch_soccer_goal_kick.svg",
+    "intent": "The kicker swings the planted leg steady and whips the other foot through the ball; the ball rockets into the goal, bulging the net for a beat before settling.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_diagram_shoreline_wave_refraction",
+    "category": "diagram",
+    "svg": "t_diagram_shoreline_wave_refraction.svg",
+    "intent": "Physical-process diagram: incoming wave crests bend as they enter shallow water, rotating to become nearly parallel with the beach while the dashed ray arrows slow and fan outward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_diagram_seesaw_torque_diagram",
+    "category": "diagram",
+    "svg": "t_diagram_seesaw_torque_diagram.svg",
+    "intent": "The seesaw rocks once about the central pivot: the heavier side dips with a smooth eased rotation while the lighter side rises, then both rebound slightly toward level.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_sketch_air_track_bumpers",
+    "category": "sketch",
+    "svg": "t_sketch_air_track_bumpers.svg",
+    "intent": "The left glider shoots along the air track, compresses the spring bumper on the right glider, then rebounds as the second glider slides away more slowly.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_sketch_knife_chopping_carrot",
+    "category": "sketch",
+    "svg": "t_sketch_knife_chopping_carrot.svg",
+    "intent": "The knife chops in a crisp looping rhythm, pivoting down to the carrot slices with a slight rebound while the cut coins nudge outward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_snail_on_leaf",
+    "category": "sketch",
+    "svg": "t_sketch_snail_on_leaf.svg",
+    "intent": "The snail creeps slowly along the big leaf with a subtle body ripple; its eye stalks bob independently while the leaf flexes under the tiny weight.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_sketch_magnet_coil_needle",
+    "category": "sketch",
+    "svg": "t_sketch_magnet_coil_needle.svg",
+    "intent": "Current pulses through the coil, making the compass needle snap toward the electromagnet and overshoot before settling; small field lines breathe outward with each pulse.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_logo_puzzle_piece_logo",
+    "category": "logo",
+    "svg": "t_logo_puzzle_piece_logo.svg",
+    "intent": "The puzzle piece slides in from the left, rotates a few degrees as the knob snaps into position, then settles with a small rubbery squash.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_logo_conveyor_cogs",
+    "category": "logo",
+    "svg": "t_logo_conveyor_cogs.svg",
+    "intent": "Logo animation: the two cogs counter-rotate as the conveyor belt scrolls left, carrying the orange parcel smoothly across the top run and easing to a stop at center.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_sketch_hand_saw_board",
+    "category": "sketch",
+    "svg": "t_sketch_hand_saw_board.svg",
+    "intent": "The saw slides back and forth along the cut groove with gritty easing, while the loose board end trembles and a few sawdust flecks pop outward on each forward stroke.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_logo_snowflake_mitten_logo",
+    "category": "logo",
+    "svg": "t_logo_snowflake_mitten_logo.svg",
+    "intent": "Logo animation: the mitten slides in from the left and overshoots, then the snowflake spins once lightly above it and locks into the center with a crisp winter snap.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_sketch_autumn_leaf_whirl",
+    "category": "sketch",
+    "svg": "t_sketch_autumn_leaf_whirl.svg",
+    "intent": "The fallen leaves spiral around the bare tree in a playful wind loop, with the trunk bending a few degrees and rebounding as if pushed by a breeze.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_logo_fox_leaf_logo",
+    "category": "logo",
+    "svg": "t_logo_fox_leaf_logo.svg",
+    "intent": "Logo animation: the fox head draws attention with a quick diagonal slide-in, the white muzzle scales open like folded paper, and the tail-leaf silhouette sways once with elastic easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_cartoon_sunflower_sun_stretch",
+    "category": "cartoon",
+    "svg": "t_cartoon_sunflower_sun_stretch.svg",
+    "intent": "The sleepy sunflower wakes with the spring sun, stretching its stem upward and turning its face toward the light; petals fan open in a staggered, cheerful bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_teddy_drums",
+    "category": "cartoon",
+    "svg": "t_cartoon_teddy_drums.svg",
+    "intent": "The teddy bear taps the toy drum in an alternating left-right rhythm; the sticks squash slightly on impact and the bear's ears bounce with each beat.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_cartoon_mug_sip_typing",
+    "category": "cartoon",
+    "svg": "t_cartoon_mug_sip_typing.svg",
+    "intent": "The coffee mug scoots beside the keyboard, lifts one bendy arm to sip from a straw, then shivers happily as steam curls upward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_logo_prism_spectrum_logo",
+    "category": "logo",
+    "svg": "t_logo_prism_spectrum_logo.svg",
+    "intent": "A white beam slides into the prism, refracts, and fans into three colored rays that stretch outward with crisp linear timing; the prism gives a tiny glassy tilt at the end.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_cartoon_monkey_bar_swing",
+    "category": "cartoon",
+    "svg": "t_cartoon_monkey_bar_swing.svg",
+    "intent": "The small character swings hand-over-hand across the monkey bars; the body arcs like a pendulum under each grip while the legs kick forward on every reach.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_sketch_drawer_file_pop",
+    "category": "sketch",
+    "svg": "t_sketch_drawer_file_pop.svg",
+    "intent": "The top desk drawer slides open with a smooth ease-out, a file folder pops up, and loose papers flutter once before stopping.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_lighthouse_beam_sweep",
+    "category": "sketch",
+    "svg": "t_sketch_lighthouse_beam_sweep.svg",
+    "intent": "The lighthouse beacon sweeps across the ocean in a slow arc, brightening the dashed guide rays as the water lines shimmer subtly underneath.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_diagram_stapler_press",
+    "category": "diagram",
+    "svg": "t_diagram_stapler_press.svg",
+    "intent": "The top arm of the stapler pivots downward about the rear hinge, compresses with a quick snap at the front, then rebounds slightly with a crisp mechanical ease.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_logo_trumpet_burst_logo",
+    "category": "logo",
+    "svg": "t_logo_trumpet_burst_logo.svg",
+    "intent": "Logo animation: the trumpet slides in from the left as if playing a bright accent, and the bell burst scales outward in quick staggered pops.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_cartoon_snail_waters_sprout",
+    "category": "cartoon",
+    "svg": "t_cartoon_snail_waters_sprout.svg",
+    "intent": "The snail inches forward with a squashy body wave while tilting the tiny watering can; droplets arc down and the sprout perks taller with a soft bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_diagram_traffic_gate_barrier",
+    "category": "diagram",
+    "svg": "t_diagram_traffic_gate_barrier.svg",
+    "intent": "The barrier arm pivots upward about the hinge in a smooth motor-driven sweep, overshoots slightly near vertical, then settles while the counterweight dips in response.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_cartoon_paperclip_skate",
+    "category": "cartoon",
+    "svg": "t_cartoon_paperclip_skate.svg",
+    "intent": "The paperclip creature pushes off with one leg and skates in a looping S-curve across the desk, leaving a dashed motion trail as its eyes lean into the turn.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_stapler_snap",
+    "category": "sketch",
+    "svg": "t_sketch_stapler_snap.svg",
+    "intent": "The stapler top pivots downward with a quick squashy snap, presses the paper stack, then rebounds slightly as if spring-loaded.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_cartoon_pig_mud_splash",
+    "category": "cartoon",
+    "svg": "t_cartoon_pig_mud_splash.svg",
+    "intent": "The piglet hops down into the puddle, squashing it wide and sending two mud splashes outward; ears and tail jiggle with a soft rubbery settle.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_balance_beam_weights",
+    "category": "sketch",
+    "svg": "t_sketch_balance_beam_weights.svg",
+    "intent": "The small sliding mass glides along the beam until the tilted balance levels out, then the pointer quivers around center with damped motion.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_sketch_snowman_scarf_flurry",
+    "category": "sketch",
+    "svg": "t_sketch_snowman_scarf_flurry.svg",
+    "intent": "Snowflakes drift down at staggered speeds while the snowman's scarf flutters left to right; the twig arms wobble slightly after each gust.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_sketch_swing_pump",
+    "category": "sketch",
+    "svg": "t_sketch_swing_pump.svg",
+    "intent": "The empty playground swing pumps forward and back for one smooth arc, chains staying taut as the seat eases through the bottom and slows near each high point.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  }
+]

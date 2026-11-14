@@ -152,6 +152,31 @@ async def train(args):
     print(f"done -> {out_dir}\nuse: KSA_GEN_MODEL={ckpts[-1]['path']} uv run ksa run --method oneshot")
 
 
+def report(args):
+    """One comparison table (held-out judge, render validity, generator cost) across runs."""
+    rows = []
+    for rd in map(Path, args.run_dirs):
+        data = json.loads((rd / "results.json").read_text())
+        meta, res = data["meta"], data["results"]
+        jf = rd / f"judge-{args.judge}.json"
+        judge = json.loads(jf.read_text())["mean"] if jf.exists() else None
+        critic = sum(r["critique"]["overall"] for r in res) / len(res)
+        valid = sum(bool(r.get("render", {}).get("ok")) for r in res) / len(res)
+        gen = [r.get("meter", {}).get("generator", {}) for r in res]
+        toks = sum(g.get("input_tokens", 0) + g.get("output_tokens", 0) for g in gen) / len(res)
+        allt = sum(sum(m["input_tokens"] + m["output_tokens"] for m in r.get("meter", {}).values()) for r in res) / len(res)
+        secs = sum(r.get("seconds", 0) for r in res) / len(res)
+        model = meta.get("gen_model", "?").replace("sampler_weights/", "")[-40:]
+        rows.append(f"| {rd.name} | {model} | {meta['method']} | "
+                    f"{'%.2f' % judge if judge is not None else '-'} | {critic:.2f} | {valid:.0%} | "
+                    f"{toks / 1000:.0f}K | {allt / 1000:.0f}K | {secs:.0f}s |")
+    table = "\n".join([f"| run | generator | method | judge ({args.judge}) | critic | valid renders | "
+                        "gen tokens/case | all tokens/case | sec/case |", "|---|---|---|---|---|---|---|---|---|", *rows])
+    print(table)
+    if args.out:
+        Path(args.out).write_text(table + "\n")
+
+
 def main():
     p = argparse.ArgumentParser(prog="ksa.distill")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -169,9 +194,15 @@ def main():
     t.add_argument("--batch", type=int, default=8)
     t.add_argument("--max-len", type=int, default=24000)
     t.add_argument("--name", default="sft")
+    r = sub.add_parser("report", help="compare runs: judge score, validity, cost")
+    r.add_argument("run_dirs", nargs="+")
+    r.add_argument("--judge", default="gpt-5.4")
+    r.add_argument("--out")
     args = p.parse_args()
     if args.cmd == "export":
         export(args)
+    elif args.cmd == "report":
+        report(args)
     else:
         asyncio.run(train(args))
 

@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_logo_rolling_pin_wheat_logo",
+    "category": "logo",
+    "svg": "t_logo_rolling_pin_wheat_logo.svg",
+    "intent": "Logo animation: the rolling pin rolls a half turn across the mark, compressing slightly at the handles, while the wheat sprigs fan outward and spring back into symmetry.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_logo_guitar_pick_strings_logo",
+    "category": "logo",
+    "svg": "t_logo_guitar_pick_strings_logo.svg",
+    "intent": "Logo animation: the pick drops into place with a tiny squash, then the three strings sweep across from left to right like strummed bands.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_metro_steps_logo",
+    "category": "logo",
+    "svg": "t_logo_metro_steps_logo.svg",
+    "intent": "The stair blocks rise upward in sequence like an escalator, then the metro circle draws attention with a smooth scale pop and settles into a clean transit mark.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "city street"
+  },
+  {
+    "id": "t_cartoon_cat_conveyor_wrench",
+    "category": "cartoon",
+    "svg": "t_cartoon_cat_conveyor_wrench.svg",
+    "intent": "The cat rides the conveyor belt while tightening a wobbling bolt with quick ratchet clicks; the belt loops steadily and the loose gear beside it gives a satisfied spin.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_cartoon_cat_drum_fill",
+    "category": "cartoon",
+    "svg": "t_cartoon_cat_drum_fill.svg",
+    "intent": "The cat drummer snaps into a short drum fill: both sticks alternate downstrokes on the toms, the cymbal wobbles after each hit, and the tail flicks sharply on the final beat.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_cartoon_frog_reaches_flower",
+    "category": "cartoon",
+    "svg": "t_cartoon_frog_reaches_flower.svg",
+    "intent": "The frog crouches, blinks, then springs upward on stretchy legs to sniff the flower; the flower head nods from the tiny impact and rebounds.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_sketch_garden_shears_trim",
+    "category": "sketch",
+    "svg": "t_sketch_garden_shears_trim.svg",
+    "intent": "The garden shears snap closed around the tall stems with a crisp overshoot; the cut flower heads pop upward slightly, then tumble down with a playful rotation.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_logo_soccer_seesaw_logo",
+    "category": "logo",
+    "svg": "t_logo_soccer_seesaw_logo.svg",
+    "intent": "Logo animation: the seesaw pivots around the center triangle while the soccer ball hops from the low end to the high end, landing with playful easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_diagram_planet_orbit_transfer",
+    "category": "diagram",
+    "svg": "t_diagram_planet_orbit_transfer.svg",
+    "intent": "The small spacecraft marker coasts along the elliptical transfer path from the inner orbit toward the outer planet, easing fastest near the sun and slower near apoapsis; the two planets advance slightly on their circular guide orbits.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_logo_compact_car_bounce_logo",
+    "category": "logo",
+    "svg": "t_logo_compact_car_bounce_logo.svg",
+    "intent": "Logo animation: the compact car squashes slightly on its tires, then does a cheerful two-hop bounce with the wheels lagging and settling into place.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_logo_owl_badge_logo",
+    "category": "logo",
+    "svg": "t_logo_owl_badge_logo.svg",
+    "intent": "Logo animation: the round owl badge rotates in from -12 degrees, both eye discs bounce into place sequentially, and the beak flips down to a crisp stop.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_cartoon_raccoon_trash_lid_pop",
+    "category": "cartoon",
+    "svg": "t_cartoon_raccoon_trash_lid_pop.svg",
+    "intent": "The raccoon pops out of the sidewalk trash can, lifting the lid like a hinged hat and blinking at the street. The lid wobbles on its pivot while the raccoon\u2019s paws grip the rim and its head bounces up into view.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_diagram_block_and_tackle",
+    "category": "diagram",
+    "svg": "t_diagram_block_and_tackle.svg",
+    "intent": "The rope is pulled down on the free end, causing the lower pulley and attached load to rise at half the rope speed; arrows emphasize the mechanical advantage.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_drawbridge_street_span",
+    "category": "diagram",
+    "svg": "t_diagram_drawbridge_street_span.svg",
+    "intent": "The street bridge deck rotates upward around the left trunnion while the counterweight descends, with the dashed arc showing the deck tip path and a small bounce at the raised stop.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_cartoon_jack_in_box_pop",
+    "category": "cartoon",
+    "svg": "t_cartoon_jack_in_box_pop.svg",
+    "intent": "The crank turns twice, then the lid snaps open and the clown puppet springs upward with a stretchy overshoot before settling into a wobble.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_diagram_electromagnet_needle_deflection",
+    "category": "diagram",
+    "svg": "t_diagram_electromagnet_needle_deflection.svg",
+    "intent": "When the switch closes, current runs through the coil and the compass needle swings toward the electromagnet, overshooting slightly before damping back.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_cartoon_boat_duck_sailor",
+    "category": "cartoon",
+    "svg": "t_cartoon_boat_duck_sailor.svg",
+    "intent": "The duck sailor rocks with the rowboat on a looping wave, tugging the tiller side to side; the mast flag flutters with a snappy two-frame feel.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_cartoon_crab_side_shuffle",
+    "category": "cartoon",
+    "svg": "t_cartoon_crab_side_shuffle.svg",
+    "intent": "The crab does a quick sideways shuffle across the sand, claws bobbing in alternating arcs and legs tapping with snappy easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_sailboat_rock_logo",
+    "category": "logo",
+    "svg": "t_logo_sailboat_rock_logo.svg",
+    "intent": "Logo animation: the sailboat gently rocks on an invisible wave, the main sail bends a few degrees with the motion, then returns to a calm upright pose.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_diagram_bee_pollination_path",
+    "category": "diagram",
+    "svg": "t_diagram_bee_pollination_path.svg",
+    "intent": "The bee follows the dashed loop from the left flower to the right flower, bobbing gently; pollen dots lift from the first blossom and settle onto the second as it arrives.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_diagram_basketball_arc_to_hoop",
+    "category": "diagram",
+    "svg": "t_diagram_basketball_arc_to_hoop.svg",
+    "intent": "The basketball follows the dashed parabolic flight path toward the hoop, squashes lightly on the rim, then drops through the net with gravity-driven easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_logo_comet_swoosh_logo",
+    "category": "logo",
+    "svg": "t_logo_comet_swoosh_logo.svg",
+    "intent": "Logo animation: the comet streaks in along the curved trail with a squash-and-stretch head, the tail draws behind it, then the whole mark eases to a crisp stop.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_diagram_drawer_slide",
+    "category": "diagram",
+    "svg": "t_diagram_drawer_slide.svg",
+    "intent": "The desk drawer glides straight outward along the dashed rails, eases past the halfway mark, and gives a small stop-and-settle bounce at full extension.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_cartoon_frog_buoyancy_beaker",
+    "category": "cartoon",
+    "svg": "t_cartoon_frog_buoyancy_beaker.svg",
+    "intent": "The frog student drops the cork into the beaker; it sinks a little, rebounds to the surface, and bobs gently while the frog's hands clap once.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_diagram_paper_punch_lever",
+    "category": "diagram",
+    "svg": "t_diagram_paper_punch_lever.svg",
+    "intent": "The punch lever rotates down around the rear pivot, driving the two circular dies through the sheet; small paper chads drop vertically and bounce once on the desk line.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_cartoon_bear_tastes_sauce",
+    "category": "cartoon",
+    "svg": "t_cartoon_bear_tastes_sauce.svg",
+    "intent": "The bear chef lifts the spoon to taste the sauce, smiles after a tiny pause, and the pot lid gives a playful rattle from the simmering bubbles.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_board_game_spinner",
+    "category": "sketch",
+    "svg": "t_sketch_board_game_spinner.svg",
+    "intent": "The spinner arrow whips around the dial, decelerates over several ticks, and lands on one wedge while the small token hops forward along the path squares.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_diagram_paddle_wheel_boat",
+    "category": "diagram",
+    "svg": "t_diagram_paddle_wheel_boat.svg",
+    "intent": "The side paddle wheel turns clockwise, its buckets dipping through the water and pushing backward; the boat eases forward with a small bob as the dashed wake trails behind.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_cartoon_submarine_octopus",
+    "category": "cartoon",
+    "svg": "t_cartoon_submarine_octopus.svg",
+    "intent": "The octopus captain peers through the porthole as the submarine dives diagonally; tentacles wiggle against the glass and bubbles rise with staggered timing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_diagram_drum_pedal_beater",
+    "category": "diagram",
+    "svg": "t_diagram_drum_pedal_beater.svg",
+    "intent": "Mechanism diagram: the footboard is pressed down, rotating the hinge linkage so the beater swings forward and strikes the drum head, then springs back with a soft overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  }
+]
