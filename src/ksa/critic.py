@@ -113,6 +113,9 @@ async def critique(case: dict, input_png: Path, sheet_png: Path, strip_png: Path
                 f"(1.00 = identical).")
     text = (f'Intent: {case["intent"]}\nDuration: {case["duration"]} s\n{fid_note}\n'
             "Image 1: input drawing. Image 2: overview sheet. Image 3: consecutive-frame strip.")
+    if (model or llm.CRITIC_MODEL) == "none":  # measured-only: no API calls
+        return {"scores": {"fidelity": fid_score}, "overall": fid_score, "measured": {"fidelity_f1": round(f1, 3)},
+                "issues": [fid_note] if f1 < 0.9 else [], "fixes": []}
     raw = await llm.call(
         role="critic", model=model or llm.CRITIC_MODEL, effort=llm.CRITIC_EFFORT, system=SYSTEM,
         text=text, images=[input_png, sheet_png, strip_png], log=log,

@@ -152,6 +152,15 @@ async def train(args):
     print(f"done -> {out_dir}\nuse: KSA_GEN_MODEL={ckpts[-1]['path']} uv run ksa run --method oneshot")
 
 
+def motion(frames: list[str]) -> float:
+    """Mean absolute pixel change between consecutive frames (0-1); ~0 means nothing moves."""
+    from PIL import Image, ImageChops, ImageStat
+    if len(frames) < 2:
+        return 0.0
+    ims = [Image.open(f).convert("L").resize((128, 128)) for f in frames]
+    return sum(ImageStat.Stat(ImageChops.difference(a, b)).mean[0] for a, b in zip(ims, ims[1:])) / (255 * (len(ims) - 1))
+
+
 def report(args):
     """One comparison table (held-out judge, render validity, generator cost) across runs."""
     rows = []
@@ -166,12 +175,16 @@ def report(args):
         toks = sum(g.get("input_tokens", 0) + g.get("output_tokens", 0) for g in gen) / len(res)
         allt = sum(sum(m["input_tokens"] + m["output_tokens"] for m in r.get("meter", {}).values()) for r in res) / len(res)
         secs = sum(r.get("seconds", 0) for r in res) / len(res)
+        f1 = sum(r["critique"].get("measured", {}).get("fidelity_f1", 0) for r in res) / len(res)
+        moving = sum(motion(r["render"].get("frames", [])) > args.motion_min
+                     for r in res if r.get("render", {}).get("ok")) / len(res)
         model = meta.get("gen_model", "?").replace("sampler_weights/", "")[-40:]
         rows.append(f"| {rd.name} | {model} | {meta['method']} | "
-                    f"{'%.2f' % judge if judge is not None else '-'} | {critic:.2f} | {valid:.0%} | "
+                    f"{'%.2f' % judge if judge is not None else '-'} | {critic:.2f} | {valid:.0%} | {f1:.2f} | {moving:.0%} | "
                     f"{toks / 1000:.0f}K | {allt / 1000:.0f}K | {secs:.0f}s |")
     table = "\n".join([f"| run | generator | method | judge ({args.judge}) | critic | valid renders | "
-                        "gen tokens/case | all tokens/case | sec/case |", "|---|---|---|---|---|---|---|---|---|", *rows])
+                        "anchor F1 | moving | gen tokens/case | all tokens/case | sec/case |",
+                        "|---|---|---|---|---|---|---|---|---|---|---|", *rows])
     print(table)
     if args.out:
         Path(args.out).write_text(table + "\n")
@@ -198,6 +211,7 @@ def main():
     r.add_argument("run_dirs", nargs="+")
     r.add_argument("--judge", default="gpt-5.4")
     r.add_argument("--out")
+    r.add_argument("--motion-min", type=float, default=0.001)
     args = p.parse_args()
     if args.cmd == "export":
         export(args)
