@@ -57,9 +57,21 @@ scores zero, and its errors are fed back.
 - **The baseline makes real semantic mistakes.** For example, the pendulum swings away from the side the
   diagram's arrow indicates, and never passes through the vertical. These are the failures the loop should fix.
 
+Design, metrics and team roles: [docs/design.md](docs/design.md).
+
+## Provenance
+
+All code, benchmark data and docs in this repository were written during the event (from Nov 14,
+10:00 PT), as the git history shows. Before the event there were only planning notes, kept in a
+separate repository: an ideation chat and a summary of the event rules. No code or assets from earlier
+projects are used here. The concept builds on the author's prior research on sketch-based animation:
+KineticSketch, DrawTalk, and the MotionLang motion DSL.
+
 ## Credits
 
 [Playwright](https://playwright.dev) (headless rendering), [Pillow](https://python-pillow.org)
 (GIFs and contact sheets), and the [OpenAI API](https://platform.openai.com) (generator and critic).
-The concept builds on the author's prior research on sketch-based animation. All code in this repository
-was written during the event.
+
+## License
+
+[Apache-2.0](LICENSE)

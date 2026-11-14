@@ -3,6 +3,7 @@ name = "ksa"
 version = "0.1.0"
 description = "Autoresearch loop for stylized sketch animation"
 readme = "README.md"
+license = "Apache-2.0"
 authors = [
     { name = "Li-Yi Wei", email = "git@liyiwei.org" }
 ]
