@@ -29,8 +29,11 @@ ROOT = Path(__file__).resolve().parents[2]
 CASES_DIR = ROOT / "benchmark" / "cases"
 
 
-def load_cases(only: str | None) -> list[dict]:
-    cases = json.loads((CASES_DIR / "cases.json").read_text())
+def load_cases(only: str | None, cases_file: str | None = None) -> list[dict]:
+    path = Path(cases_file) if cases_file else CASES_DIR / "cases.json"
+    cases = json.loads(path.read_text())
+    for c in cases:  # absolute svg paths, so other splits (benchmark/train) work unchanged
+        c["svg"] = str((path.parent / c["svg"]).resolve())
     if only:
         keep = set(only.split(","))
         cases = [c for c in cases if c["id"] in keep]
@@ -109,14 +112,14 @@ def config_from(args) -> SearchConfig:
 
 
 async def run(args):
-    cases = load_cases(args.cases)
+    cases = load_cases(args.cases, args.cases_file)
     cfg = config_from(args)
     run_dir = Path(args.out) / f'{time.strftime("%Y%m%d-%H%M%S")}-{cfg.method}'
     run_dir.mkdir(parents=True)
     log = run_dir / "llm_calls.jsonl"
     meta = {"method": cfg.method, "config": cfg.__dict__, "gen_model": llm.GEN_MODEL, "gen_effort": llm.GEN_EFFORT,
             "critic_model": llm.CRITIC_MODEL, "critic_effort": llm.CRITIC_EFFORT,
-            "cases": [c["id"] for c in cases]}
+            "cases": [c["id"] for c in cases], "cases_file": args.cases_file}
     print(f"run dir: {run_dir}")
     async with Renderer(concurrency=args.concurrency) as renderer:
         results = await asyncio.gather(*(run_case(c, renderer, run_dir, log, cfg) for c in cases))
@@ -129,7 +132,7 @@ async def judge(args):
     times each, without regenerating anything. Writes judge-<model>.json next to the run."""
     run_dir = Path(args.run_dir)
     data = json.loads((run_dir / "results.json").read_text())
-    cases = {c["id"]: c for c in load_cases(None)}
+    cases = {c["id"]: c for c in load_cases(None, data["meta"].get("cases_file"))}
     model = args.model or llm.CRITIC_MODEL
     log = run_dir / "llm_calls.jsonl"
 
@@ -168,6 +171,7 @@ def main():
     r.add_argument("--rounds", type=int, default=2)
     r.add_argument("--patience", type=int, default=2)
     r.add_argument("--cases", help="comma-separated case ids (default: all)")
+    r.add_argument("--cases-file", help="cases.json of another split, e.g. benchmark/train/cases.json")
     r.add_argument("--out", default=str(ROOT / "runs"))
     r.add_argument("--concurrency", type=int, default=8)
     j = sub.add_parser("judge", help="re-score an existing run's final renders")

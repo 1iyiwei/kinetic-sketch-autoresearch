@@ -73,3 +73,22 @@ Held-out eval on the 10 benchmark cases (+ hand-drawn) — never in training
 - Which sponsor challenges to enter.
 - Live drawing on stage vs precomputed replay.
 - Base model choice for the student (check Tinker model list; must write valid HTML/JS reliably).
+
+## Status & commands (Tinker pipeline)
+
+Built and smoke-tested end to end:
+
+```bash
+uv run python benchmark/make_train_cases.py              # 300 train drawings -> benchmark/train/ (75 per category)
+uv run ksa run --method loop --cases-file benchmark/train/cases.json   # teacher data
+uv run python -m ksa.distill export runs/<train-run> --out data/sft_r1.jsonl   # held-out cases always excluded
+uv run python -m ksa.distill train data/sft_r1.jsonl --name r1                 # Tinker LoRA SFT, prints tinker:// path
+KSA_GEN_MODEL=tinker:Qwen/Qwen3.6-35B-A3B uv run ksa run --method oneshot      # base student
+KSA_GEN_MODEL=tinker://.../sampler_weights/r1-e2 uv run ksa run --method oneshot   # fine-tuned student
+```
+
+Smoke results (not headline numbers): teacher loop on 8 train cases = 3.56 mean, ~150K tokens/case;
+base Qwen3.6-35B-A3B one-shot: windmill 4.50, pendulum 2.25 (text-only, ~12K tokens/case);
+SFT on 12 examples trained and sampled through `tinker://` successfully.
+Note: base model's SFT loss starts low (~0.15), so round-1 SFT gains may be modest; RL with the
+renderer + critic as reward is the likely bigger lever.
