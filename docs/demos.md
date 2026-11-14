@@ -30,7 +30,7 @@ below names the criterion it serves.
 | 0:00–0:15 | A rough pendulum sketch, then the one-shot animation swinging the wrong way | "Ask a model to animate a drawing and it writes code blind. This pendulum swings away from the arrow." | Problem |
 | 0:15–0:40 | The loop on that sketch: render → contact sheet → critic issues → revision; the pendulum tree (r0n0 → r1n0 → r2n1) | "Our agent renders its program, a vision critic watches the frames, and the agent revises. Here it catches the wrong-way swing and fixes the physics." | Autonomy |
 | 0:40–1:05 | The comparison page: three columns, green winners; the headline numbers | "On 10 drawings, judged by a different model three times each: one-shot 3.58, best-of-6 3.60, loop 3.91. Sampling more doesn't help; looking and revising does." | Results, rigour |
-| 1:05–1:30 | `playbooks/train.json` growing case by case; then a held-out drawing animated with the playbook | "After each drawing it writes down what fixed it, as general lessons. On drawings it never saw, lessons help where they fit (spring–mass, every run) and hurt where they are misapplied (windmill); selecting lessons per drawing removes the misapplied ones (one-shot 3.60 → 3.74)." | Self-improvement |
+| 1:05–1:30 | `playbooks/train-v1.json` and its `history`; then the test table | "We also tried learning across drawings: after each one, it writes down general lessons. On new drawings those prompt lessons help when they fit and hurt when they don't, and on a larger test set they don't reliably help; the noise between identical runs is as big as the effect. The loop is what transfers. Next, we distill it into an open model's weights on Tinker." | Rigour, honest failure |
 | 1:30–1:50 | Two findings, one visual each: the aliasing windmill, and the phantom "smaller and shifted" critique next to a pixel diff | "Vision critics hallucinate, so we measure what we can and keep the judge separate. Every call is logged." | Interpretability |
 | 1:50–2:00 | The repo, and a gallery of the best animations | "Kinetic Sketch Autoresearch: sketches in, animations out, and it learns." | — |
 
@@ -57,7 +57,7 @@ below names the criterion it serves.
 - *Equal compute?* Equal generator calls; the loop uses about 33% more tokens. Next: a token-matched best-of-K.
 - *Why code instead of a video model?* Stylized, exact and editable output; the drawing is preserved by
   construction; motion can be checked and corrected.
-- *Does it generalize?* The playbook is learned on 8 training drawings, pruned on 3 validation drawings, and measured on 7 held-out ones; 5 complex drawings form a separate stress test.
+- *Does it generalize?* The loop's gain holds on 7 held-out test drawings (+0.21, 6 of 7). The playbook of prompt lessons does not reliably transfer, and we show that. On 5 complex multi-object drawings, neither method does well yet.
 
 ### Finals (3 minutes on stage, live demo, no Q&A)
 
@@ -80,7 +80,7 @@ open tools/draw.html
 Draw, type what should happen, and press **Save SVG**; the file goes to `~/Downloads`. Then:
 
 ```bash
-uv run ksa animate ~/Downloads/drawing.svg --playbook playbooks/train-v2.json
+uv run ksa animate ~/Downloads/drawing.svg
 ```
 
 - It prints `round 0: … best 3.50`, `round 1: …`, `round 2: …`, then opens a page with the input, the animation and
@@ -88,7 +88,7 @@ uv run ksa animate ~/Downloads/drawing.svg --playbook playbooks/train-v2.json
 - The intent comes from the drawing page; to override it, add it as a second argument in quotes.
 - For a logo intro that builds up to the drawing, add `--anchor end`. For a textbook figure, add `--category diagram`.
 - For a faster take (about 45 seconds, no revisions), add `--method oneshot`.
-- Before the playbook-v2 runs finish, use `playbooks/train-v1.json`.
+- The playbook is optional (`--playbook playbooks/train-v1.json`); it didn't reliably help on the larger test set.
 
 **2. Video shot: the loop fixing the pendulum** (about 3 minutes; screen-record the terminal, then speed it up)
 
@@ -114,7 +114,7 @@ The shareable version is the claude.ai page in the table at the top. To rebuild 
 **4. Video shot: the playbook**
 
 ```bash
-cat playbooks/train-v2.json
+cat playbooks/train-v1.json
 ```
 
 Scroll through `lessons`, then `history`, which records what changed after each training drawing and why.

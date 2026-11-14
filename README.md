@@ -20,7 +20,8 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Playbook: lessons distilled from search trees, train/test split | done: `src/ksa/playbook.py`, `playbooks/` |
 | Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
 | Per-drawing lesson selection; per-lesson credit (`ksa lessons`) | done: `src/ksa/playbook.py`, `src/ksa/lessons.py` |
-| More drawings: validation split for pruning, significance | next |
+| Playbook v2 on 8 train / 3 val / 7 test drawings | done: no reliable gain (see below) |
+| Distill the loop into an open model (Qwen on Tinker) | next |
 | Parallel rendering and critique on Modal | next |
 
 ## Results (Sat 13:15, 10 cases)
@@ -120,6 +121,36 @@ Reproduce: `uv run ksa learn --split train --cases pendulum,ball_ramp,stick_wave
 then `uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json --lessons {all,select}`,
 `ksa judge` each run, `uv run ksa report <runs...> --split test`, and
 `uv run ksa lessons --playbook playbooks/train-v1.json --baseline <no-playbook runs> --with <selected runs>`.
+
+### Playbook v2 on the larger benchmark: no reliable gain (Sat 15:50)
+
+Learned with selection on all 8 train drawings ([`playbooks/train-v2.json`](playbooks/train-v2.json), 12 lessons),
+pruned on the 3 val drawings, and tested on the 7 test drawings (one-shot, 3 runs each, held-out judge):
+
+| One-shot with… | Judge (7 test drawings) | vs. no playbook | Wins / losses / ties |
+| --- | --- | --- | --- |
+| no playbook | 3.78 | — | — |
+| v2, selected lessons | 3.63 | −0.15 | 2 / 5 / 0 |
+| v2 after pruning on val, selected lessons | 3.74 | −0.04 | 3 / 2 / 2 |
+| *(for contrast)* the loop, no playbook | 3.99 | +0.21 | 6 / 1 / 0 |
+
+- **Pruning on val dropped nothing.** No selected lesson had a negative mean effect over ≥ 2 val drawings, so the
+  pruned playbook is *identical* to v2. The two rows differ by 0.11 from run-to-run noise alone. That is as large as
+  every playbook effect we measured, including v1's +0.14.
+- **Selection is shaky on new kinds of drawings.** On val it gave the flower a pendulum lesson and the clock a
+  rigid-rod lesson; both cost 0.11.
+- **Conclusion:** lessons in the prompt don't reliably improve generation at this scale, while the render → critique
+  → revise loop does: +0.33 on the first 10 drawings, +0.30 on the 5-drawing test, +0.21 on the 7-drawing test,
+  winning on 6 of 7. To make improvements stick, the next step is to put them in the model's weights rather than
+  its prompt: fine-tune an open model on the programs the loop found (see "Next: distill the loop into the model").
+
+### Next: distill the loop into the model (Tinker)
+
+Every loop run leaves training data: (drawing, intent) → the best program found, plus critic scores for every
+candidate. Plan: fine-tune `Qwen/Qwen3.6-35B-A3B` with LoRA on [Tinker](https://thinkingmachines.ai/tinker/) on the
+loop's best programs for the train drawings, then compare one-shot before and after on the held-out test drawings.
+Smoke test: base Qwen3.6-35B-A3B on Tinker wrote a valid windmill program in one shot (about 4.3K tokens, 76 s),
+which the held-out judge scored 4.50, against 4.42 for `gpt-5.5` one-shot on that drawing (one sample).
 
 ## Run
 
