@@ -4,6 +4,8 @@
   uv run ksa run --method bestof --k 6         # equal-compute baseline: sample K, keep the critic's best
   uv run ksa run --method loop [--k 2 --beam 1 --children 2 --rounds 2]
   uv run ksa run ... --cases ball_ramp,fish    # subset
+  uv run ksa run ... --split test --playbook playbooks/train.json   # held-out cases, with learned lessons
+  uv run ksa learn --split train --out playbooks/train.json          # learn a playbook, case by case
   uv run ksa judge runs/<run-dir> [--model gpt-5.4] [--repeats 3]
 
 Each run writes runs/<stamp>-<method>/ with per-case search trees, results.json,
@@ -22,6 +24,7 @@ import time
 from pathlib import Path
 
 from . import critic, llm
+from . import playbook as pbk
 from .paths import relativize, resolve
 from .render import Renderer
 from .search import SearchConfig, search
@@ -30,8 +33,10 @@ ROOT = Path(__file__).resolve().parents[2]
 CASES_DIR = ROOT / "benchmark" / "cases"
 
 
-def load_cases(only: str | None) -> list[dict]:
+def load_cases(only: str | None, split: str | None = None) -> list[dict]:
     cases = json.loads((CASES_DIR / "cases.json").read_text())
+    if split:
+        cases = [c for c in cases if c.get("split") == split]
     if only:
         keep = set(only.split(","))
         cases = [c for c in cases if c["id"] in keep]
@@ -46,13 +51,16 @@ def gen_calls(meter: dict) -> int:
     return meter.get("generator", {}).get("calls", 0)
 
 
-async def run_case(case: dict, renderer: Renderer, run_dir: Path, log: Path, cfg: SearchConfig) -> dict:
+async def run_case(case: dict, renderer: Renderer, run_dir: Path, log: Path, cfg: SearchConfig,
+                   playbook: str = "", label: str | None = None) -> dict:
     cdir = run_dir / case["id"]
     cdir.mkdir(parents=True, exist_ok=True)
     svg = CASES_DIR / case["svg"]
     png = await renderer.rasterize_svg(svg, cdir / "input.png")
     t0 = time.time()
-    rec = await search(case, svg, png, renderer, cdir, log, cfg)
+    rec = await search(case, svg, png, renderer, cdir, log, cfg, playbook=playbook)
+    if label:
+        rec["method"] = label
     rec["seconds"] = round(time.time() - t0, 1)
     traj = " -> ".join(f"{s:.2f}" for s in rec["best_score_by_round"])
     print(f'  {case["id"]:<12} {traj:<28} nodes={rec["n_nodes"]:<3} gen_calls={gen_calls(rec["meter"]):<3} '
@@ -110,20 +118,57 @@ def config_from(args) -> SearchConfig:
                         patience=args.patience)
 
 
+def run_meta(label: str, cfg: SearchConfig, cases: list[dict], **extra) -> dict:
+    return {"method": label, "config": cfg.__dict__, "gen_model": llm.GEN_MODEL, "gen_effort": llm.GEN_EFFORT,
+            "critic_model": llm.CRITIC_MODEL, "critic_effort": llm.CRITIC_EFFORT,
+            "cases": [c["id"] for c in cases], **extra}
+
+
 async def run(args):
-    cases = load_cases(args.cases)
+    cases = load_cases(args.cases, args.split)
     cfg = config_from(args)
-    run_dir = Path(args.out) / f'{time.strftime("%Y%m%d-%H%M%S")}-{cfg.method}'
+    pb = pbk.load(Path(args.playbook)) if args.playbook else None
+    label = cfg.method + ("+playbook" if pb else "")
+    run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{label}'
     run_dir.mkdir(parents=True)
     log = run_dir / "llm_calls.jsonl"
-    meta = {"method": cfg.method, "config": cfg.__dict__, "gen_model": llm.GEN_MODEL, "gen_effort": llm.GEN_EFFORT,
-            "critic_model": llm.CRITIC_MODEL, "critic_effort": llm.CRITIC_EFFORT,
-            "cases": [c["id"] for c in cases]}
+    meta = run_meta(label, cfg, cases, split=args.split, playbook=args.playbook,
+                    playbook_lessons=len(pb["lessons"]) if pb else 0)
+    if pb:
+        (run_dir / "playbook_used.json").write_text(json.dumps(pb, indent=2))
     print(f"run dir: {run_dir}")
     async with Renderer(concurrency=args.concurrency) as renderer:
-        results = await asyncio.gather(*(run_case(c, renderer, run_dir, log, cfg) for c in cases))
+        results = await asyncio.gather(*(run_case(c, renderer, run_dir, log, cfg, pbk.prompt_text(pb), label)
+                                         for c in cases))
     mean = write_reports(run_dir, results, meta)
     print(f"mean overall {mean:.2f} / 5 -> {run_dir / 'index.html'}")
+
+
+async def learn(args):
+    """Learn a playbook: run the loop on each case in order, and after each one let the
+    analyst update the playbook from that case's search tree. Later cases see the lessons
+    from earlier ones. Saves the playbook after every case, so it can be inspected live."""
+    cases = load_cases(args.cases, args.split)
+    cfg = config_from(args)
+    out = Path(args.out_playbook)
+    pb = pbk.load(out) if args.resume else pbk.empty()
+    label = f"learn_{cfg.method}"
+    run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{label}'
+    run_dir.mkdir(parents=True)
+    log = run_dir / "llm_calls.jsonl"
+    print(f"run dir: {run_dir}\nplaybook: {out}")
+    results = []
+    async with Renderer(concurrency=args.concurrency) as renderer:
+        for case in cases:
+            rec = await run_case(case, renderer, run_dir, log, cfg, pbk.prompt_text(pb), label)
+            rec["playbook_lessons_before"] = len(pb["lessons"])
+            results.append(rec)
+            pb = await pbk.update(pb, case, run_dir / case["id"] / "tree.json", log, meter=rec["meter"])
+            pbk.save(pb, out)
+            print(f'    playbook: {len(pb["lessons"])} lessons; {pb["history"][-1]["change_note"]}', flush=True)
+    (run_dir / "playbook_learned.json").write_text(json.dumps(pb, indent=2))
+    mean = write_reports(run_dir, results, run_meta(label, cfg, cases, split=args.split, playbook_out=str(out)))
+    print(f"mean overall {mean:.2f} / 5 (scores while learning) -> {out}")
 
 
 async def judge(args):
@@ -174,6 +219,22 @@ def main():
     r.add_argument("--cases", help="comma-separated case ids (default: all)")
     r.add_argument("--out", default=str(ROOT / "runs"))
     r.add_argument("--concurrency", type=int, default=8)
+    for sp in (r,):
+        sp.add_argument("--split", choices=["train", "test"], help="only cases in this split")
+        sp.add_argument("--playbook", help="playbook JSON whose lessons the generator gets")
+    lp = sub.add_parser("learn", help="learn a playbook from loop runs, case by case")
+    lp.add_argument("--split", choices=["train", "test"], default="train")
+    lp.add_argument("--cases", help="comma-separated case ids, in learning order (default: the split)")
+    lp.add_argument("--out-playbook", default=str(ROOT / "playbooks" / "train.json"))
+    lp.add_argument("--resume", action="store_true", help="start from the existing playbook file")
+    lp.add_argument("--method", default="loop", choices=["loop"])
+    lp.add_argument("--k", type=int, default=2)
+    lp.add_argument("--beam", type=int, default=1)
+    lp.add_argument("--children", type=int, default=2)
+    lp.add_argument("--rounds", type=int, default=2)
+    lp.add_argument("--patience", type=int, default=2)
+    lp.add_argument("--out", default=str(ROOT / "runs"))
+    lp.add_argument("--concurrency", type=int, default=8)
     j = sub.add_parser("judge", help="re-score an existing run's final renders")
     j.add_argument("run_dir")
     j.add_argument("--model", help="judge model (default: KSA_CRITIC_MODEL)")
@@ -181,12 +242,22 @@ def main():
     c = sub.add_parser("compare", help="side-by-side page for several runs")
     c.add_argument("run_dirs", nargs="+")
     c.add_argument("-o", "--out", default=str(ROOT / "runs" / "compare.html"))
+    rp = sub.add_parser("report", help="markdown table of judged runs, grouped by method")
+    rp.add_argument("run_dirs", nargs="+")
+    rp.add_argument("--cases", help="restrict to these case ids")
+    rp.add_argument("--split", choices=["train", "test"], help="restrict to cases in this split")
+    rp.add_argument("--baseline", default="one_shot")
     args = p.parse_args()
     if args.cmd == "compare":
         from .compare import write_compare
         print(write_compare([Path(d) for d in args.run_dirs], Path(args.out)))
         return
-    asyncio.run(run(args) if args.cmd == "run" else judge(args))
+    if args.cmd == "report":
+        from .report import table
+        keep = [c["id"] for c in load_cases(args.cases, args.split)] if (args.cases or args.split) else None
+        print(table([Path(d) for d in args.run_dirs], keep, args.baseline))
+        return
+    asyncio.run({"run": run, "learn": learn, "judge": judge}[args.cmd](args))
 
 
 if __name__ == "__main__":

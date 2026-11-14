@@ -9,9 +9,12 @@ from pathlib import Path
 
 def relativize(obj, base: Path):
     """Recursively turn absolute path strings under `base` into paths relative to it."""
-    prefix = str(Path(base).resolve()) + "/"
+    prefixes = {str(Path(base).resolve()) + "/", str(Path(base)) + "/"}  # absolute or as given
     if isinstance(obj, str):
-        return obj[len(prefix):] if obj.startswith(prefix) else obj
+        for prefix in prefixes:
+            if obj.startswith(prefix):
+                return obj[len(prefix):]
+        return obj
     if isinstance(obj, dict):
         return {k: relativize(v, base) for k, v in obj.items()}
     if isinstance(obj, list):

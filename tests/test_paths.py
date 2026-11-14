@@ -12,3 +12,7 @@ def test_relativize_and_resolve_roundtrip(tmp_path):
     assert rel["other"] == "/elsewhere/x.png" and rel["n"] == 3
     assert resolve(rel["gif"], run) == run / "fish/nodes/r0n0/render/anim.gif"
     assert resolve("/abs/p.png", run) == Path("/abs/p.png")
+
+
+def test_relativize_relative_base(tmp_path):
+    assert relativize({"g": "runs/x/fish/a.gif"}, "runs/x") == {"g": "fish/a.gif"}

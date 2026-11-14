@@ -84,7 +84,7 @@ async def evaluate(case, renderer: Renderer, node: Node, program: str | None, ra
 
 
 async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Path, log: Path,
-                 cfg: SearchConfig) -> dict:
+                 cfg: SearchConfig, playbook: str = "") -> dict:
     meter: dict = {}
     nodes: list[Node] = []
     method = cfg.method
@@ -93,7 +93,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
         node = Node(id=f"r0n{i}", round=0, parent=None, origin="sample")
         try:
             program, raw = await generate.one_shot(case, svg, png, log, meter=meter,
-                                                   tags={"method": method, "node": node.id})
+                                                   tags={"method": method, "node": node.id}, playbook=playbook)
         except llm.FatalAPIError:
             raise
         except Exception as e:  # noqa: BLE001 - a failed call is a result
@@ -109,7 +109,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
             node.origin = "sample"
             try:
                 program, raw = await generate.one_shot(case, svg, png, log, meter=meter,
-                                                       tags={"method": method, "node": node.id})
+                                                       tags={"method": method, "node": node.id}, playbook=playbook)
             except llm.FatalAPIError:
                 raise
             except Exception as e:  # noqa: BLE001
@@ -122,7 +122,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
                 program, raw = await generate.revise(
                     case, svg, png, program_path.read_text(), parent.critique,
                     parent.render.get("errors", []), sheet, strip, log, meter=meter,
-                    tags={"method": method, "node": node.id, "parent": parent.id})
+                    tags={"method": method, "node": node.id, "parent": parent.id}, playbook=playbook)
             except llm.FatalAPIError:
                 raise
             except Exception as e:  # noqa: BLE001

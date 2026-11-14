@@ -239,6 +239,10 @@ CASES = [
 # Intros that build the drawing up from nothing: the drawing is the final frame, not the first.
 BUILD_UP = {"sun_logo", "bolt_logo"}
 
+# Train/test split for the playbook (lessons learned on train cases, measured on test cases).
+# Each category appears on both sides; so does a build-up intro.
+TRAIN = {"pendulum", "ball_ramp", "stick_wave", "rocket", "sun_logo"}
+
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
@@ -246,7 +250,8 @@ def main():
     for cid, category, fn, intent in CASES:
         (OUT / f"{cid}.svg").write_text(fn())
         manifest.append({"id": cid, "category": category, "svg": f"{cid}.svg", "intent": intent,
-                         "duration": 4.0, "anchor": "end" if cid in BUILD_UP else "start"})
+                         "duration": 4.0, "anchor": "end" if cid in BUILD_UP else "start",
+                         "split": "train" if cid in TRAIN else "test"})
     (OUT / "cases.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print(f"wrote {len(manifest)} cases to {OUT}")
 

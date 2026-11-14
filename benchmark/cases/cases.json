@@ -5,7 +5,8 @@
     "svg": "ball_ramp.svg",
     "intent": "The ball rolls down the ramp, speeds up, and comes to rest on the floor after a small bounce.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "train"
   },
   {
     "id": "pendulum",
@@ -13,7 +14,8 @@
     "svg": "pendulum.svg",
     "intent": "Textbook diagram: the pendulum is released from the drawn position and swings back and forth, slowly losing amplitude.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "train"
   },
   {
     "id": "spring_mass",
@@ -21,7 +23,8 @@
     "svg": "spring_mass.svg",
     "intent": "Textbook diagram: the block oscillates horizontally on the spring, which stretches and compresses with it.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "test"
   },
   {
     "id": "windmill",
@@ -29,7 +32,8 @@
     "svg": "windmill.svg",
     "intent": "The windmill blades spin steadily around the hub while the tower stays still.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "test"
   },
   {
     "id": "stick_wave",
@@ -37,7 +41,8 @@
     "svg": "stick_wave.svg",
     "intent": "The stick figure waves hello with the raised arm, with a little bounce in the body.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "train"
   },
   {
     "id": "fish",
@@ -45,7 +50,8 @@
     "svg": "fish.svg",
     "intent": "The fish swims across the frame from right to left, wagging its tail; the bubbles drift upward.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "test"
   },
   {
     "id": "rocket",
@@ -53,7 +59,8 @@
     "svg": "rocket.svg",
     "intent": "The rocket shakes on the pad with flickering flames, then launches up and out of the frame.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "train"
   },
   {
     "id": "sun_logo",
@@ -61,7 +68,8 @@
     "svg": "sun_logo.svg",
     "intent": "Logo intro: the sun disc scales up from nothing, the rays pop in one by one around it, then the whole logo settles with a gentle pulse.",
     "duration": 4.0,
-    "anchor": "end"
+    "anchor": "end",
+    "split": "train"
   },
   {
     "id": "heart_logo",
@@ -69,7 +77,8 @@
     "svg": "heart_logo.svg",
     "intent": "Logo animation: the heart beats twice (quick double pulse) and the highlight glints.",
     "duration": 4.0,
-    "anchor": "start"
+    "anchor": "start",
+    "split": "test"
   },
   {
     "id": "bolt_logo",
@@ -77,6 +86,7 @@
     "svg": "bolt_logo.svg",
     "intent": "Logo animation: the cloud drifts in, the lightning bolt strikes down with a flash, and everything settles.",
     "duration": 4.0,
-    "anchor": "end"
+    "anchor": "end",
+    "split": "test"
   }
 ]
