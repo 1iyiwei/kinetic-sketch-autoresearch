@@ -1,0 +1,78 @@
+{
+  "lessons": [
+    {
+      "text": "For a rolling object on an incline, compute its center from the visible ramp line plus one radius along the ramp normal, and keep every rolling keyframe on that contact path. If the static pose starts slightly off-contact, hide the correction in the first instant or redesign the path so it does not read as a drop/snap before rolling.",
+      "applies_to": "rolling objects on ramps",
+      "evidence": "Initial attempt hovered above the ramp; revised normal-based path improved contact but a visible early snap remained."
+    },
+    {
+      "text": "Make downhill acceleration readable with nonuniform spacing from the start: use an ease-in distance function along the slope and ensure later sampled positions are clearly farther apart than early ones. Avoid a long nearly-even opening segment that delays the sense of speeding up.",
+      "applies_to": "gravity-driven rolling/sliding motion",
+      "evidence": "Both attempts showed only moderate acceleration because 0.00s\u20130.58s advanced slowly and almost evenly."
+    },
+    {
+      "text": "Show rolling with an internal surface mark, stripe, or asymmetry that rotates according to traveled distance divided by radius, not just by translating a plain circle. Keep the cue invisible on the exact anchor frame if it was not in the source drawing.",
+      "applies_to": "round rolling objects",
+      "evidence": "The first attempt\u2019s plain circle made rolling only inferred; adding a hidden-at-anchor rolling mark coincided with better intent."
+    },
+    {
+      "text": "For a requested small bounce after reaching the floor, dedicate a clear lift-off and landing arc after the ramp-to-floor transition, even if the height is modest. Impact ticks or squash alone are not enough if the center does not visibly rise and fall.",
+      "applies_to": "floor impacts and small bounces",
+      "evidence": "The final result still lost points because the bounce was only suggested and lacked a clear upward rebound arc."
+    },
+    {
+      "text": "After a bounce or floor contact, spend visible time on horizontal deceleration and final settling using an ease-out, rather than stopping almost immediately. Include a small final roll/settle interval so the transition from motion to rest does not feel abrupt.",
+      "applies_to": "rolling objects coming to rest",
+      "evidence": "The final attempt was essentially stopped by 2.83s with little deceleration between 2.25s and 2.83s."
+    },
+    {
+      "text": "When adding speed trails, impact ticks, or other animation-only graphics, make them deliberate, attached to the moving object/contact point, and fully hidden on the anchor frame. Faint stray strokes that do not clearly function as motion cues read as artifacts.",
+      "applies_to": "motion marks and impact accents",
+      "evidence": "Initial faint gray trailing strokes read as accidental; revised cleaner hidden-at-anchor marks improved integrity to 5."
+    },
+    {
+      "text": "For an oscillator released from a drawn extreme, keep the exact source pose at t=0 and animate the transform as the difference from that drawn angle, with the sign chosen so the first motion goes back toward equilibrium rather than farther outward. A damped cosine such as theta0*exp(-d*t)*cos(omega*t) gives readable alternating sides while preserving the anchor frame.",
+      "applies_to": "pendulums and hinged oscillators",
+      "evidence": "The first attempt moved farther outward and never crossed center; changing to a damped-cosine delta from the drawn release pose raised intent from 2 to 4."
+    },
+    {
+      "text": "Make damping visible from the first full swing: each reversal should be slightly closer to equilibrium than the previous opposite extreme, while speed is highest near the center and slowest at the ends. Avoid uneven small swings after a near-center pose that break the smooth decaying sinusoidal envelope.",
+      "applies_to": "damped back-and-forth motion",
+      "evidence": "The final version improved back-and-forth motion but still lost points because the first opposite amplitude was nearly as large and later damping/timing felt uneven."
+    },
+    {
+      "text": "For a pendulum or other fixed-length hinged body, rotate one rigid rod-and-mass group about the exact pivot, or compute the mass center from pivot plus constant length and angle. Do not bend the connector or independently move the mass in a way that makes the radius change.",
+      "applies_to": "rigid rods, strings, and hinged masses",
+      "evidence": "The final version still showed rod kinks and a bob path that did not always follow a clean circular arc around the pivot."
+    },
+    {
+      "text": "When a diagram includes an equilibrium or center reference, align the animated path to it and ensure the moving body visibly passes through or under that reference during the cycle. Keep extrema inside the drawing bounds so the motion reads as controlled diagram physics rather than leaving the frame.",
+      "applies_to": "textbook diagrams with reference lines",
+      "evidence": "The first attempt did not use the vertical reference as the swing center and clipped the moving mass at the right edge."
+    }
+  ],
+  "history": [
+    {
+      "ts": "2026-11-14 15:20:28",
+      "case": "ball_ramp",
+      "change_note": "Added six transferable lessons on contact geometry, acceleration, rolling cues, bounce readability, deceleration, and clean auxiliary marks because these were the main causes of score changes and remaining issues.",
+      "n_lessons": 6,
+      "best_score_by_round": [
+        3.75,
+        4.25,
+        4.25
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:23:40",
+      "case": "pendulum",
+      "change_note": "Added lessons on damped oscillation setup, visible decay, rigid pivot rigging, and use of diagram center references because the search improvement came from correcting pendulum physics while remaining issues concerned damping and rod rigidity.",
+      "n_lessons": 10,
+      "best_score_by_round": [
+        3.0,
+        4.0,
+        4.0
+      ]
+    }
+  ]
+}

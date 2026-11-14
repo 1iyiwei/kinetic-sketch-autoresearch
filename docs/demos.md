@@ -57,14 +57,83 @@ below names the criterion it serves.
 - *Equal compute?* Equal generator calls; the loop uses about 33% more tokens. Next: a token-matched best-of-K.
 - *Why code instead of a video model?* Stylized, exact and editable output; the drawing is preserved by
   construction; motion can be checked and corrected.
-- *Does it generalize?* The playbook is learned on 5 training drawings and measured on 5 held-out ones.
+- *Does it generalize?* The playbook is learned on 8 training drawings, pruned on 3 validation drawings, and measured on 7 held-out ones; 5 complex drawings form a separate stress test.
 
 ### Finals (3 minutes on stage, live demo, no Q&A)
 
-- **Live:** take a drawing from the audience or a judge (SVG from a tablet, or a pre-made sketch), run the loop
-  with the playbook, and show round-by-round scores while it works (about 2–3 minutes; Modal would make it faster).
+- **Live:** a judge draws on `tools/draw.html` and types the intent; you save the SVG and run `ksa animate` with the
+  playbook. The terminal shows the best score after each round, and the result opens when it's done (about 2–3
+  minutes; Modal would make it faster).
 - **Fallback:** if anything stalls, switch to a pre-computed run in the gallery and the pendulum tree.
-- **Still needed:** a `ksa animate my.svg "intent"` command and a quick way to get a drawing in.
+
+## Runbook: commands for each demo
+
+Run everything from the repo root (`cd kinetic-sketch-autoresearch`). It needs `OPENAI_API_KEY` in `.env` and, once
+per machine, `uv sync && uv run playwright install chromium-headless-shell`.
+
+**1. Live: draw something and animate it**
+
+```bash
+open tools/draw.html
+```
+
+Draw, type what should happen, and press **Save SVG**; the file goes to `~/Downloads`. Then:
+
+```bash
+uv run ksa animate ~/Downloads/drawing.svg --playbook playbooks/train-v2.json
+```
+
+- It prints `round 0: … best 3.50`, `round 1: …`, `round 2: …`, then opens a page with the input, the animation and
+  the critic's notes. Output goes to `runs/animate/<time>-<name>/`.
+- The intent comes from the drawing page; to override it, add it as a second argument in quotes.
+- For a logo intro that builds up to the drawing, add `--anchor end`. For a textbook figure, add `--category diagram`.
+- For a faster take (about 45 seconds, no revisions), add `--method oneshot`.
+- Before the playbook-v2 runs finish, use `playbooks/train-v1.json`.
+
+**2. Video shot: the loop fixing the pendulum** (about 3 minutes; screen-record the terminal, then speed it up)
+
+```bash
+uv run ksa run --method loop --cases pendulum
+```
+
+Then open the candidates in order (r0n0 is the first sample, r1n* are revisions, the best is listed in `tree.json`):
+
+```bash
+open runs/*-loop_k2_b1_c2_r2/pendulum/nodes/*/render/anim.gif
+```
+
+**3. Video shot: the results comparison**
+
+```bash
+open runs/compare.html
+```
+
+The shareable version is the claude.ai page in the table at the top. To rebuild the comparison from other runs, use
+`uv run ksa compare <one_shot run> <best_of_6 run> <loop run>`.
+
+**4. Video shot: the playbook**
+
+```bash
+cat playbooks/train-v2.json
+```
+
+Scroll through `lessons`, then `history`, which records what changed after each training drawing and why.
+
+**5. Numbers for the slides**
+
+```bash
+uv run ksa report runs/v2/*/2026* --split test
+```
+
+```bash
+uv run ksa lessons --playbook playbooks/train-v2.json --baseline runs/v2/oneshot-val-*/2026* --with runs/v2/pbsel-val-*/2026*
+```
+
+**6. Submission checklist (by Sun 14:30)**
+- [ ] Repo public, README results current, `playbooks/` committed.
+- [ ] A 2-minute video (shots 1–4), uploaded to YouTube, Drive or Loom.
+- [ ] A short description: the one-sentence story, plus the results table.
+- [ ] Track: Open. Challenges: Originator (upload the Claude Code sessions); Modal if the fan-out lands.
 
 ## Good moments for the demo video
 

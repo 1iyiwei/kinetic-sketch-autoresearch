@@ -57,7 +57,7 @@ async def run_case(case: dict, renderer: Renderer, run_dir: Path, log: Path, cfg
     lessons that apply to this drawing and intent."""
     cdir = run_dir / case["id"]
     cdir.mkdir(parents=True, exist_ok=True)
-    svg = CASES_DIR / case["svg"]
+    svg = Path(case["svg_path"]) if "svg_path" in case else CASES_DIR / case["svg"]
     png = await renderer.rasterize_svg(svg, cdir / "input.png")
     t0 = time.time()
     sel_meter: dict = {}
@@ -142,7 +142,7 @@ async def run(args):
     cases = load_cases(args.cases, args.split)
     cfg = config_from(args)
     pb = pbk.load(Path(args.playbook)) if args.playbook else None
-    label = cfg.method + ({"all": "+playbook", "select": "+playbook_sel"}[args.lessons] if pb else "")
+    label = cfg.method + (f"+{Path(args.playbook).stem}_{args.lessons}" if pb else "")  # e.g. one_shot+train-v2_select
     run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{label}'
     run_dir.mkdir(parents=True)
     log = run_dir / "llm_calls.jsonl"
@@ -183,6 +183,37 @@ async def learn(args):
     (run_dir / "playbook_learned.json").write_text(json.dumps(pb, indent=2))
     mean = write_reports(run_dir, results, run_meta(label, cfg, cases, split=args.split, playbook_out=str(out)))
     print(f"mean overall {mean:.2f} / 5 (scores while learning) -> {out}")
+
+
+async def animate(args):
+    """Animate any SVG (for example one saved from tools/draw.html) with the loop, and open the result."""
+    import re
+    import shutil
+    import subprocess
+    svg = Path(args.svg).expanduser().resolve()
+    intent = args.intent
+    if not intent:  # tools/draw.html stores the intent in <desc>
+        m = re.search(r"<desc>(.*?)</desc>", svg.read_text(), re.S)
+        intent = html.unescape(m.group(1).strip()) if m else None
+    if not intent:
+        raise SystemExit("No intent: pass it as the second argument, or type it in the drawing page before saving.")
+    cfg = config_from(args)
+    cfg.verbose = True
+    pb = pbk.load(Path(args.playbook)) if args.playbook else None
+    label = cfg.method + (f"+{Path(args.playbook).stem}_{args.lessons}" if pb else "")
+    run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{svg.stem}'
+    run_dir.mkdir(parents=True)
+    shutil.copy(svg, run_dir / svg.name)
+    case = {"id": svg.stem, "category": args.category, "svg": svg.name, "svg_path": str(run_dir / svg.name),
+            "intent": intent, "duration": args.duration, "anchor": args.anchor}
+    print(f"animating {svg.name}: {intent}\nrun dir: {run_dir}", flush=True)
+    async with Renderer(concurrency=args.concurrency) as renderer:
+        rec = await run_case(case, renderer, run_dir, run_dir / "llm_calls.jsonl", cfg, pb, args.lessons, label)
+    write_reports(run_dir, [rec], run_meta(label, cfg, [case], playbook=args.playbook, intent=intent))
+    gif = resolve(rec["render"]["gif"], run_dir) if rec.get("render", {}).get("ok") else None
+    print(f"best {rec['critique']['overall']:.2f} / 5 -> {run_dir / 'index.html'}")
+    if gif and not args.no_open:
+        subprocess.run(["open", str(run_dir / "index.html")], check=False)
 
 
 async def judge(args):
@@ -234,12 +265,12 @@ def main():
     r.add_argument("--out", default=str(ROOT / "runs"))
     r.add_argument("--concurrency", type=int, default=8)
     for sp in (r,):
-        sp.add_argument("--split", choices=["train", "test"], help="only cases in this split")
+        sp.add_argument("--split", choices=["train", "val", "test", "complex"], help="only cases in this split")
         sp.add_argument("--playbook", help="playbook JSON whose lessons the generator gets")
         sp.add_argument("--lessons", choices=["all", "select"], default="select",
                         help="give every lesson, or only those selected for each drawing (default)")
     lp = sub.add_parser("learn", help="learn a playbook from loop runs, case by case")
-    lp.add_argument("--split", choices=["train", "test"], default="train")
+    lp.add_argument("--split", choices=["train", "val", "test", "complex"], default="train")
     lp.add_argument("--cases", help="comma-separated case ids, in learning order (default: the split)")
     lp.add_argument("--out-playbook", default=str(ROOT / "playbooks" / "train.json"))
     lp.add_argument("--resume", action="store_true", help="start from the existing playbook file")
@@ -252,6 +283,24 @@ def main():
     lp.add_argument("--patience", type=int, default=2)
     lp.add_argument("--out", default=str(ROOT / "runs"))
     lp.add_argument("--concurrency", type=int, default=8)
+    an = sub.add_parser("animate", help="animate any SVG drawing with the loop and open the result")
+    an.add_argument("svg")
+    an.add_argument("intent", nargs="?", help="what should happen (default: the SVG's <desc>)")
+    an.add_argument("--method", choices=["oneshot", "bestof", "loop"], default="loop")
+    an.add_argument("--k", type=int, default=2)
+    an.add_argument("--beam", type=int, default=1)
+    an.add_argument("--children", type=int, default=2)
+    an.add_argument("--rounds", type=int, default=2)
+    an.add_argument("--patience", type=int, default=2)
+    an.add_argument("--playbook", help="playbook JSON (lessons are selected for this drawing)")
+    an.add_argument("--lessons", choices=["all", "select"], default="select")
+    an.add_argument("--category", default="sketch", choices=["sketch", "diagram", "cartoon", "logo"])
+    an.add_argument("--anchor", default="start", choices=["start", "end"],
+                    help="which frame must look like the drawing: start, or end for build-up intros")
+    an.add_argument("--duration", type=float, default=4.0)
+    an.add_argument("--out", default=str(ROOT / "runs" / "animate"))
+    an.add_argument("--concurrency", type=int, default=8)
+    an.add_argument("--no-open", action="store_true")
     j = sub.add_parser("judge", help="re-score an existing run's final renders")
     j.add_argument("run_dir")
     j.add_argument("--model", help="judge model (default: KSA_CRITIC_MODEL)")
@@ -262,7 +311,7 @@ def main():
     rp = sub.add_parser("report", help="markdown table of judged runs, grouped by method")
     rp.add_argument("run_dirs", nargs="+")
     rp.add_argument("--cases", help="restrict to these case ids")
-    rp.add_argument("--split", choices=["train", "test"], help="restrict to cases in this split")
+    rp.add_argument("--split", choices=["train", "val", "test", "complex"], help="restrict to cases in this split")
     rp.add_argument("--baseline", default="one_shot")
     ls = sub.add_parser("lessons", help="per-lesson effect on judged runs; optionally prune")
     ls.add_argument("--playbook", required=True)
@@ -290,7 +339,7 @@ def main():
         keep = [c["id"] for c in load_cases(args.cases, args.split)] if (args.cases or args.split) else None
         print(table([Path(d) for d in args.run_dirs], keep, args.baseline))
         return
-    asyncio.run({"run": run, "learn": learn, "judge": judge}[args.cmd](args))
+    asyncio.run({"run": run, "learn": learn, "judge": judge, "animate": animate}[args.cmd](args))
 
 
 if __name__ == "__main__":

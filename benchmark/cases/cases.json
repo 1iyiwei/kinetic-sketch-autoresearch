@@ -88,5 +88,122 @@
     "duration": 4.0,
     "anchor": "end",
     "split": "test"
+  },
+  {
+    "id": "bouncing_ball",
+    "category": "sketch",
+    "svg": "bouncing_ball.svg",
+    "intent": "The ball drops from where it is held and bounces three times, each bounce lower, squashing on impact and stretching as it falls, then rests on its shadow.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "train"
+  },
+  {
+    "id": "clock",
+    "category": "sketch",
+    "svg": "clock.svg",
+    "intent": "The minute hand sweeps one full turn while the hour hand advances by one hour; both turn about the center, and the face stays still.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "val"
+  },
+  {
+    "id": "flower",
+    "category": "cartoon",
+    "svg": "flower.svg",
+    "intent": "The flower sways gently in a breeze, bending from the base of the stem, while the petals flutter slightly.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "val"
+  },
+  {
+    "id": "projectile",
+    "category": "diagram",
+    "svg": "projectile.svg",
+    "intent": "Textbook diagram: the cannon recoils slightly as the ball is launched; the ball follows the drawn dashed arc and lands at the mark.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "val"
+  },
+  {
+    "id": "bird",
+    "category": "cartoon",
+    "svg": "bird.svg",
+    "intent": "The bird flaps its wings and flies from left to right out of the frame, bobbing up and down with each flap.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "train"
+  },
+  {
+    "id": "car",
+    "category": "cartoon",
+    "svg": "car.svg",
+    "intent": "The car drives to the right and out of the frame, its wheels rolling in step with its speed and the body bobbing slightly.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "test"
+  },
+  {
+    "id": "star_logo",
+    "category": "logo",
+    "svg": "star_logo.svg",
+    "intent": "Logo intro: the star spins in from nothing with a small overshoot, the inner star pops in, then the center sparkles once.",
+    "duration": 4.0,
+    "anchor": "end",
+    "split": "train"
+  },
+  {
+    "id": "wave_logo",
+    "category": "logo",
+    "svg": "wave_logo.svg",
+    "intent": "Logo intro: the three wave stripes draw on from left to right one after another, then the finished logo ripples gently once and settles.",
+    "duration": 4.0,
+    "anchor": "end",
+    "split": "test"
+  },
+  {
+    "id": "newtons_cradle",
+    "category": "diagram",
+    "svg": "newtons_cradle.svg",
+    "intent": "Newton's cradle: the raised left ball swings down and strikes the row; the right ball swings out and back, and the exchange repeats while the middle balls stay nearly still.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "complex"
+  },
+  {
+    "id": "gears",
+    "category": "diagram",
+    "svg": "gears.svg",
+    "intent": "The two meshing gears turn in opposite directions; the small gear turns faster in proportion to its size, and the teeth stay meshed without passing through each other.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "complex"
+  },
+  {
+    "id": "dominoes",
+    "category": "sketch",
+    "svg": "dominoes.svg",
+    "intent": "The ball rolls right into the first domino; the dominoes topple one after another in a chain, and the last one falls flat.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "complex"
+  },
+  {
+    "id": "cat_box",
+    "category": "cartoon",
+    "svg": "cat_box.svg",
+    "intent": "The cat crouches, leaps in an arc onto the box, lands with a little squash, and sits on top.",
+    "duration": 4.0,
+    "anchor": "start",
+    "split": "complex"
+  },
+  {
+    "id": "story",
+    "category": "cartoon",
+    "svg": "story.svg",
+    "intent": "A three-beat story: the cloud drifts over the sun and the scene dims, rain falls from the cloud, then the sprout grows taller and its bud opens into a flower.",
+    "duration": 6.0,
+    "anchor": "start",
+    "split": "complex"
   }
 ]

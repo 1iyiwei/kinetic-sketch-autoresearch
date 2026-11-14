@@ -11,7 +11,7 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 
 | Piece | State |
 | --- | --- |
-| Benchmark: 10 cases (sketch, diagram, cartoon, logo) with intents | done: `benchmark/` |
+| Benchmark: 23 drawings (sketch, diagram, cartoon, logo), with train, val, test and complex splits | done: `benchmark/` |
 | Deterministic headless renderer (frames, GIF, contact sheets) | done: `src/ksa/render.py` |
 | One-shot baseline generator | done: `src/ksa/generate.py` |
 | Hybrid critic: measured fidelity + vision rubric, structured output | done: `src/ksa/critic.py` |
@@ -45,6 +45,28 @@ physics: pendulum 3.08 → 4.25, spring–mass 3.17 → 4.17. Run directories: `
 - **Caveats.** Only 10 cases and one seed per method. The loop used about 33% more tokens than best-of-6 (its
   revise prompts include the program and its renders). The critic and judge share the measured fidelity term.
   Next: more cases, more seeds, and a token-matched best-of-K.
+
+## Expanded benchmark: 23 drawings (Sat 15:20)
+
+The benchmark grew to 23 drawings in four splits: **train** (8, the playbook learns from these), **val** (3, for
+pruning lessons), **test** (7, held-out numbers), and **complex** (5: Newton's cradle, meshing gears, a domino chain,
+a cat jumping onto a box, and a three-beat story). The complex tier is never learned from and is reported separately.
+One-shot ran 3 times per split; the loop ran once. Held-out judge `gpt-5.4`, 3× each.
+
+| Split | One-shot (3 runs) | Loop (1 run) | Loop vs. one-shot | Wins / losses / ties |
+| --- | --- | --- | --- | --- |
+| Test (7) | 3.78 | **3.99** | +0.21 | 6 / 1 / 0 |
+| Complex (5) | 3.60 | 3.52 | −0.08 | 1 / 3 / 1 |
+
+- **On single-subject drawings the loop's gain holds up on the bigger test set.** It wins on 6 of 7 drawings, the
+  largest gain again on the spring–mass (3.47 → 4.08).
+- **On complex drawings it doesn't help yet.** Multi-object interactions are hard for both methods: Newton's cradle
+  scores 2.39 one-shot and 2.33 with the loop. The critic can name what's wrong ("the right ball should swing out
+  as the left one hits"), but two rounds of revision don't fix coordinated physics across several bodies. Possible
+  next steps: more rounds on complex drawings, a physics helper in the generator's toolbox, or splitting the
+  animation into beats that are revised separately.
+
+Run directories: `runs/v2/oneshot-{val,test,complex}-{1,2,3}`, `runs/v2/loop-{test,complex}`.
 
 ## Playbook: does learning carry over to new drawings? (Sat 14:50)
 

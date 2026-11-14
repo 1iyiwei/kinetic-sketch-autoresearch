@@ -45,6 +45,7 @@ class SearchConfig:
     rounds: int = 0
     stop_at: float = 4.75  # good enough, stop early
     patience: int = 1  # rounds without improvement before stopping
+    verbose: bool = False  # print the best score after each round (live demo)
 
     @property
     def method(self) -> str:
@@ -133,6 +134,8 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
     nodes += await asyncio.gather(*(sample(i) for i in range(cfg.k)))
     best = max(nodes, key=lambda n: n.score)
     history = [best.score]
+    if cfg.verbose:
+        print(f"    round 0: {len(nodes)} samples, best {best.score:.2f} ({best.id})", flush=True)
     stale = 0
     for rnd in range(1, cfg.rounds + 1):
         if best.score >= cfg.stop_at or stale >= cfg.patience:
@@ -144,6 +147,8 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
         stale = 0 if new_best.score > best.score else stale + 1
         best = new_best
         history.append(best.score)
+        if cfg.verbose:
+            print(f"    round {rnd}: revised {len(jobs)}, best {best.score:.2f} ({best.id})", flush=True)
 
     tree = {"case": case["id"], "method": method, "config": asdict(cfg), "best": best.id,
             "best_score_by_round": history, "meter": meter, "nodes": [asdict(n) for n in nodes]}
