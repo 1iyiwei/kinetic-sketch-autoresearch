@@ -16,9 +16,10 @@ import time
 from pathlib import Path
 
 from dotenv import load_dotenv
+import openai
 from openai import AsyncOpenAI
 
-load_dotenv()
+load_dotenv(override=True)  # the project .env wins over a stale shell key
 
 GEN_MODEL = os.getenv("KSA_GEN_MODEL", "gpt-5.5")
 CRITIC_MODEL = os.getenv("KSA_CRITIC_MODEL", "gpt-5.5")
@@ -26,6 +27,10 @@ GEN_EFFORT = os.getenv("KSA_GEN_EFFORT", "low")
 CRITIC_EFFORT = os.getenv("KSA_CRITIC_EFFORT", "low")
 
 _client: AsyncOpenAI | None = None
+
+
+class FatalAPIError(RuntimeError):
+    """Out of credits, bad key, no access: abort the run instead of scoring zeros."""
 
 
 def client() -> AsyncOpenAI:
@@ -42,23 +47,36 @@ def image_part(path: Path) -> dict:
 
 async def call(*, role: str, model: str, effort: str, system: str, text: str,
                images: list[Path] = (), log: Path | None = None, tags: dict | None = None,
-               json_schema: dict | None = None) -> str:
+               json_schema: dict | None = None, meter: dict | None = None) -> str:
     content = [{"type": "input_text", "text": text}] + [image_part(p) for p in images]
     t0 = time.time()
     extra = {}
     if json_schema is not None:  # structured output: the reply is guaranteed to parse
         extra["text"] = {"format": {"type": "json_schema", "name": json_schema["name"],
                                     "schema": json_schema["schema"], "strict": True}}
-    resp = await client().responses.create(
-        model=model,
-        instructions=system,
-        input=[{"role": "user", "content": content}],
-        reasoning={"effort": effort},
-        **extra,
-    )
+    try:
+        resp = await client().responses.create(
+            model=model,
+            instructions=system,
+            input=[{"role": "user", "content": content}],
+            reasoning={"effort": effort},
+            **extra,
+        )
+    except (openai.AuthenticationError, openai.PermissionDeniedError, openai.NotFoundError) as e:
+        raise FatalAPIError(f"{model}: {e}") from e
+    except openai.RateLimitError as e:
+        if "insufficient_quota" in str(e) or "credits" in str(e):
+            raise FatalAPIError(f"{model}: out of credits: {e}") from e
+        raise
     out = resp.output_text
+    u = resp.usage
+    if meter is not None:  # per-case compute accounting, for equal-compute comparisons
+        m = meter.setdefault(role, {"calls": 0, "input_tokens": 0, "output_tokens": 0, "seconds": 0.0})
+        m["calls"] += 1
+        m["input_tokens"] += getattr(u, "input_tokens", 0) or 0
+        m["output_tokens"] += getattr(u, "output_tokens", 0) or 0
+        m["seconds"] = round(m["seconds"] + time.time() - t0, 2)
     if log is not None:
-        u = resp.usage
         rec = {
             "ts": t0, "role": role, "model": model, "effort": effort, "tags": tags or {},
             "latency_s": round(time.time() - t0, 2),

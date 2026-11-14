@@ -236,13 +236,17 @@ CASES = [
 ]
 
 
+# Intros that build the drawing up from nothing: the drawing is the final frame, not the first.
+BUILD_UP = {"sun_logo", "bolt_logo"}
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     manifest = []
     for cid, category, fn, intent in CASES:
         (OUT / f"{cid}.svg").write_text(fn())
         manifest.append({"id": cid, "category": category, "svg": f"{cid}.svg", "intent": intent,
-                         "duration": 4.0})
+                         "duration": 4.0, "anchor": "end" if cid in BUILD_UP else "start"})
     (OUT / "cases.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print(f"wrote {len(manifest)} cases to {OUT}")
 
