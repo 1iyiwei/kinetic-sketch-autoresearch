@@ -17,8 +17,10 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Hybrid critic: measured fidelity + vision rubric, structured output | done: `src/ksa/critic.py` |
 | Research loop: beam search with critique → revise | done: `src/ksa/search.py` |
 | Equal-compute baselines (one-shot, best-of-K), held-out repeated judge | done: `src/ksa/cli.py` |
+| Playbook: lessons distilled from search trees, train/test split | done: `src/ksa/playbook.py`, `playbooks/` |
+| Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
+| Per-drawing lesson selection; prune lessons that hurt | next |
 | Parallel rendering and critique on Modal | next |
-| Playbook (lessons carried across cases), ablations | next |
 
 ## Results (Sat 13:15, 10 cases)
 
@@ -41,7 +43,39 @@ physics: pendulum 3.08 → 4.25, spring–mass 3.17 → 4.17. Run directories: `
   gain survives the change of judge.
 - **Caveats.** Only 10 cases and one seed per method. The loop used about 33% more tokens than best-of-6 (its
   revise prompts include the program and its renders). The critic and judge share the measured fidelity term.
-  Next: more cases, a train/test split, more seeds, and a token-matched best-of-K.
+  Next: more cases, more seeds, and a token-matched best-of-K.
+
+## Playbook: does learning carry over to new drawings? (Sat 14:50)
+
+`ksa learn` runs the loop on the 5 **train** drawings one at a time. After each one, an analyst model reads that
+search tree: the first attempts' issues, the code diff of the fix that won, and what is still wrong. It then
+rewrites the playbook, keeping at most 12 general lessons and never naming the drawing. Later drawings get the
+lessons in their prompts. Result: [`playbooks/train-v1.json`](playbooks/train-v1.json), with 12 lessons and a
+`history` of each update and its reason (for example "added lessons on damped oscillator phase and fixed-pivot
+rigging, because the search improved by replacing an incorrect outward drift with a damped cosine rotation about
+the drawn pivot").
+
+Measured on the 5 **test** drawings, which it never saw (held-out judge `gpt-5.4`, 3× each; one-shot ran 3 times
+with and 3 times without the playbook):
+
+| Method | Runs | Judge (held-out) | vs. one-shot | Wins / losses / ties |
+| --- | --- | --- | --- | --- |
+| One-shot | 3 | 3.60 | — | — |
+| One-shot + playbook | 3 | 3.68 | +0.08 | 4 / 1 / 0 |
+| Loop | 1 | 3.90 | +0.30 | 3 / 1 / 1 |
+| Loop + playbook | 1 | 3.87 | +0.27 | 3 / 2 / 0 |
+
+**The overall gain is small, within run-to-run noise; per drawing it is clear in both directions:**
+- **Positive transfer where a lesson fits.** The spring–mass is an oscillator the playbook never saw, but its
+  lessons came from the pendulum. It improved in every run: 3.17–3.50 without, 3.67–4.25 with.
+- **Negative transfer where a lesson is misapplied.** The windmill needs none of these lessons, but gets all 12.
+  It dropped in every run (4.50 → 3.83–4.25), and the judge now calls its spin "strobey".
+- **Next:** give each drawing only the lessons whose `applies_to` matches it, and track each lesson's effect on later
+  cases so lessons that hurt are pruned. Also more train/test drawings: 5 + 5 is small.
+
+Reproduce: `uv run ksa learn --split train --cases pendulum,ball_ramp,stick_wave,rocket,sun_logo`, then
+`uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json`, `ksa judge` each run, and
+`uv run ksa report <runs...> --split test`.
 
 ## Run
 
@@ -56,6 +90,9 @@ uv run ksa run --method loop            # k=2 samples, then 2 rounds of revising
 uv run ksa run --method loop --cases fish,pendulum --rounds 3   # subset, more rounds
 uv run ksa judge runs/<run-dir> --model gpt-5.4 --repeats 3     # held-out judge, repeated
 uv run ksa compare runs/<one_shot> runs/<best_of_6> runs/<loop>   # side-by-side page -> runs/compare.html
+uv run ksa learn --split train --out-playbook playbooks/train-v2.json   # learn lessons, case by case
+uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json   # use them on held-out drawings
+uv run ksa report runs/<run> runs/<run> ... --split test     # judged runs grouped by method
 uv run pytest
 ```
 

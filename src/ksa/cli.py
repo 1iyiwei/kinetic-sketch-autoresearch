@@ -37,9 +37,9 @@ def load_cases(only: str | None, split: str | None = None) -> list[dict]:
     cases = json.loads((CASES_DIR / "cases.json").read_text())
     if split:
         cases = [c for c in cases if c.get("split") == split]
-    if only:
-        keep = set(only.split(","))
-        cases = [c for c in cases if c["id"] in keep]
+    if only:  # keep the order given (it is the learning order for `ksa learn`)
+        by_id = {c["id"]: c for c in cases}
+        cases = [by_id[i] for i in only.split(",") if i in by_id]
     return cases
 
 
