@@ -167,7 +167,7 @@ def report(args):
     for rd in map(Path, args.run_dirs):
         data = json.loads((rd / "results.json").read_text())
         meta, res = data["meta"], data["results"]
-        jf = rd / f"judge-{args.judge}.json"
+        jf = rd / f"judge-{llm.slug(args.judge)}.json"
         judge = json.loads(jf.read_text())["mean"] if jf.exists() else None
         critic = sum(r["critique"]["overall"] for r in res) / len(res)
         valid = sum(bool(r.get("render", {}).get("ok")) for r in res) / len(res)

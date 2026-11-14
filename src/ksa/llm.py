@@ -55,7 +55,7 @@ async def call(*, role: str, model: str, effort: str, system: str, text: str,
                json_schema: dict | None = None, meter: dict | None = None) -> str:
     if model.startswith("tinker:"):
         return await tinker_call(role=role, model=model, system=system, text=text, log=log, tags=tags,
-                                 meter=meter)
+                                 meter=meter, images=images, json_schema=json_schema)
     content = [{"type": "input_text", "text": text}] + [image_part(p) for p in images]
     t0 = time.time()
     extra = {}
@@ -130,14 +130,48 @@ async def tinker_sampler(model: str):
     return _tinker[model]
 
 
+def tinker_input(tok, system: str, text: str, images: list[Path]):
+    """Chat prompt as a tinker ModelInput; images go where the template puts <|image_pad|>."""
+    import tinker
+    if not images:
+        ids = chat_tokens(tok, [{"role": "system", "content": system}, {"role": "user", "content": text}], True)
+        return tinker.ModelInput.from_ints(ids), len(ids)
+    content = [{"type": "image"} for _ in images] + [{"type": "text", "text": text}]
+    rendered = tok.apply_chat_template([{"role": "system", "content": system}, {"role": "user", "content": content}],
+                                       tokenize=False, add_generation_prompt=True, enable_thinking=False)
+    pieces = rendered.split("<|image_pad|>")
+    chunks, n = [], 0
+    for i, piece in enumerate(pieces):
+        ids = tok.encode(piece, add_special_tokens=False)
+        if ids:
+            chunks.append(tinker.types.EncodedTextChunk(tokens=ids))
+            n += len(ids)
+        if i < len(images):
+            chunks.append(tinker.types.ImageChunk(data=images[i].read_bytes(), format="png",
+                                            expected_tokens=vision_tokens(images[i])))
+            n += vision_tokens(images[i])
+    return tinker.ModelInput(chunks=chunks), n
+
+
+def vision_tokens(path: Path) -> int:
+    """Qwen-VL image tokens: 16 px patches merged 2x2, after resizing each side to a multiple of 32."""
+    from PIL import Image
+    w, h = Image.open(path).size
+    return max(1, round(w / 32)) * max(1, round(h / 32))
+
+
 async def tinker_call(*, role: str, model: str, system: str, text: str, log: Path | None = None,
-                      tags: dict | None = None, meter: dict | None = None) -> str:
+                      tags: dict | None = None, meter: dict | None = None, images: list[Path] = (),
+                      json_schema: dict | None = None) -> str:
     import tinker
     t0 = time.time()
     sc, tok = await tinker_sampler(model)
-    prompt = chat_tokens(tok, [{"role": "system", "content": system}, {"role": "user", "content": text}], True)
+    if json_schema is not None:
+        text += ("\n\nReply with only a JSON object (no prose) matching this JSON schema:\n"
+                 + json.dumps(json_schema["schema"]))
+    model_input, n_prompt = tinker_input(tok, system, text, list(images))
     try:
-        res = await sc.sample(prompt=tinker.ModelInput.from_ints(prompt), num_samples=1,
+        res = await sc.sample(prompt=model_input, num_samples=1,
                                     sampling_params=tinker.SamplingParams(max_tokens=TINKER_MAX_TOKENS,
                                                                           temperature=TINKER_TEMPERATURE))
     except Exception as e:
@@ -146,7 +180,7 @@ async def tinker_call(*, role: str, model: str, system: str, text: str, log: Pat
         raise
     seq = res.sequences[0]
     out = tok.decode(seq.tokens, skip_special_tokens=True).strip()
-    n_in, n_out = len(prompt), len(seq.tokens)
+    n_in, n_out = n_prompt, len(seq.tokens)
     if meter is not None:
         m = meter.setdefault(role, {"calls": 0, "input_tokens": 0, "output_tokens": 0, "seconds": 0.0})
         m["calls"] += 1
@@ -156,11 +190,16 @@ async def tinker_call(*, role: str, model: str, system: str, text: str, log: Pat
     if log is not None:
         rec = {"ts": t0, "role": role, "model": model, "effort": "none", "tags": tags or {},
                "latency_s": round(time.time() - t0, 2), "input_tokens": n_in, "output_tokens": n_out,
-               "stop_reason": str(seq.stop_reason), "images": [], "prompt": text, "response": out}
+               "stop_reason": str(seq.stop_reason), "images": [str(p) for p in images], "prompt": text, "response": out}
         log.parent.mkdir(parents=True, exist_ok=True)
         with log.open("a") as f:
             f.write(json.dumps(rec) + "\n")
     return out
+
+
+def slug(model: str) -> str:
+    """Filesystem-safe model name, e.g. tinker:Qwen/Qwen3.6-35B-A3B -> tinker-Qwen-Qwen3.6-35B-A3B."""
+    return re.sub(r"[^A-Za-z0-9._-]+", "-", model).strip("-")
 
 
 def extract_block(text: str, lang: str) -> str | None:

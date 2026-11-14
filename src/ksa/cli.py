@@ -155,7 +155,7 @@ async def judge(args):
     summary = {"run": run_dir.name, "method": data["meta"]["method"], "judge": model, "repeats": args.repeats,
                "mean": round(statistics.mean(means), 3), "mean_within_case_sd": round(noise, 3),
                "per_case": per_case}
-    out = run_dir / f'judge-{model}.json'
+    out = run_dir / f'judge-{llm.slug(model)}.json'
     out.write_text(json.dumps(summary, indent=2))
     print(f"judge {model}: mean {summary['mean']:.2f} / 5, within-case sd {noise:.2f} -> {out}")
 
