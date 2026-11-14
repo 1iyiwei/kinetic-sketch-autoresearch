@@ -140,7 +140,7 @@ async def train(args):
     out_dir = ROOT / "runs" / f'distill-{time.strftime("%Y%m%d-%H%M%S")}-{args.name}'
     out_dir.mkdir(parents=True)
     log = (out_dir / "train_log.jsonl").open("a")
-    rng = random.Random(0)
+    rng = random.Random(args.seed)
     steps_per_epoch = max(1, len(data) // args.batch)
     total, step, ckpts = steps_per_epoch * args.epochs, 0, []
     for epoch in range(args.epochs):
@@ -224,6 +224,7 @@ def main():
     t.add_argument("--batch", type=int, default=8)
     t.add_argument("--max-len", type=int, default=24000)
     t.add_argument("--name", default="sft")
+    t.add_argument("--seed", type=int, default=0, help="data shuffle seed")
     r = sub.add_parser("report", help="compare runs: judge score, validity, cost")
     r.add_argument("run_dirs", nargs="+")
     r.add_argument("--judge", default="gpt-5.4")

@@ -201,6 +201,10 @@ async def animate(args):
         intent = html.unescape(m.group(1).strip()) if m else None
     if not intent:
         raise SystemExit("No intent: pass it as the second argument, or type it in the drawing page before saving.")
+    if args.gen_model:  # e.g. the distilled Tinker student, for a fully open demo
+        llm.GEN_MODEL = args.gen_model
+    if args.critic_model:
+        llm.CRITIC_MODEL = args.critic_model
     cfg = config_from(args)
     cfg.verbose = True
     pb = pbk.load(Path(args.playbook)) if args.playbook else None
@@ -306,6 +310,8 @@ def main():
     an.add_argument("--out", default=str(ROOT / "runs" / "animate"))
     an.add_argument("--concurrency", type=int, default=8)
     an.add_argument("--no-open", action="store_true")
+    an.add_argument("--gen-model", help="generator model (default KSA_GEN_MODEL), e.g. tinker://.../sampler_weights/r1-e0")
+    an.add_argument("--critic-model", help="critic model (default KSA_CRITIC_MODEL), e.g. tinker:Qwen/Qwen3.6-35B-A3B")
     j = sub.add_parser("judge", help="re-score an existing run's final renders")
     j.add_argument("run_dir")
     j.add_argument("--model", help="judge model (default: KSA_CRITIC_MODEL)")

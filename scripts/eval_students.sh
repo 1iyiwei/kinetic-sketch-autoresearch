@@ -7,15 +7,16 @@ cd "$(dirname "$0")/.."
 SEEDS=${SEEDS:-3}
 JUDGE=${JUDGE:-tinker:Qwen/Qwen3.6-35B-A3B}
 REPEATS=${REPEATS:-2}
+OUT=${OUT:-runs/eval}
 mkdir -p runs/eval/logs
 for spec in "$@"; do
   name=${spec%%=*}; gen=${spec#*=}
   (
     for s in $(seq "$SEEDS"); do
-      KSA_CRITIC_MODEL=none KSA_GEN_MODEL="$gen" uv run ksa run --method oneshot --out "runs/eval/$name" \
+      KSA_CRITIC_MODEL=none KSA_GEN_MODEL="$gen" uv run ksa run --method oneshot --out "$OUT/$name" \
         > "runs/eval/logs/$name-$s.log" 2>&1
     done
-    for rd in runs/eval/"$name"/*/; do
+    for rd in "$OUT/$name"/*/; do
       uv run ksa judge "$rd" --model "$JUDGE" --repeats "$REPEATS" >> "runs/eval/logs/$name-judge.log" 2>&1
     done
     echo "done $name"

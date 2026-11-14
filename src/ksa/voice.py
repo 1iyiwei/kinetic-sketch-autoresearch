@@ -2,7 +2,9 @@
 
   uv run python -m ksa.voice [--port 8765]      # then open http://localhost:8765
 
-Speech is transcribed with OpenAI (KSA_STT_MODEL, default gpt-4o-transcribe); typing works too.
+Speech is transcribed in the browser (Web Speech API, free) when available, otherwise with OpenAI
+(KSA_STT_MODEL, default gpt-4o-transcribe); typing works too. With KSA_GEN_MODEL/KSA_CRITIC_MODEL set to
+Tinker models (e.g. the distilled student) the whole demo runs without OpenAI.
 Each spoken correction goes through the same revise step as the research loop, as a human critique,
 and is saved with the before/after programs and scores to runs/voice/<session>/feedback.jsonl,
 which is preference data for training the Tinker student.
@@ -205,7 +207,13 @@ $('go').onclick=async()=>{st('generating, rendering, critiquing… (~1 min)');$(
  try{const r=await post('/animate',{case:$('case').value,intent:$('intent').value,svg:uploaded});session=r.session;last=r.node;card(r);st('done, now say a correction')}catch(e){st(e.message)}};
 $('rev').onclick=async()=>{if(!session)return st('animate first');const fb=$('feedback').value.trim();if(!fb)return;st('revising…');
  try{const r=await post('/revise',{session,node:last,feedback:fb});last=r.node;card(r,fb);$('feedback').value='';st('done')}catch(e){st(e.message)}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 document.querySelectorAll('.mic').forEach(b=>{let rec,chunks;
+ if(SR){let sr=null;
+  const go=()=>{sr=new SR();sr.lang='en-US';sr.interimResults=true;b.classList.add('rec');st('listening…');
+   sr.onresult=e=>{const t=[...e.results].map(r=>r[0].transcript).join('');$(b.dataset.target).value=t;st('heard: '+t)};
+   sr.onend=()=>b.classList.remove('rec');sr.onerror=e=>st('speech: '+e.error);sr.start()};
+  b.onmousedown=b.ontouchstart=e=>{e.preventDefault();go()};b.onmouseup=b.ontouchend=b.onmouseleave=()=>{if(sr){sr.stop();sr=null}};return}
  const start=async()=>{const s=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(s);chunks=[];
   rec.ondataavailable=e=>chunks.push(e.data);rec.onstop=async()=>{s.getTracks().forEach(t=>t.stop());b.classList.remove('rec');st('transcribing…');
    const blob=new Blob(chunks,{type:rec.mimeType});const r=await fetch('/transcribe',{method:'POST',headers:{'Content-Type':rec.mimeType},body:blob});
