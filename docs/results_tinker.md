@@ -15,6 +15,7 @@ Students: 3 samples per case (mean ± sd across runs).
 | student, 90 drawings, 1 epoch | 3 | 2.49 ± 0.24 | 2.76 ± 0.41 | 73% | 0.64 | 67% |
 | student, 90 drawings, 3 epochs | 3 | 3.05 ± 0.27 | 3.39 ± 0.22 | 90% | 0.89 | 77% |
 | **student, 120 drawings, 1 epoch (`r1-e0`)** | 3 | **3.27 ± 0.38** | 3.84 ± 0.27 | 100% | 0.97 | 90% |
+| **round 2**: teacher data + 131 open-loop programs (Qwen3.6-critic ≥ 4.25), 1 epoch (`r2-e0`) | 3 | 3.23 ± 0.30 | - | 100% | 0.97 | 93% |
 | student, 120 drawings, 2 epochs | 3 | 3.06 ± 0.29 | 3.59 ± 0.36 | 93% | 0.86 | 83% |
 | student, 120 drawings, 3 epochs | 3 | 3.19 ± 0.41 | 3.51 ± 0.43 | 97% | 0.90 | 97% |
 | **open loop**: student `r1-e2` + Qwen3.6 critic | 2 | 3.51 ± 0.03 | 4.27 ± 0.11 | 100% | 1.00 | 100% |
@@ -26,10 +27,13 @@ Findings
   closing ~65% of the gap to gpt-5.5 one-shot at ~7K tokens/case on a 3B-active open model.
 - Teacher data volume matters more than epochs: 90 → 120 drawings helps; extra epochs do not.
 - A fully open loop (student generator + open critic, no OpenAI) reaches 3.5–3.7, ~85% of the gap.
+- Round 2 (expert iteration with the open loop as teacher on 150 unused drawings) did not help:
+  3.23 vs 3.27. Its data was selected by the Qwen3.6 critic, which overrates its own family (round-2
+  loop means 4.0–4.7 by that critic), so the selection signal was weak. Self-training needs a reliable selector.
 - Judge self-preference is real: the critic's own model scores the open loop 4.2–4.3, but the
   independent judge gives 3.5–3.7 and still prefers gpt-5.5 one-shot. Report the independent column.
 
-Not yet done: round 2 (student-in-loop data → retrain), more teacher data (OpenAI credits),
+Not yet done: round 2 with an independent selector (e.g. 397B critic), more teacher data (OpenAI credits),
 gpt-5.5 loop re-judged with the same open judges (needs the held-out loop run directory).
 
 Reproduce
