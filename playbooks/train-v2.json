@@ -1,0 +1,152 @@
+{
+  "lessons": [
+    {
+      "text": "For a rolling object on an incline, compute its center from the visible ramp line plus one radius along the ramp normal, keep every rolling keyframe on that contact path, and use nonuniform ease-in spacing so later positions are clearly farther apart. Add an internal surface mark, stripe, or asymmetry that rotates by traveled distance divided by radius, keeping the cue hidden on the exact anchor frame if it was not in the source.",
+      "applies_to": "rolling objects on ramps",
+      "evidence": "Normal-based contact and a hidden-at-anchor rolling mark improved ramp rolling, while early snap and weak acceleration still cost points."
+    },
+    {
+      "text": "For a specified bounce sequence, give each bounce its own clear ground-contact keyframe, rebound apex, and next landing, with decreasing heights and durations large enough to read in overview; reserve a separate final tiny hop/settle instead of simply arriving at rest. Use unmistakable volume-preserving squash on contact, stretch on fast falls, and tie shadow size/darkness to height so the ground relationship reinforces the bounce timing.",
+      "applies_to": "falling or rolling objects with repeated bounces",
+      "evidence": "The repeated-bounce attempt kept fidelity but stayed at intent/motion 3 because later bounces were ambiguous, squash/stretch was subtle, the last bounce was unclear, and the shadow barely changed."
+    },
+    {
+      "text": "When adding speed trails, impact ticks, smoke, exhaust, or other animation-only graphics, make them deliberate, attached to the moving object or contact point, and fully hidden on the anchor frame. Fade or hide them before the subject fully exits so isolated remnants do not read as detached drawing fragments.",
+      "applies_to": "motion marks and effects accents",
+      "evidence": "Faint gray trailing strokes and late edge fragments read as artifacts; hidden-at-anchor marks and fading speed lines improved integrity."
+    },
+    {
+      "text": "For an oscillator released from a drawn extreme, keep the exact source pose at t=0 and animate the transform as the difference from that drawn angle, with the sign chosen so the first motion goes back toward equilibrium rather than farther outward. Use a damped cosine with visible decay from the first full swing: reversals should get progressively closer to center, with fastest motion near center and slowest motion at the ends.",
+      "applies_to": "pendulums and hinged oscillators",
+      "evidence": "Changing to a damped-cosine delta from the drawn release pose raised intent, while weak first-swing damping and uneven later timing still cost points."
+    },
+    {
+      "text": "For a pendulum or other fixed-length hinged body, rotate one rigid rod-and-mass group about the exact pivot, or compute the mass center from pivot plus constant length and angle. Do not bend the connector or independently move the mass in a way that makes the radius change.",
+      "applies_to": "rigid rods, strings, and hinged masses",
+      "evidence": "The final oscillator version still showed rod kinks and a bob path that did not always follow a clean circular arc around the pivot."
+    },
+    {
+      "text": "When a diagram includes an equilibrium or center reference, align the animated path to it and ensure the moving body visibly passes through or under that reference during the cycle. Keep extrema inside the drawing bounds so the motion reads as controlled diagram physics rather than leaving the frame.",
+      "applies_to": "textbook diagrams with reference lines",
+      "evidence": "The first oscillator attempt did not use the vertical reference as the swing center and clipped the moving mass at the right edge."
+    },
+    {
+      "text": "For a waving limb, build a simple joint hierarchy: rotate the upper segment about the shoulder, the lower segment about the elbow, and the hand about the wrist, keeping segment lengths constant across frames. Avoid redrawing/interpolating endpoints in ways that shorten the limb, move the elbow inconsistently, or pass the arm through the head or torso.",
+      "applies_to": "character limb waves and hinged arms",
+      "evidence": "The best waving attempt conveyed a wave but lost motion quality because the arm became vertical through the body area and its length/elbow position changed between poses."
+    },
+    {
+      "text": "For a character\u2019s \u201clittle bounce,\u201d translate the head-and-torso mass by a visibly readable amount with eased down/up timing, and keep it synchronized with the gesture instead of using only tiny sub-pixel shifts. Preserve planted contacts where appropriate so the bounce reads as body motion, not a drifting redraw.",
+      "applies_to": "cartoon body bounces during gestures",
+      "evidence": "The bounce was judged present but hard to read because the head/torso shifted only slightly at a few moments."
+    },
+    {
+      "text": "For an engine ignition and powered launch, animate the body itself from the beginning with readable irregular vibration plus a small rotation about the lower contact or base, then tie exhaust buildup to early upward displacement and multi-frame acceleration. Do not rely on flame flicker alone, keep the object fixed for most of the runtime, or translate it suddenly offscreen at the end.",
+      "applies_to": "cartoon launches from a pad or stand",
+      "evidence": "Launch attempts had visible exhaust but too-subtle body shake and a delayed, compressed liftoff where the object stayed on the pad until late."
+    },
+    {
+      "text": "For a logo intro, scale growing elements about their exact centers or base-edge pivots using translate-center/scale/translate-back transforms, with quick overshoot/settle rather than mechanical growth or clipping. When an emblem should appear from nothing, start with a tiny hidden or faded pre-emergence before the first readable frame, keep staggered steps close enough to avoid a dead hold, and animate any final sparkle/pulse as a brief expand-and-contract arc over multiple frames before restoring the final anchor pose.",
+      "applies_to": "logo build-ups, radial parts, and sparkle pulses",
+      "evidence": "The best logo intro reached fidelity/intent/integrity 5, but motion stayed 4 because the first visible emblem popped abruptly, there was a long hold before the next pop-in, and the sparkle read like a single-frame swap."
+    },
+    {
+      "text": "For flapping flight, animate the wing as a broad smooth cycle around the shoulder pivot, with readable raised and downstroke poses, eased extremes, and a vertical body bob of several pixels tied to the wingbeat. Avoid tiny or mostly one-sided wing rotations and nearly flat horizontal paths, because they read as weak flapping even if the object translates across the frame.",
+      "applies_to": "cartoon flying characters and creatures",
+      "evidence": "The final flight version scored only motion 3 because the wing mostly moved between diagonal-up and near-vertical poses and the body stayed at nearly the same height through most of the shot."
+    },
+    {
+      "text": "For a flying character crossing and exiting the frame, parent all non-flapping drawing details to one body group and carry them rigidly with the body, adding only deliberate wing motion, subtle pitch, or follow-through. Pace the travel so the subject remains visible for most of the shot and exits as a coherent grouped silhouette near the end, not as early empty frames or detached edge fragments.",
+      "applies_to": "cartoon flight across the frame",
+      "evidence": "Removing independent detail motion improved integrity from 3 to 4, while early exit, internal sketch-line drift, uniform travel, and leftover fragments were called out as problems."
+    }
+  ],
+  "history": [
+    {
+      "ts": "2026-11-14 15:20:28",
+      "case": "ball_ramp",
+      "change_note": "Added six transferable lessons on contact geometry, acceleration, rolling cues, bounce readability, deceleration, and clean auxiliary marks because these were the main causes of score changes and remaining issues.",
+      "n_lessons": 6,
+      "best_score_by_round": [
+        3.75,
+        4.25,
+        4.25
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:23:40",
+      "case": "pendulum",
+      "change_note": "Added lessons on damped oscillation setup, visible decay, rigid pivot rigging, and use of diagram center references because the search improvement came from correcting pendulum physics while remaining issues concerned damping and rod rigidity.",
+      "n_lessons": 10,
+      "best_score_by_round": [
+        3.0,
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:27:02",
+      "case": "stick_wave",
+      "change_note": "Added two transferable character-animation lessons on hinged limb rigging and readable body bounces, reflecting the remaining issues that kept the waving gesture at a motion score of 3.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.0,
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:30:28",
+      "case": "rocket",
+      "change_note": "Merged related rolling/bounce lessons to make room for two launch-specific lessons about readable body shake during ignition and synchronizing thrust buildup with eased liftoff, reflecting the final search\u2019s remaining motion issues.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.0,
+        4.0,
+        4.25
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:33:07",
+      "case": "sun_logo",
+      "change_note": "Merged related rolling and launch lessons to make room for two logo-intro lessons about center-locked scaling/pulses and crisp staggered radial pop-ins, matching the new score gains and remaining issues.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.25,
+        4.5,
+        4.5
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:35:50",
+      "case": "bouncing_ball",
+      "change_note": "I replaced the prior generic floor-bounce note with a more specific repeated-bounce lesson covering explicit contact/apex timing, visible squash/stretch, final settling, and height-linked shadows because the new search plateaued on exactly those weaknesses.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.0,
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:38:47",
+      "case": "bird",
+      "change_note": "Merged related oscillator and logo lessons to make room for two new cartoon-flight lessons on readable flap/bob cycles and coherent grouped exits, reflecting the final search improvements and remaining issues.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        3.75,
+        3.75,
+        4.0
+      ]
+    },
+    {
+      "ts": "2026-11-14 15:39:44",
+      "case": "star_logo",
+      "change_note": "Sharpened the logo intro lesson to require a smoother from-nothing emergence, tighter staging between sequential reveals, and a multi-frame sparkle arc because the latest best run was otherwise correct but lost motion score on those points.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.75
+      ]
+    }
+  ]
+}

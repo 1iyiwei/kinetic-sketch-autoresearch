@@ -1,0 +1,121 @@
+{
+  "lessons": [
+    {
+      "text": "For a rolling round object, compute the center path from surface tangency: move along the ramp normal/axis until the center reaches the floor-rest height, then continue on the floor at a fixed center height. Avoid hand-picked positions that let the object hover above or sink into the ramp or floor.",
+      "applies_to": "rolling on ramps and floors",
+      "evidence": "Initial attempts showed hovering at several times; the improved version added floor center height and ramp-travel geometry and raised integrity to 5."
+    },
+    {
+      "text": "Make downhill acceleration readable from the first few sampled frames: keep any start hold/anticipation very short, and use a monotonic accelerating distance curve so each consecutive position advances more than the last. Do not delay most of the travel until late in the shot.",
+      "applies_to": "gravity-driven rolling or sliding",
+      "evidence": "The low-scoring version barely moved early and traveled mostly later; the revision shortened the hold and used stronger acceleration, improving the score, though mild uneven acceleration remained."
+    },
+    {
+      "text": "If a plain circular object must read as rolling, add a small interior tracking mark or texture that rotates with arc length, while hiding it on the exact anchor frame if it was not in the drawing. Speed lines alone can read as sliding rather than spin.",
+      "applies_to": "plain wheels, balls, circular objects",
+      "evidence": "The first version had no visible rotation and motion strokes read like sliding; the revision added a hidden-at-start spin mark and rotation became somewhat clearer."
+    },
+    {
+      "text": "For a bounce or path transition, explicitly stage the collision beat: contact, squash/compression, visible rebound or air gap, second contact, and settle. At a ramp-to-floor corner, reach the floor contact point before compressing; dust or impact marks alone are not enough.",
+      "applies_to": "bounces, landings, ramp-to-floor transitions",
+      "evidence": "Earlier attempts left the bounce and ramp-to-floor contact faint, with impact marks but no clear airborne rebound or staged collision."
+    },
+    {
+      "text": "Once an object has come to rest, lock its final translation and rotation exactly instead of leaving residual easing, wobble, or numerical drift. A settled object should remain identical across the last frames.",
+      "applies_to": "settles and final rests",
+      "evidence": "The first version drifted slightly between the last frames, making the rest feel floaty; the revision used an exact rest position and improved integrity."
+    },
+    {
+      "text": "For a released pendulum or other suspended oscillator drawn at an extreme, use the drawing as the maximum-displacement pose with zero initial velocity: drive the angle with a damped cosine, with each successive extreme smaller. Choose a period that feels weighty for the diagram scale; if sampled frames look rushed or mechanical, lengthen the period rather than adding decorative accents.",
+      "applies_to": "pendulums and damped oscillators",
+      "evidence": "Using a damped cosine from the drawn release pose raised intent to 5, while the remaining issue was a period that felt fast and mechanical."
+    },
+    {
+      "text": "Animate pendulum-like rigs by rotating the original rod/string and bob artwork together about one fixed pivot, preserving the anchor frame at t=0. This keeps rod length, attachment, and arc geometry consistent and avoids clipping from recomputed endpoints.",
+      "applies_to": "hinged or suspended rigid rigs",
+      "evidence": "The first version had inconsistent rod length and the bob clipped off-frame; the final rotated both elements about the drawn pivot and achieved integrity 5."
+    },
+    {
+      "text": "For textbook-style diagrams, keep static reference guides stable and visually readable while moving parts pass near them. Avoid extra speed marks or layering choices that clutter the centerline or obscure the construction lines.",
+      "applies_to": "diagram animations with guides",
+      "evidence": "The final kept the arc and dashed vertical guide stable, but overlap near the centerline slightly reduced clarity; earlier added accents were removed."
+    },
+    {
+      "text": "For a waving gesture, rig the arm with fixed shoulder, elbow, and wrist pivots and make the hand/forearm trace a visibly wide side-to-side arc. Do not rely on gray motion marks to imply a wave before the limb itself has swung clearly, and keep the shoulder attachment locked to the torso.",
+      "applies_to": "character waves and arm gestures",
+      "evidence": "The best version kept fidelity but the wave read as a mostly held raised arm with motion marks, and the shoulder pivot appeared to slide in some poses."
+    },
+    {
+      "text": "For a body bounce on a simple character, drive the torso with a rhythmic eased vertical cycle from the start: slight anticipation, compression/down beat, rebound/up beat, and settle, synchronized with the gesture. Avoid a long initial hold followed by an abrupt whole-body drop, and use enough amplitude to read in sampled frames.",
+      "applies_to": "cartoon character bounce",
+      "evidence": "The final body bounce was very subtle, the figure mostly stayed upright, and the first visible change was an abrupt downward shift after an initial hold."
+    },
+    {
+      "text": "For a powered launch, make the pre-liftoff vibration affect the main body, not just the flame: use visible high-frequency x/y offsets and small rotation about the base/nozzle, building through a brief press-down and exhaust expansion into continuous eased ascent. Cap exhaust so it does not intersect the ground, and leave expanding/fading smoke or exhaust follow-through after exit while locking any final anchor frame exactly.",
+      "applies_to": "powered launches and vertical exits",
+      "evidence": "Earlier launch versions had body hold, abrupt liftoff, ground-intersecting exhaust, and an empty ending; eased lift and trail elements improved integrity, though trail readability remained limited."
+    },
+    {
+      "text": "For a radial logo intro, scale each spoke/ray from its own geometric center or local base rather than from the logo center, so partial pops do not become clipped slivers near the hub. Stagger start times farther apart than each pop duration for a clean one-by-one read in overview samples, use only modest central overshoot, make the final whole-logo pulse large enough to see, and lock to the exact final art before the last frames.",
+      "applies_to": "radial logos and build-up intros",
+      "evidence": "Changing ray pivots to local centers removed the sliver artifact and improved integrity to 5, but grouped ray starts, strong early overshoot, and a too-subtle final pulse kept intent/motion at 4."
+    }
+  ],
+  "history": [
+    {
+      "ts": "2026-11-14 14:33:32",
+      "case": "ball_ramp",
+      "change_note": "Added six lessons about tangential contact geometry, readable acceleration, rotational tracking, bounce staging, ramp-floor collision timing, and final rest locking based on the rolling-and-bounce search results.",
+      "n_lessons": 6,
+      "best_score_by_round": [
+        4.0,
+        4.0,
+        4.25
+      ]
+    },
+    {
+      "ts": "2026-11-14 14:36:38",
+      "case": "pendulum",
+      "change_note": "Added lessons on damped oscillator phase, fixed-pivot rigging, period choice, and guide clarity because the new search improved by replacing an incorrect outward drift with a damped cosine rotation about the drawn pivot while leaving speed and guide-overlap issues.",
+      "n_lessons": 10,
+      "best_score_by_round": [
+        3.0,
+        4.25,
+        4.75
+      ]
+    },
+    {
+      "ts": "2026-11-14 14:39:27",
+      "case": "stick_wave",
+      "change_note": "Added two lessons from the unsuccessful wave-and-bounce search, focusing on visible rigged arm motion with fixed pivots and clearly eased rhythmic body bounce, because the score plateaued with those as the persistent issues.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        3.75,
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "ts": "2026-11-14 14:42:47",
+      "case": "rocket",
+      "change_note": "Merged related bounce/ramp and pendulum timing guidance to stay under 12 lessons, then added two powered-launch lessons supported by the new score gains and remaining issues.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.0,
+        4.25,
+        4.25
+      ]
+    },
+    {
+      "ts": "2026-11-14 14:45:16",
+      "case": "sun_logo",
+      "change_note": "Merged the two powered-launch lessons to make room for a new radial-logo intro lesson, based on the improvement from local ray pivots and the remaining issues with sequencing, overshoot, and pulse readability.",
+      "n_lessons": 12,
+      "best_score_by_round": [
+        4.25,
+        4.25,
+        4.5
+      ]
+    }
+  ]
+}

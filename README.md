@@ -11,14 +11,18 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 
 | Piece | State |
 | --- | --- |
-| Benchmark: 10 cases (sketch, diagram, cartoon, logo) with intents | done: `benchmark/` |
+| Benchmark: 23 drawings (sketch, diagram, cartoon, logo), with train, val, test and complex splits | done: `benchmark/` |
 | Deterministic headless renderer (frames, GIF, contact sheets) | done: `src/ksa/render.py` |
 | One-shot baseline generator | done: `src/ksa/generate.py` |
 | Hybrid critic: measured fidelity + vision rubric, structured output | done: `src/ksa/critic.py` |
 | Research loop: beam search with critique → revise | done: `src/ksa/search.py` |
 | Equal-compute baselines (one-shot, best-of-K), held-out repeated judge | done: `src/ksa/cli.py` |
+| Playbook: lessons distilled from search trees, train/test split | done: `src/ksa/playbook.py`, `playbooks/` |
+| Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
+| Per-drawing lesson selection; per-lesson credit (`ksa lessons`) | done: `src/ksa/playbook.py`, `src/ksa/lessons.py` |
+| Playbook v2 on 8 train / 3 val / 7 test drawings | done: no reliable gain (see below) |
+| Distill the loop into an open model (Qwen on Tinker) | next |
 | Parallel rendering and critique on Modal | next |
-| Playbook (lessons carried across cases), ablations | next |
 
 ## Results (Sat 13:15, 10 cases)
 
@@ -41,7 +45,112 @@ physics: pendulum 3.08 → 4.25, spring–mass 3.17 → 4.17. Run directories: `
   gain survives the change of judge.
 - **Caveats.** Only 10 cases and one seed per method. The loop used about 33% more tokens than best-of-6 (its
   revise prompts include the program and its renders). The critic and judge share the measured fidelity term.
-  Next: more cases, a train/test split, more seeds, and a token-matched best-of-K.
+  Next: more cases, more seeds, and a token-matched best-of-K.
+
+## Expanded benchmark: 23 drawings (Sat 15:20)
+
+The benchmark grew to 23 drawings in four splits: **train** (8, the playbook learns from these), **val** (3, for
+pruning lessons), **test** (7, held-out numbers), and **complex** (5: Newton's cradle, meshing gears, a domino chain,
+a cat jumping onto a box, and a three-beat story). The complex tier is never learned from and is reported separately.
+One-shot ran 3 times per split; the loop ran once. Held-out judge `gpt-5.4`, 3× each.
+
+| Split | One-shot (3 runs) | Loop (1 run) | Loop vs. one-shot | Wins / losses / ties |
+| --- | --- | --- | --- | --- |
+| Test (7) | 3.78 | **3.99** | +0.21 | 6 / 1 / 0 |
+| Complex (5) | 3.60 | 3.52 | −0.08 | 1 / 3 / 1 |
+
+- **On single-subject drawings the loop's gain holds up on the bigger test set.** It wins on 6 of 7 drawings, the
+  largest gain again on the spring–mass (3.47 → 4.08).
+- **On complex drawings it doesn't help yet.** Multi-object interactions are hard for both methods: Newton's cradle
+  scores 2.39 one-shot and 2.33 with the loop. The critic can name what's wrong ("the right ball should swing out
+  as the left one hits"), but two rounds of revision don't fix coordinated physics across several bodies. Possible
+  next steps: more rounds on complex drawings, a physics helper in the generator's toolbox, or splitting the
+  animation into beats that are revised separately.
+
+Run directories: `runs/v2/oneshot-{val,test,complex}-{1,2,3}`, `runs/v2/loop-{test,complex}`.
+
+## Playbook: does learning carry over to new drawings? (Sat 14:50)
+
+`ksa learn` runs the loop on the 5 **train** drawings one at a time. After each one, an analyst model reads that
+search tree: the first attempts' issues, the code diff of the fix that won, and what is still wrong. It then
+rewrites the playbook, keeping at most 12 general lessons and never naming the drawing. Later drawings get the
+lessons in their prompts. Result: [`playbooks/train-v1.json`](playbooks/train-v1.json), with 12 lessons and a
+`history` of each update and its reason (for example "added lessons on damped oscillator phase and fixed-pivot
+rigging, because the search improved by replacing an incorrect outward drift with a damped cosine rotation about
+the drawn pivot").
+
+Measured on the 5 **test** drawings, which it never saw (held-out judge `gpt-5.4`, 3× each; one-shot ran 3 times
+with and 3 times without the playbook):
+
+| Method | Runs | Judge (held-out) | vs. one-shot | Wins / losses / ties |
+| --- | --- | --- | --- | --- |
+| One-shot | 3 | 3.60 | — | — |
+| One-shot + all 12 lessons | 3 | 3.68 | +0.08 | 4 / 1 / 0 |
+| **One-shot + selected lessons** | 3 | **3.74** | **+0.14** | 4 / 1 / 0 |
+| Loop | 1 | 3.90 | +0.30 | 3 / 1 / 1 |
+| Loop + all 12 lessons | 1 | 3.87 | +0.27 | 3 / 2 / 0 |
+| Loop + selected lessons | 1 | 3.92 | +0.32 | 3 / 1 / 1 |
+
+**Giving every lesson to every drawing transfers in both directions:**
+- **Positive transfer where a lesson fits.** The spring–mass is an oscillator the playbook never saw, but its
+  lessons came from the pendulum. It improved in every run: 3.17–3.50 without, 3.67–4.25 with.
+- **Negative transfer where a lesson is misapplied.** The windmill needs none of these lessons, but gets all 12.
+  It dropped in every run (4.50 → 3.83–4.25), and the judge now calls its spin "strobey".
+
+**Per-drawing lesson selection.** Before generating, a small model (`gpt-5.4-mini`) looks at the drawing and its
+intent and picks only the lessons for the motion and physics the animation needs, matching on the kind of motion
+rather than the object's name. Selecting none is allowed. The selection and its reasons are saved per case
+(`playbook_selected.json`). On the training drawings it recovers each drawing's own lessons. On the test drawings it
+gives the spring–mass the oscillator and diagram lessons, the windmill only the pivot-rigging lesson, and the logos
+the build-up-intro and settle lessons.
+- One-shot with selected lessons scores 3.74, against 3.68 with all lessons and 3.60 with none. The windmill
+  recovers (4.00 with all lessons → 4.42 selected, 4.50 with none).
+- Per-lesson credit (`ksa lessons`): every lesson that was selected on a test drawing has a non-negative mean
+  effect. Lessons 6 and 8 (oscillator, diagram guides) gained +0.22 on the spring–mass; lesson 7 (pivot rigging)
+  gained +0.42 on the fish and lost 0.08 on the windmill.
+- **How strong is this?** It's a trend, not yet significant. Per-run means with selection are 3.72 / 3.63 / 3.88
+  against 3.52 / 3.70 / 3.58 without, about 1.5 standard errors apart, from 3 runs on 5 drawings.
+- **Disclosure:** the selector's wording was revised once after seeing its picks on the test drawings (the first
+  version matched object names and gave the spring–mass no lessons). The revised wording is generic and names no
+  test drawing. `ksa lessons --prune-to` can drop lessons that hurt, but pruning on test results and then reporting
+  test scores would be circular, so it is not used for any number here. It needs a separate validation split.
+- **Next:** more drawings (a validation split for pruning, and enough cases for significance), and per-lesson
+  credit computed during learning.
+
+Reproduce: `uv run ksa learn --split train --cases pendulum,ball_ramp,stick_wave,rocket,sun_logo --lessons all`,
+then `uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json --lessons {all,select}`,
+`ksa judge` each run, `uv run ksa report <runs...> --split test`, and
+`uv run ksa lessons --playbook playbooks/train-v1.json --baseline <no-playbook runs> --with <selected runs>`.
+
+### Playbook v2 on the larger benchmark: no reliable gain (Sat 15:50)
+
+Learned with selection on all 8 train drawings ([`playbooks/train-v2.json`](playbooks/train-v2.json), 12 lessons),
+pruned on the 3 val drawings, and tested on the 7 test drawings (one-shot, 3 runs each, held-out judge):
+
+| One-shot with… | Judge (7 test drawings) | vs. no playbook | Wins / losses / ties |
+| --- | --- | --- | --- |
+| no playbook | 3.78 | — | — |
+| v2, selected lessons | 3.63 | −0.15 | 2 / 5 / 0 |
+| v2 after pruning on val, selected lessons | 3.74 | −0.04 | 3 / 2 / 2 |
+| *(for contrast)* the loop, no playbook | 3.99 | +0.21 | 6 / 1 / 0 |
+
+- **Pruning on val dropped nothing.** No selected lesson had a negative mean effect over ≥ 2 val drawings, so the
+  pruned playbook is *identical* to v2. The two rows differ by 0.11 from run-to-run noise alone. That is as large as
+  every playbook effect we measured, including v1's +0.14.
+- **Selection is shaky on new kinds of drawings.** On val it gave the flower a pendulum lesson and the clock a
+  rigid-rod lesson; both cost 0.11.
+- **Conclusion:** lessons in the prompt don't reliably improve generation at this scale, while the render → critique
+  → revise loop does: +0.33 on the first 10 drawings, +0.30 on the 5-drawing test, +0.21 on the 7-drawing test,
+  winning on 6 of 7. To make improvements stick, the next step is to put them in the model's weights rather than
+  its prompt: fine-tune an open model on the programs the loop found (see "Next: distill the loop into the model").
+
+### Next: distill the loop into the model (Tinker)
+
+Every loop run leaves training data: (drawing, intent) → the best program found, plus critic scores for every
+candidate. Plan: fine-tune `Qwen/Qwen3.6-35B-A3B` with LoRA on [Tinker](https://thinkingmachines.ai/tinker/) on the
+loop's best programs for the train drawings, then compare one-shot before and after on the held-out test drawings.
+Smoke test: base Qwen3.6-35B-A3B on Tinker wrote a valid windmill program in one shot (about 4.3K tokens, 76 s),
+which the held-out judge scored 4.50, against 4.42 for `gpt-5.5` one-shot on that drawing (one sample).
 
 ## Run
 
@@ -55,6 +164,10 @@ uv run ksa run --method bestof --k 6    # equal-compute baseline: sample 6, keep
 uv run ksa run --method loop            # k=2 samples, then 2 rounds of revising the best into 2 children
 uv run ksa run --method loop --cases fish,pendulum --rounds 3   # subset, more rounds
 uv run ksa judge runs/<run-dir> --model gpt-5.4 --repeats 3     # held-out judge, repeated
+uv run ksa compare runs/<one_shot> runs/<best_of_6> runs/<loop>   # side-by-side page -> runs/compare.html
+uv run ksa learn --split train --out-playbook playbooks/train-v2.json   # learn lessons, case by case
+uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json   # use them on held-out drawings
+uv run ksa report runs/<run> runs/<run> ... --split test     # judged runs grouped by method
 uv run pytest
 ```
 
@@ -93,7 +206,7 @@ scores zero, and its errors are fed back.
   scored that as jarring; the loop lost on both intro logos. Each case now declares an *anchor* frame (the first
   frame, or the last for build-up intros). Sun went 2.75 → 4.25 and bolt 2.92 → 4.25 under the judge.
 
-Design, metrics and team roles: [docs/design.md](docs/design.md).
+Design, metrics and team roles: [docs/design.md](docs/design.md). Shareable result pages and demo material: [docs/demos.md](docs/demos.md).
 
 ## Provenance
 

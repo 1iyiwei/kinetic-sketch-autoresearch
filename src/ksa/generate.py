@@ -62,11 +62,12 @@ The drawing is attached as an image, and here is its SVG source (512x512):
 
 
 async def one_shot(case: dict, svg_path: Path, png_path: Path, log: Path,
-                   meter: dict | None = None, tags: dict | None = None) -> tuple[str | None, str]:
+                   meter: dict | None = None, tags: dict | None = None, playbook: str = "") -> tuple[str | None, str]:
     """Returns (html or None, raw model text)."""
     raw = await llm.call(
         role="generator", model=llm.GEN_MODEL, effort=llm.GEN_EFFORT, system=SYSTEM,
-        text=build_prompt(case, svg_path.read_text()), images=[png_path], log=log,
+        text=build_prompt(case, svg_path.read_text()) + (f"\n{playbook}\n" if playbook else ""),
+        images=[png_path], log=log,
         tags={"case": case["id"], "method": "one_shot", **(tags or {})}, meter=meter,
     )
     return llm.extract_block(raw, "html"), raw
@@ -114,11 +115,12 @@ Current program:
 
 async def revise(case: dict, svg_path: Path, png_path: Path, program: str, critique: dict,
                  errors: list[str], sheet: Path | None, strip: Path | None, log: Path,
-                 meter: dict | None = None, tags: dict | None = None) -> tuple[str | None, str]:
+                 meter: dict | None = None, tags: dict | None = None, playbook: str = "") -> tuple[str | None, str]:
     images = [png_path] + ([sheet, strip] if sheet and strip else [])
     raw = await llm.call(
         role="generator", model=llm.GEN_MODEL, effort=llm.GEN_EFFORT, system=SYSTEM,
-        text=build_revise_prompt(case, svg_path.read_text(), program, critique, errors, sheet is not None),
+        text=build_revise_prompt(case, svg_path.read_text(), program, critique, errors, sheet is not None)
+        + (f"\n{playbook}\n" if playbook else ""),
         images=images, log=log, tags={"case": case["id"], "method": "revise", **(tags or {})}, meter=meter,
     )
     return llm.extract_block(raw, "html"), raw

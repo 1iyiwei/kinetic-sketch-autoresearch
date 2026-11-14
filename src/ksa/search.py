@@ -20,6 +20,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from . import critic, generate, llm
+from .paths import relativize
 from .render import Renderer
 
 
@@ -44,6 +45,7 @@ class SearchConfig:
     rounds: int = 0
     stop_at: float = 4.75  # good enough, stop early
     patience: int = 1  # rounds without improvement before stopping
+    verbose: bool = False  # print the best score after each round (live demo)
 
     @property
     def method(self) -> str:
@@ -83,7 +85,7 @@ async def evaluate(case, renderer: Renderer, node: Node, program: str | None, ra
 
 
 async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Path, log: Path,
-                 cfg: SearchConfig) -> dict:
+                 cfg: SearchConfig, playbook: str = "") -> dict:
     meter: dict = {}
     nodes: list[Node] = []
     method = cfg.method
@@ -92,7 +94,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
         node = Node(id=f"r0n{i}", round=0, parent=None, origin="sample")
         try:
             program, raw = await generate.one_shot(case, svg, png, log, meter=meter,
-                                                   tags={"method": method, "node": node.id})
+                                                   tags={"method": method, "node": node.id}, playbook=playbook)
         except llm.FatalAPIError:
             raise
         except Exception as e:  # noqa: BLE001 - a failed call is a result
@@ -108,7 +110,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
             node.origin = "sample"
             try:
                 program, raw = await generate.one_shot(case, svg, png, log, meter=meter,
-                                                       tags={"method": method, "node": node.id})
+                                                       tags={"method": method, "node": node.id}, playbook=playbook)
             except llm.FatalAPIError:
                 raise
             except Exception as e:  # noqa: BLE001
@@ -121,7 +123,7 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
                 program, raw = await generate.revise(
                     case, svg, png, program_path.read_text(), parent.critique,
                     parent.render.get("errors", []), sheet, strip, log, meter=meter,
-                    tags={"method": method, "node": node.id, "parent": parent.id})
+                    tags={"method": method, "node": node.id, "parent": parent.id}, playbook=playbook)
             except llm.FatalAPIError:
                 raise
             except Exception as e:  # noqa: BLE001
@@ -132,6 +134,8 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
     nodes += await asyncio.gather(*(sample(i) for i in range(cfg.k)))
     best = max(nodes, key=lambda n: n.score)
     history = [best.score]
+    if cfg.verbose:
+        print(f"    round 0: {len(nodes)} samples, best {best.score:.2f} ({best.id})", flush=True)
     stale = 0
     for rnd in range(1, cfg.rounds + 1):
         if best.score >= cfg.stop_at or stale >= cfg.patience:
@@ -143,10 +147,12 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
         stale = 0 if new_best.score > best.score else stale + 1
         best = new_best
         history.append(best.score)
+        if cfg.verbose:
+            print(f"    round {rnd}: revised {len(jobs)}, best {best.score:.2f} ({best.id})", flush=True)
 
     tree = {"case": case["id"], "method": method, "config": asdict(cfg), "best": best.id,
             "best_score_by_round": history, "meter": meter, "nodes": [asdict(n) for n in nodes]}
-    (cdir / "tree.json").write_text(json.dumps(tree, indent=2))
+    (cdir / "tree.json").write_text(json.dumps(relativize(tree, cdir.parent), indent=2))
     return {"case": case["id"], "category": case["category"], "method": method, "best_node": best.id,
             "critique": best.critique, "render": best.render, "best_score_by_round": history,
             "n_nodes": len(nodes), "meter": meter, "program": str(cdir / "nodes" / best.id / "program.html")}
