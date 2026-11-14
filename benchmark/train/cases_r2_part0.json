@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_sketch_tennis_serve",
+    "category": "sketch",
+    "svg": "t_sketch_tennis_serve.svg",
+    "intent": "The tossed tennis ball hangs for a moment, then the racket sweeps up from behind the player and smacks it across the court with a sharp elastic follow-through.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_sketch_boiling_pot_lid_rattle",
+    "category": "sketch",
+    "svg": "t_sketch_boiling_pot_lid_rattle.svg",
+    "intent": "The pot simmers for 3 seconds: steam curls rise and fade while the lid rattles with tiny side-to-side hops, easing back to center after each clink.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_pancake_flip_pan",
+    "category": "sketch",
+    "svg": "t_sketch_pancake_flip_pan.svg",
+    "intent": "The cook flips the pancake upward in a squashy arc; it rotates once above the pan, then drops back into the pan with a soft bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_stand_mixer_bowl_whisk",
+    "category": "sketch",
+    "svg": "t_sketch_stand_mixer_bowl_whisk.svg",
+    "intent": "The stand mixer's beater spins rapidly in the bowl with a wobbling oval blur, and the batter surface sloshes gently left and right.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_toaster_pop_toast",
+    "category": "sketch",
+    "svg": "t_sketch_toaster_pop_toast.svg",
+    "intent": "After a tiny anticipatory shake, the toast springs up from the toaster slots, overshoots, and settles back to a jaunty visible position as crumbs flick away.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_sketch_spring_cloud_flower",
+    "category": "sketch",
+    "svg": "t_sketch_spring_cloud_flower.svg",
+    "intent": "The cloud slides slowly across the sky as raindrops fall onto the flower; the bloom opens wider in a springy overshoot after the drops land.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_sketch_freight_train_coupling",
+    "category": "sketch",
+    "svg": "t_sketch_freight_train_coupling.svg",
+    "intent": "The freight train chugs from left to right with the wheel hubs rotating; the loose coupler between cars stretches and snaps back like a spring as it starts moving.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_sketch_sailboat_tacking",
+    "category": "sketch",
+    "svg": "t_sketch_sailboat_tacking.svg",
+    "intent": "The sailboat rocks over a small wave, the boom pivots across the mast as if tacking, and the triangular sail snaps to the other side with a soft overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_sketch_drawbridge_car_jump",
+    "category": "sketch",
+    "svg": "t_sketch_drawbridge_car_jump.svg",
+    "intent": "The little car accelerates up the raised drawbridge and hops the gap, rotating slightly nose-up before landing on the far deck with squashy suspension.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_sketch_tugboat_crane_swing",
+    "category": "sketch",
+    "svg": "t_sketch_tugboat_crane_swing.svg",
+    "intent": "The tugboat bobs in place while the small deck crane swings its hanging crate from left to right; the crate lags behind on the cable like a pendular load and then settles.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_sketch_cow_tail_swat",
+    "category": "sketch",
+    "svg": "t_sketch_cow_tail_swat.svg",
+    "intent": "The cow idly chews while its tail swishes side to side to swat at the small fly; the head gives a slow nod with soft easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_rooster_crow_flap",
+    "category": "sketch",
+    "svg": "t_sketch_rooster_crow_flap.svg",
+    "intent": "The rooster throws its beak upward to crow as both wings flap in two quick beats; the body bobs slightly on the skinny legs.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_fox_pounce_grass",
+    "category": "sketch",
+    "svg": "t_sketch_fox_pounce_grass.svg",
+    "intent": "The fox crouches, wiggles its haunches, then springs forward toward the grass clump in a squash-and-stretch pounce; the tail follows through in a loose arc.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_sketch_prism_spectrum_bench",
+    "category": "sketch",
+    "svg": "t_sketch_prism_spectrum_bench.svg",
+    "intent": "A narrow light beam sweeps into the prism, refracts through it, and fans out into three colored paths that wobble slightly like a lab demo being adjusted.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_sketch_gear_train_crank",
+    "category": "sketch",
+    "svg": "t_sketch_gear_train_crank.svg",
+    "intent": "The small hand crank turns clockwise, driving the three meshed gears with alternating rotation; the motion eases into a steady mechanical rhythm with a tiny wobble in each hand-drawn gear.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_sketch_seesaw_gear_cam",
+    "category": "sketch",
+    "svg": "t_sketch_seesaw_gear_cam.svg",
+    "intent": "The lumpy cam gear rotates under the right end of the seesaw, repeatedly lifting it so the plank rocks about the center pivot with a bouncy clack.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_sketch_rube_toggle_machine",
+    "category": "sketch",
+    "svg": "t_sketch_rube_toggle_machine.svg",
+    "intent": "A falling marble taps the top lever, flipping the toggle so the linkage kicks the little gear and opens the trap door at the bottom.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_sketch_satellite_orbiting_planet",
+    "category": "sketch",
+    "svg": "t_sketch_satellite_orbiting_planet.svg",
+    "intent": "The satellite glides clockwise along the dashed orbital path around the planet, easing slightly as it passes behind and then popping back in front; the small solar panels wobble softly from inertia.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_sketch_comet_slingshot_sun",
+    "category": "sketch",
+    "svg": "t_sketch_comet_slingshot_sun.svg",
+    "intent": "The comet streaks along the curved dashed path, brightening as it whips around the sun, then exits with its tail stretching long and snapping back.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_sketch_lunar_lander_touchdown",
+    "category": "sketch",
+    "svg": "t_sketch_lunar_lander_touchdown.svg",
+    "intent": "The lunar lander descends the last few pixels on soft thruster puffs, legs flexing on contact; a small dust ring expands outward across the moon surface and fades.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_sketch_crab_scuttle_shell",
+    "category": "sketch",
+    "svg": "t_sketch_crab_scuttle_shell.svg",
+    "intent": "The crab scuttles sideways in quick two-step bursts, claws snapping open and shut while the nearby shell tips and settles from the vibration.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_sketch_guitar_strum",
+    "category": "sketch",
+    "svg": "t_sketch_guitar_strum.svg",
+    "intent": "The pick hand strums downward across the strings, the strings wobble with quick elastic vibration, and a few sound-wave arcs pulse outward from the guitar body.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_sketch_drum_kit_hit",
+    "category": "sketch",
+    "svg": "t_sketch_drum_kit_hit.svg",
+    "intent": "The two sticks snap down to strike the snare and cymbal, the drum heads squash subtly on impact, and the cymbal shivers in a fast decaying wobble.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_sketch_piano_keys_bounce",
+    "category": "sketch",
+    "svg": "t_sketch_piano_keys_bounce.svg",
+    "intent": "Several piano keys press down in a playful arpeggio from left to right, then rebound with soft easing while the little music notes hop upward.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_sketch_violin_bow_glide",
+    "category": "sketch",
+    "svg": "t_sketch_violin_bow_glide.svg",
+    "intent": "The bow glides smoothly across the strings, reversing direction at the end with a tiny wrist bounce, while the violin body gives a warm vibrating shimmer.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_sketch_desk_lamp_nod",
+    "category": "sketch",
+    "svg": "t_sketch_desk_lamp_nod.svg",
+    "intent": "The desk lamp nods down toward the notebook, overshoots, then eases back while the cone of light softly sweeps across the page.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_rolling_chair_spin",
+    "category": "sketch",
+    "svg": "t_sketch_rolling_chair_spin.svg",
+    "intent": "The office chair swivels a half turn around its center post, wheels jittering with playful inertia before it settles facing front again.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_sketch_tomato_vine_sway",
+    "category": "sketch",
+    "svg": "t_sketch_tomato_vine_sway.svg",
+    "intent": "The tomato vine sways left and right as if in a light breeze; each hanging tomato lags behind on its stem, swinging like a small weighted bob before settling.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_sketch_butterfly_visits_flower",
+    "category": "sketch",
+    "svg": "t_sketch_butterfly_visits_flower.svg",
+    "intent": "The butterfly flutters in a looping path toward the flower, wings beating fast with eased squash; the flower bends toward it, then springs back after the butterfly lifts off.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_sketch_bus_stop_umbrella_gust",
+    "category": "sketch",
+    "svg": "t_sketch_bus_stop_umbrella_gust.svg",
+    "intent": "A gust of wind tugs the umbrella canopy upward and sideways while the waiting figure leans into it; the bus-stop sign wobbles on its pole and settles.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  }
+]

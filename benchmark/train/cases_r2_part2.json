@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_diagram_accordion_bellows_airflow",
+    "category": "diagram",
+    "svg": "t_diagram_accordion_bellows_airflow.svg",
+    "intent": "Process diagram: the two accordion ends pull apart, the bellows expand in alternating folds, and airflow pulses through the reed block to make a visible vibrating reed motion.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_diagram_tape_dispenser_pull",
+    "category": "diagram",
+    "svg": "t_diagram_tape_dispenser_pull.svg",
+    "intent": "The tape strip is pulled to the right, unspooling the roll around its hub while the free end stretches forward and lightly snaps against the serrated cutter.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_diagram_watering_can_pour",
+    "category": "diagram",
+    "svg": "t_diagram_watering_can_pour.svg",
+    "intent": "The watering can tips forward around the handle, and a stream of droplets arcs down onto the seedling; the seedling leaves perk upward with a soft elastic ease.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_diagram_sprout_growth_timeline",
+    "category": "diagram",
+    "svg": "t_diagram_sprout_growth_timeline.svg",
+    "intent": "The growth diagram builds left to right: the seed cracks, the shoot rises, leaves unfurl, and the height arrow extends upward in a measured textbook cadence.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_diagram_greenhouse_vent_opener",
+    "category": "diagram",
+    "svg": "t_diagram_greenhouse_vent_opener.svg",
+    "intent": "As the sun warms the cylinder, the piston rod extends and pushes the roof vent open about its hinge; the dashed angle guide tracks the lid\u2019s slow eased rotation.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_diagram_streetlight_day_night_sensor",
+    "category": "diagram",
+    "svg": "t_diagram_streetlight_day_night_sensor.svg",
+    "intent": "The sun path advances along the dashed arc; as it drops behind the buildings, the photocell triggers the lamp cone to fade on with a soft easing glow.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_diagram_crosswalk_signal_cycle",
+    "category": "diagram",
+    "svg": "t_diagram_crosswalk_signal_cycle.svg",
+    "intent": "The pedestrian signal cycles from stop to walk: the raised hand fades out, the walking figure steps forward with alternating leg and arm swings, and the dashed timing arrow sweeps around the clock.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_diagram_toy_car_pullback",
+    "category": "diagram",
+    "svg": "t_diagram_toy_car_pullback.svg",
+    "intent": "Diagram animation: the toy car is pulled backward along the dashed guide, winding the rear-wheel spring, then released to zip forward with a tiny body vibration. Rear wheel hub rotates quickly while the chassis stays level with eased acceleration.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_diagram_jack_in_box_lid",
+    "category": "diagram",
+    "svg": "t_diagram_jack_in_box_lid.svg",
+    "intent": "Diagram animation: the crank turns once, the lid flips open on its rear hinge, and the clown head pops up on a compressed spring with a squash-and-stretch bounce. Motion should feel mechanical at first, then elastic as the spring extends.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_diagram_yo_yo_sleeper",
+    "category": "diagram",
+    "svg": "t_diagram_yo_yo_sleeper.svg",
+    "intent": "Diagram animation: the yo-yo drops straight down as the string unwinds from the axle, spins rapidly at the bottom, then climbs partway back up with easing. Dashed ghost positions mark the vertical path and the spin arrows circle the rim.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_diagram_vise_jaw_clamp",
+    "category": "diagram",
+    "svg": "t_diagram_vise_jaw_clamp.svg",
+    "intent": "The screw handle turns clockwise for one full rotation, driving the movable jaw left until the workpiece is clamped; add a slight easing stop and tiny compression wobble on the block.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_hand_plane_shaving",
+    "category": "diagram",
+    "svg": "t_diagram_hand_plane_shaving.svg",
+    "intent": "The hand plane glides smoothly to the right across the board while a thin wood shaving curls up and lengthens from the mouth, then springs back slightly at the end.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_ratchet_socket_click",
+    "category": "diagram",
+    "svg": "t_diagram_ratchet_socket_click.svg",
+    "intent": "The ratchet handle rocks down through a short arc around the socket, clicks back lightly without turning the bolt, then repeats with a crisp mechanical snap.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_scissor_jack_lift",
+    "category": "diagram",
+    "svg": "t_diagram_scissor_jack_lift.svg",
+    "intent": "The central screw turns, pulling the side pivots inward so the crossed arms rise and lift the top saddle; motion should feel slow, heavy, and constrained by the dashed guide rails.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_cartoon_soccer_dribble_pup",
+    "category": "cartoon",
+    "svg": "t_cartoon_soccer_dribble_pup.svg",
+    "intent": "The puppy dribbles the soccer ball in short bouncy taps, ears flopping and tail wagging as the ball darts side to side between its paws.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_cartoon_swing_set_pump",
+    "category": "cartoon",
+    "svg": "t_cartoon_swing_set_pump.svg",
+    "intent": "The child pumps on the playground swing, leaning back on the forward arc and tucking legs under on the return, with the seat trailing slightly behind the chains.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_cartoon_basketball_dino_dunk",
+    "category": "cartoon",
+    "svg": "t_cartoon_basketball_dino_dunk.svg",
+    "intent": "The tiny dinosaur springs off the court, stuffs the basketball through the hoop, then hangs for a beat while the net snaps downward and rebounds.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_cartoon_octopus_stirs_soup",
+    "category": "cartoon",
+    "svg": "t_cartoon_octopus_stirs_soup.svg",
+    "intent": "The octopus cook rotates the spoon around the pot in a smooth loop while two tentacles bob in counter rhythm and little steam curls rise from the soup.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_cartoon_mouse_grates_cheese",
+    "category": "cartoon",
+    "svg": "t_cartoon_mouse_grates_cheese.svg",
+    "intent": "The tiny mouse rapidly rubs a cheese wedge up and down against the grater; crumbs pop off and bounce into a small pile as the tail flicks for balance.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_cartoon_umbrella_splash_jumper",
+    "category": "cartoon",
+    "svg": "t_cartoon_umbrella_splash_jumper.svg",
+    "intent": "The bundled character hops over the puddle as the umbrella bobs and tilts with squashy easing; raindrops streak downward and the puddle ripples outward on landing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_leaf_chasing_squirrel",
+    "category": "cartoon",
+    "svg": "t_cartoon_leaf_chasing_squirrel.svg",
+    "intent": "The squirrel dashes after the spinning autumn leaf, tail whipping in a delayed follow-through while the leaf loops just out of reach and drifts down.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_snowman_sneeze_scarf",
+    "category": "cartoon",
+    "svg": "t_cartoon_snowman_sneeze_scarf.svg",
+    "intent": "The snowman sneezes, popping the carrot nose forward while the scarf flutters in two wavy beats; loose snowflakes wobble downward around the body.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_acorn_under_cloud_gust",
+    "category": "cartoon",
+    "svg": "t_cartoon_acorn_under_cloud_gust.svg",
+    "intent": "A tiny acorn creature braces against an autumn gust as the cloud blows past overhead; the cap tilts, arms flap, and wind swirls sweep fallen leaves across the ground.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_cartoon_car_cat_steering",
+    "category": "cartoon",
+    "svg": "t_cartoon_car_cat_steering.svg",
+    "intent": "The cat driver bobs with the bumps as the tiny car scoots left to right; the front wheel spins faster, and the tail flicks out the window with squashy easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_cartoon_train_bear_conductor",
+    "category": "cartoon",
+    "svg": "t_cartoon_train_bear_conductor.svg",
+    "intent": "The bear conductor pumps one arm while the little locomotive chugs forward; smoke puffs grow and drift back as the wheels make a jaunty quarter-turn loop.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_cartoon_tram_mouse_ticket",
+    "category": "cartoon",
+    "svg": "t_cartoon_tram_mouse_ticket.svg",
+    "intent": "The mouse hops onto the tram step and waves a ticket overhead; the tram doors slide open with a soft ease-out while the bell cord jiggles.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_cartoon_goat_tin_can_tug",
+    "category": "cartoon",
+    "svg": "t_cartoon_goat_tin_can_tug.svg",
+    "intent": "The goat tugs the tin can toward its mouth with a quick elastic neck stretch, then chews as the can rattles and bounces on its string.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_cartoon_fox_pounce_leaf",
+    "category": "cartoon",
+    "svg": "t_cartoon_fox_pounce_leaf.svg",
+    "intent": "The fox crouches, wiggles its tail for anticipation, then springs forward in a high pounce toward the leaf and lands with a squash.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_cartoon_chicken_peck_grain",
+    "category": "cartoon",
+    "svg": "t_cartoon_chicken_peck_grain.svg",
+    "intent": "The chicken bobs its head down to peck three kernels in sequence, each peck snapping quickly down and easing back up while the tail feathers flick.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "farm and wild animals"
+  },
+  {
+    "id": "t_cartoon_lab_robot_lever",
+    "category": "cartoon",
+    "svg": "t_cartoon_lab_robot_lever.svg",
+    "intent": "The little lab robot presses down on the lever handle; the pivot stays fixed, the far pan pops upward with a rubbery overshoot, and the robot's arm recoils slightly.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  }
+]

@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_sketch_storefront_awning_open",
+    "category": "sketch",
+    "svg": "t_sketch_storefront_awning_open.svg",
+    "intent": "The striped storefront awning unfurls downward in three soft folds, then rebounds slightly; the hanging sign swings once as if bumped by the motion.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "city street"
+  },
+  {
+    "id": "t_sketch_manhole_cover_pop",
+    "category": "sketch",
+    "svg": "t_sketch_manhole_cover_pop.svg",
+    "intent": "The manhole cover rattles, lifts on one edge like a hinged lid, and drops back with two quick bounces; little steam puffs pulse upward from the opening.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_sketch_jack_in_box_pop",
+    "category": "sketch",
+    "svg": "t_sketch_jack_in_box_pop.svg",
+    "intent": "The crank turns twice with snappy easing, then the lid flips open and the jester springs upward on a wobbly coil before settling with a playful overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_sketch_marble_maze_tilt",
+    "category": "sketch",
+    "svg": "t_sketch_marble_maze_tilt.svg",
+    "intent": "The board tilts side to side around its center, making the marble roll through the drawn corridors with slight banking on the corners and a soft clack at each wall touch.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_sketch_tabletop_catapult",
+    "category": "sketch",
+    "svg": "t_sketch_tabletop_catapult.svg",
+    "intent": "The spoon arm is pulled down, pauses under tension, then snaps upward around the axle to fling the pom-pom in a high arc with a bouncy landing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_sketch_bench_vise_clamp",
+    "category": "sketch",
+    "svg": "t_sketch_bench_vise_clamp.svg",
+    "intent": "The vise handle spins a half turn and the sliding jaw cranks inward to grip the small board, overshooting slightly then easing back as if tightened by hand.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_sketch_open_toolbox_wrenches",
+    "category": "sketch",
+    "svg": "t_sketch_open_toolbox_wrenches.svg",
+    "intent": "The toolbox lid flips open on its rear hinge with a weighty bounce, and the loose wrenches inside hop and settle as if jostled by the lid's motion.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_diagram_swing_pump_mechanics",
+    "category": "diagram",
+    "svg": "t_diagram_swing_pump_mechanics.svg",
+    "intent": "The swing seat arcs forward and back about the top bar; the rider tucks legs on the back swing and extends them on the forward swing to pump higher.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_diagram_skateboard_ollie_forces",
+    "category": "diagram",
+    "svg": "t_diagram_skateboard_ollie_forces.svg",
+    "intent": "The skater pops the tail down about the rear wheel, the board pivots upward, then levels out as the center of mass follows the dashed rise-and-fall path.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "playground and sports"
+  },
+  {
+    "id": "t_diagram_pressure_cooker_valve",
+    "category": "diagram",
+    "svg": "t_diagram_pressure_cooker_valve.svg",
+    "intent": "The cooker heats up for a few seconds: steam pulses upward from the vent, the small regulator cap jitters in place, and the pressure gauge needle eases from low to high with a slight overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_diagram_rolling_pin_dough",
+    "category": "diagram",
+    "svg": "t_diagram_rolling_pin_dough.svg",
+    "intent": "The rolling pin travels left to right over the dough, rotating as it goes; the dough flattens outward and the thickness guide lines squeeze closer together.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_diagram_coffee_pour_over_flow",
+    "category": "diagram",
+    "svg": "t_diagram_coffee_pour_over_flow.svg",
+    "intent": "Water from the kettle pours in a curved stream, the grounds bed swirls in the filter, and drips fall one by one into the mug below with gentle easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "kitchen and cooking"
+  },
+  {
+    "id": "t_diagram_cold_front_wedge",
+    "category": "diagram",
+    "svg": "t_diagram_cold_front_wedge.svg",
+    "intent": "The cold front wedge slides from left to right under the warm air; the warm-air arrow lifts up the sloped boundary while the cloud pulses darker and releases short rain streaks.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_diagram_earth_season_tilt",
+    "category": "diagram",
+    "svg": "t_diagram_earth_season_tilt.svg",
+    "intent": "The Earth travels around the Sun along the dashed orbit while its tilted axis stays parallel, causing the highlighted summer hemisphere to swap smoothly after half a revolution.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "weather and seasons"
+  },
+  {
+    "id": "t_diagram_car_suspension_bump",
+    "category": "diagram",
+    "svg": "t_diagram_car_suspension_bump.svg",
+    "intent": "The wheel rolls slowly over the drawn bump; the control arm pivots at the chassis joint and the spring-damper compresses, then rebounds with a damped settle.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_diagram_train_coupler_slack",
+    "category": "diagram",
+    "svg": "t_diagram_train_coupler_slack.svg",
+    "intent": "The locomotive starts pulling to the right; the front coupler goes taut first, then each wagon jerks forward in sequence as the slack closes like a chain reaction.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_diagram_boat_lock_rise",
+    "category": "diagram",
+    "svg": "t_diagram_boat_lock_rise.svg",
+    "intent": "Water flows in through the lower gate, raising the boat vertically; the hull stays level while the dashed waterline climbs smoothly to the upper mark.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_diagram_car_steering_ackermann",
+    "category": "diagram",
+    "svg": "t_diagram_car_steering_ackermann.svg",
+    "intent": "The steering rack slides left, rotating both steering arms about their kingpins; the inside front wheel turns a larger angle along its dashed arc than the outside wheel.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "cars, trains and boats"
+  },
+  {
+    "id": "t_diagram_cart_on_incline_pulley",
+    "category": "diagram",
+    "svg": "t_diagram_cart_on_incline_pulley.svg",
+    "intent": "The cart accelerates up the incline as the hanging mass drops, with the pulley spinning and the string staying taut; motion eases in like a classroom force demo released from rest.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_diagram_projectile_launcher_arc",
+    "category": "diagram",
+    "svg": "t_diagram_projectile_launcher_arc.svg",
+    "intent": "The steel ball fires from the spring launcher, follows the dashed parabolic path, and lands in the cup with a small overshoot-and-settle bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_diagram_meshing_gears",
+    "category": "diagram",
+    "svg": "t_diagram_meshing_gears.svg",
+    "intent": "The left gear rotates clockwise and drives the right gear counterclockwise; small tooth marks chase around each rim while the center axles remain fixed.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_crank_slider",
+    "category": "diagram",
+    "svg": "t_diagram_crank_slider.svg",
+    "intent": "The crank turns steadily, pushing the connecting rod so the piston slides back and forth in its guide with sinusoidal easing at the ends.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_cam_follower",
+    "category": "diagram",
+    "svg": "t_diagram_cam_follower.svg",
+    "intent": "The off-center cam rotates under the vertical follower, lifting it once per revolution before it drops back onto the cam with a softened mechanical bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_diagram_lunar_eclipse_alignment",
+    "category": "diagram",
+    "svg": "t_diagram_lunar_eclipse_alignment.svg",
+    "intent": "The moon slides rightward into Earth\u2019s shadow cone, dims at the center, then exits with a soft ease; the dashed centerline stays fixed to emphasize the alignment.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_diagram_telescope_tracking_mount",
+    "category": "diagram",
+    "svg": "t_diagram_telescope_tracking_mount.svg",
+    "intent": "The telescope tube tilts upward around the mount pivot to follow the rising star, while the base remains locked and the dashed arc traces the tracking range.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_diagram_pulsar_beam_sweep",
+    "category": "diagram",
+    "svg": "t_diagram_pulsar_beam_sweep.svg",
+    "intent": "The neutron star spins in place as the two narrow beams sweep around like lighthouse cones; each time a beam crosses the observer line, a pulse mark blinks on the detector.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_diagram_tide_pulley_gate",
+    "category": "diagram",
+    "svg": "t_diagram_tide_pulley_gate.svg",
+    "intent": "Textbook beach diagram: the float rises and falls with the incoming tide, pulling the cable over the pulley so the small sluice gate lifts and lowers with a slight lag and soft easing.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_diagram_surfboard_lever_balance",
+    "category": "diagram",
+    "svg": "t_diagram_surfboard_lever_balance.svg",
+    "intent": "Diagram animation: the wave force pushes up on the left end of the surfboard, making it seesaw around the sand mound pivot and then rebound with a damped wobble.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_diagram_crab_claw_linkage",
+    "category": "diagram",
+    "svg": "t_diagram_crab_claw_linkage.svg",
+    "intent": "Mechanism diagram: the crank pin turns one full revolution, driving the connecting rod so the crab claw opens wide and snaps shut with a quick elastic finish.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_diagram_beach_umbrella_hinge",
+    "category": "diagram",
+    "svg": "t_diagram_beach_umbrella_hinge.svg",
+    "intent": "Beach-umbrella mechanism diagram: the sliding collar is pushed upward along the pole, spreading the ribs until the canopy pops open and settles with a tiny overshoot.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  }
+]

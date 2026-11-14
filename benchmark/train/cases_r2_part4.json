@@ -1,0 +1,272 @@
+[
+  {
+    "id": "t_logo_magnet_meter_logo",
+    "category": "logo",
+    "svg": "t_logo_magnet_meter_logo.svg",
+    "intent": "The horseshoe magnet eases in from below and snaps toward the needle; the meter needle swings past the red zone and rebounds to center with springy damping.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_logo_gyroscope_logo",
+    "category": "logo",
+    "svg": "t_logo_gyroscope_logo.svg",
+    "intent": "The outer gimbal rocks gently while the inner rotor spins fast around its center dot, then precesses in a smooth looping wobble as a polished lab icon.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "school physics lab"
+  },
+  {
+    "id": "t_logo_gearshift_badge",
+    "category": "logo",
+    "svg": "t_logo_gearshift_badge.svg",
+    "intent": "Logo animation: the gear ring rotates a quarter turn with a crisp mechanical ease while the shift lever snaps from low-left to upper-right and rebounds once into the gate.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_logo_toggle_press_machine",
+    "category": "logo",
+    "svg": "t_logo_toggle_press_machine.svg",
+    "intent": "Logo animation: the lever handle pivots downward around the left pin, driving the press block straight down with a tiny squash on impact before both return to the drawn pose.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_logo_robot_arm_claw",
+    "category": "logo",
+    "svg": "t_logo_robot_arm_claw.svg",
+    "intent": "Logo animation: the base gear spins briefly, the robot arm swings outward in two hinged segments, and the claw pinches closed with a precise servo tick.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "gears, levers and machines"
+  },
+  {
+    "id": "t_logo_orbit_planet_logo",
+    "category": "logo",
+    "svg": "t_logo_orbit_planet_logo.svg",
+    "intent": "Logo animation: the ringed planet scales up with a soft overshoot, then the orbital ring sweeps around it once while two small moons drift into their positions and settle.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_logo_crescent_star_logo",
+    "category": "logo",
+    "svg": "t_logo_crescent_star_logo.svg",
+    "intent": "Logo animation: the crescent rotates in from the left like a hinged charm, the star pops on with a bright elastic scale, and the small dot sparkles once before holding.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_logo_galaxy_pinwheel_logo",
+    "category": "logo",
+    "svg": "t_logo_galaxy_pinwheel_logo.svg",
+    "intent": "Logo animation: the spiral arms unfurl from the center in a clockwise swirl, the core blooms last, and the mark finishes with a slow celestial drift.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "space and astronomy"
+  },
+  {
+    "id": "t_logo_wave_shell_logo",
+    "category": "logo",
+    "svg": "t_logo_wave_shell_logo.svg",
+    "intent": "Logo animation: the wave slides in from the left with a soft overshoot, the shell rises from behind it and opens into place with a tiny bounce, then the foam dot pops on last.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_sailboat_moon_logo",
+    "category": "logo",
+    "svg": "t_logo_sailboat_moon_logo.svg",
+    "intent": "Logo animation: the crescent fades in first, the hull glides gently onto the water, and the two sails unfurl upward with staggered ease as the whole mark rocks once.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_crab_surf_logo",
+    "category": "logo",
+    "svg": "t_logo_crab_surf_logo.svg",
+    "intent": "Logo animation: the surf oval squashes into view, the crab body pops up from the wave, then both claws snap upward in a playful alternating motion before settling.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_beach_umbrella_logo",
+    "category": "logo",
+    "svg": "t_logo_beach_umbrella_logo.svg",
+    "intent": "Logo animation: the sand base wipes on, the umbrella canopy fans open from the center hinge in three colorful panels, and the pole swings down to lock with a crisp stop.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "ocean and beach"
+  },
+  {
+    "id": "t_logo_vinyl_note_logo",
+    "category": "logo",
+    "svg": "t_logo_vinyl_note_logo.svg",
+    "intent": "Logo animation: the record spins one smooth turn while the note stem bobs upward and settles back with a soft elastic ease.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_headphones_wave_logo",
+    "category": "logo",
+    "svg": "t_logo_headphones_wave_logo.svg",
+    "intent": "Logo animation: the headphone arc draws down into the ear pads, then the central sound wave pulses three times with alternating tall and short peaks.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_metronome_note_logo",
+    "category": "logo",
+    "svg": "t_logo_metronome_note_logo.svg",
+    "intent": "Logo animation: the metronome arm ticks left, right, and returns to center with crisp mechanical easing while the small note pops on the final beat.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "music and instruments"
+  },
+  {
+    "id": "t_logo_coffee_mug_logo",
+    "category": "logo",
+    "svg": "t_logo_coffee_mug_logo.svg",
+    "intent": "Logo animation: the mug slides in from the left and eases to a stop while the handle pops outward; the steam curls rise and fade in staggered loops.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_logo_calendar_check_logo",
+    "category": "logo",
+    "svg": "t_logo_calendar_check_logo.svg",
+    "intent": "Logo animation: the calendar drops in page-first, the binding dots bounce, and the checkmark sweeps across the date grid with a confident overshoot.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_logo_pencil_ruler_logo",
+    "category": "logo",
+    "svg": "t_logo_pencil_ruler_logo.svg",
+    "intent": "Logo animation: the ruler slides diagonally into place first, the pencil spins once around its center and locks parallel, then both give a tiny measuring-tap bounce.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "office and desk objects"
+  },
+  {
+    "id": "t_logo_sprout_badge_logo",
+    "category": "logo",
+    "svg": "t_logo_sprout_badge_logo.svg",
+    "intent": "Logo intro: the soil mound squashes in from a flat oval, then the two sprout leaves unfurl upward with a soft overshoot and settle into the circular badge.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_logo_watering_can_leaf_logo",
+    "category": "logo",
+    "svg": "t_logo_watering_can_leaf_logo.svg",
+    "intent": "The watering can slides in with a tiny tilt, three water drops fall in staggered arcs, and the leaf beneath springs open as if freshly watered.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_logo_garden_gate_vine_logo",
+    "category": "logo",
+    "svg": "t_logo_garden_gate_vine_logo.svg",
+    "intent": "The gate draws open from the center like two hinged doors while the vine curls upward around the arch and the leaves pop into place with quick scale bounces.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_logo_carrot_leaf_logo",
+    "category": "logo",
+    "svg": "t_logo_carrot_leaf_logo.svg",
+    "intent": "The carrot drops into the ground point-first with a soft bounce, then the leafy top fans out in three overlapping sweeps and settles with a small wiggle.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "garden and plants"
+  },
+  {
+    "id": "t_logo_taxi_badge_logo",
+    "category": "logo",
+    "svg": "t_logo_taxi_badge_logo.svg",
+    "intent": "The taxi badge slides in from the curb side, the checkered band snaps across the car body, and the wheels give a quick half-turn before stopping crisply.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_logo_streetlamp_moon_logo",
+    "category": "logo",
+    "svg": "t_logo_streetlamp_moon_logo.svg",
+    "intent": "At dusk, the lamp head eases down on its pole and turns on with a warm glow that expands once, while the moon drifts slightly behind it.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "city street"
+  },
+  {
+    "id": "t_logo_game_die_logo",
+    "category": "logo",
+    "svg": "t_logo_game_die_logo.svg",
+    "intent": "The die tumbles in with a snappy quarter-turn, the face dots bounce into place with elastic easing, and the square settles as if landing on a table.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_logo_yo_yo_logo",
+    "category": "logo",
+    "svg": "t_logo_yo_yo_logo.svg",
+    "intent": "The yo-yo disc drops down its string, spins with a quick blur-like rotation, then rebounds upward slightly and hangs centered with a playful ease-out.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_logo_spinning_top_logo",
+    "category": "logo",
+    "svg": "t_logo_spinning_top_logo.svg",
+    "intent": "The top twists rapidly around its center peg, wobbles in a small cone-shaped precession, then straightens and gives one final sparkle-like snap.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "toys and games"
+  },
+  {
+    "id": "t_logo_hammer_badge_logo",
+    "category": "logo",
+    "svg": "t_logo_hammer_badge_logo.svg",
+    "intent": "Logo intro: the circular badge scales up with a soft overshoot, then the hammer drops in from above and gives one tiny rebound as if striking into place.",
+    "duration": 4.0,
+    "anchor": "end",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_logo_screwdriver_spin_logo",
+    "category": "logo",
+    "svg": "t_logo_screwdriver_spin_logo.svg",
+    "intent": "The screwdriver rotates a half turn around the center while the background square tilts slightly the opposite way, then both ease into a clean vertical-diagonal lockup.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  },
+  {
+    "id": "t_logo_clamp_press_logo",
+    "category": "logo",
+    "svg": "t_logo_clamp_press_logo.svg",
+    "intent": "The clamp frame draws together as a logo mark: the top jaw slides down, pauses in a compressed hold, then springs back a few pixels with a satisfying mechanical bounce.",
+    "duration": 4.0,
+    "anchor": "start",
+    "domain": "workshop tools"
+  }
+]
