@@ -19,7 +19,8 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Equal-compute baselines (one-shot, best-of-K), held-out repeated judge | done: `src/ksa/cli.py` |
 | Playbook: lessons distilled from search trees, train/test split | done: `src/ksa/playbook.py`, `playbooks/` |
 | Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
-| Per-drawing lesson selection; prune lessons that hurt | next |
+| Per-drawing lesson selection; per-lesson credit (`ksa lessons`) | done: `src/ksa/playbook.py`, `src/ksa/lessons.py` |
+| More drawings: validation split for pruning, significance | next |
 | Parallel rendering and critique on Modal | next |
 
 ## Results (Sat 13:15, 10 cases)
@@ -61,21 +62,42 @@ with and 3 times without the playbook):
 | Method | Runs | Judge (held-out) | vs. one-shot | Wins / losses / ties |
 | --- | --- | --- | --- | --- |
 | One-shot | 3 | 3.60 | — | — |
-| One-shot + playbook | 3 | 3.68 | +0.08 | 4 / 1 / 0 |
+| One-shot + all 12 lessons | 3 | 3.68 | +0.08 | 4 / 1 / 0 |
+| **One-shot + selected lessons** | 3 | **3.74** | **+0.14** | 4 / 1 / 0 |
 | Loop | 1 | 3.90 | +0.30 | 3 / 1 / 1 |
-| Loop + playbook | 1 | 3.87 | +0.27 | 3 / 2 / 0 |
+| Loop + all 12 lessons | 1 | 3.87 | +0.27 | 3 / 2 / 0 |
+| Loop + selected lessons | 1 | 3.92 | +0.32 | 3 / 1 / 1 |
 
-**The overall gain is small, within run-to-run noise; per drawing it is clear in both directions:**
+**Giving every lesson to every drawing transfers in both directions:**
 - **Positive transfer where a lesson fits.** The spring–mass is an oscillator the playbook never saw, but its
   lessons came from the pendulum. It improved in every run: 3.17–3.50 without, 3.67–4.25 with.
 - **Negative transfer where a lesson is misapplied.** The windmill needs none of these lessons, but gets all 12.
   It dropped in every run (4.50 → 3.83–4.25), and the judge now calls its spin "strobey".
-- **Next:** give each drawing only the lessons whose `applies_to` matches it, and track each lesson's effect on later
-  cases so lessons that hurt are pruned. Also more train/test drawings: 5 + 5 is small.
 
-Reproduce: `uv run ksa learn --split train --cases pendulum,ball_ramp,stick_wave,rocket,sun_logo`, then
-`uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json`, `ksa judge` each run, and
-`uv run ksa report <runs...> --split test`.
+**Per-drawing lesson selection.** Before generating, a small model (`gpt-5.4-mini`) looks at the drawing and its
+intent and picks only the lessons for the motion and physics the animation needs, matching on the kind of motion
+rather than the object's name. Selecting none is allowed. The selection and its reasons are saved per case
+(`playbook_selected.json`). On the training drawings it recovers each drawing's own lessons. On the test drawings it
+gives the spring–mass the oscillator and diagram lessons, the windmill only the pivot-rigging lesson, and the logos
+the build-up-intro and settle lessons.
+- One-shot with selected lessons scores 3.74, against 3.68 with all lessons and 3.60 with none. The windmill
+  recovers (4.00 with all lessons → 4.42 selected, 4.50 with none).
+- Per-lesson credit (`ksa lessons`): every lesson that was selected on a test drawing has a non-negative mean
+  effect. Lessons 6 and 8 (oscillator, diagram guides) gained +0.22 on the spring–mass; lesson 7 (pivot rigging)
+  gained +0.42 on the fish and lost 0.08 on the windmill.
+- **How strong is this?** It's a trend, not yet significant. Per-run means with selection are 3.72 / 3.63 / 3.88
+  against 3.52 / 3.70 / 3.58 without, about 1.5 standard errors apart, from 3 runs on 5 drawings.
+- **Disclosure:** the selector's wording was revised once after seeing its picks on the test drawings (the first
+  version matched object names and gave the spring–mass no lessons). The revised wording is generic and names no
+  test drawing. `ksa lessons --prune-to` can drop lessons that hurt, but pruning on test results and then reporting
+  test scores would be circular, so it is not used for any number here. It needs a separate validation split.
+- **Next:** more drawings (a validation split for pruning, and enough cases for significance), and per-lesson
+  credit computed during learning.
+
+Reproduce: `uv run ksa learn --split train --cases pendulum,ball_ramp,stick_wave,rocket,sun_logo --lessons all`,
+then `uv run ksa run --method oneshot --split test --playbook playbooks/train-v1.json --lessons {all,select}`,
+`ksa judge` each run, `uv run ksa report <runs...> --split test`, and
+`uv run ksa lessons --playbook playbooks/train-v1.json --baseline <no-playbook runs> --with <selected runs>`.
 
 ## Run
 

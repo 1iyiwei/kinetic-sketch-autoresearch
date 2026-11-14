@@ -52,13 +52,27 @@ def gen_calls(meter: dict) -> int:
 
 
 async def run_case(case: dict, renderer: Renderer, run_dir: Path, log: Path, cfg: SearchConfig,
-                   playbook: str = "", label: str | None = None) -> dict:
+                   pb: dict | None = None, lessons: str = "all", label: str | None = None) -> dict:
+    """lessons: "all" gives the generator every playbook lesson; "select" first picks the
+    lessons that apply to this drawing and intent."""
     cdir = run_dir / case["id"]
     cdir.mkdir(parents=True, exist_ok=True)
     svg = CASES_DIR / case["svg"]
     png = await renderer.rasterize_svg(svg, cdir / "input.png")
     t0 = time.time()
-    rec = await search(case, svg, png, renderer, cdir, log, cfg, playbook=playbook)
+    sel_meter: dict = {}
+    selection = None
+    if pb and pb.get("lessons") and lessons == "select":
+        selection = await pbk.select(pb, case, png, log, meter=sel_meter)
+        (cdir / "playbook_selected.json").write_text(json.dumps(
+            {**selection, "lessons": [pb["lessons"][i - 1] for i in selection["selected"]]}, indent=2))
+        text = pbk.prompt_text(pb, only=selection["selected"])
+    else:
+        text = pbk.prompt_text(pb)
+    rec = await search(case, svg, png, renderer, cdir, log, cfg, playbook=text)
+    rec["meter"].update(sel_meter)
+    if selection is not None:
+        rec["playbook_selected"] = selection["selected"]
     if label:
         rec["method"] = label
     rec["seconds"] = round(time.time() - t0, 1)
@@ -128,17 +142,17 @@ async def run(args):
     cases = load_cases(args.cases, args.split)
     cfg = config_from(args)
     pb = pbk.load(Path(args.playbook)) if args.playbook else None
-    label = cfg.method + ("+playbook" if pb else "")
+    label = cfg.method + ({"all": "+playbook", "select": "+playbook_sel"}[args.lessons] if pb else "")
     run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{label}'
     run_dir.mkdir(parents=True)
     log = run_dir / "llm_calls.jsonl"
-    meta = run_meta(label, cfg, cases, split=args.split, playbook=args.playbook,
+    meta = run_meta(label, cfg, cases, split=args.split, playbook=args.playbook, lessons=args.lessons,
                     playbook_lessons=len(pb["lessons"]) if pb else 0)
     if pb:
         (run_dir / "playbook_used.json").write_text(json.dumps(pb, indent=2))
     print(f"run dir: {run_dir}")
     async with Renderer(concurrency=args.concurrency) as renderer:
-        results = await asyncio.gather(*(run_case(c, renderer, run_dir, log, cfg, pbk.prompt_text(pb), label)
+        results = await asyncio.gather(*(run_case(c, renderer, run_dir, log, cfg, pb, args.lessons, label)
                                          for c in cases))
     mean = write_reports(run_dir, results, meta)
     print(f"mean overall {mean:.2f} / 5 -> {run_dir / 'index.html'}")
@@ -152,7 +166,7 @@ async def learn(args):
     cfg = config_from(args)
     out = Path(args.out_playbook)
     pb = pbk.load(out) if args.resume else pbk.empty()
-    label = f"learn_{cfg.method}"
+    label = f"learn_{cfg.method}" + ("_sel" if args.lessons == "select" else "")
     run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{label}'
     run_dir.mkdir(parents=True)
     log = run_dir / "llm_calls.jsonl"
@@ -160,7 +174,7 @@ async def learn(args):
     results = []
     async with Renderer(concurrency=args.concurrency) as renderer:
         for case in cases:
-            rec = await run_case(case, renderer, run_dir, log, cfg, pbk.prompt_text(pb), label)
+            rec = await run_case(case, renderer, run_dir, log, cfg, pb, args.lessons, label)
             rec["playbook_lessons_before"] = len(pb["lessons"])
             results.append(rec)
             pb = await pbk.update(pb, case, run_dir / case["id"] / "tree.json", log, meter=rec["meter"])
@@ -222,11 +236,14 @@ def main():
     for sp in (r,):
         sp.add_argument("--split", choices=["train", "test"], help="only cases in this split")
         sp.add_argument("--playbook", help="playbook JSON whose lessons the generator gets")
+        sp.add_argument("--lessons", choices=["all", "select"], default="select",
+                        help="give every lesson, or only those selected for each drawing (default)")
     lp = sub.add_parser("learn", help="learn a playbook from loop runs, case by case")
     lp.add_argument("--split", choices=["train", "test"], default="train")
     lp.add_argument("--cases", help="comma-separated case ids, in learning order (default: the split)")
     lp.add_argument("--out-playbook", default=str(ROOT / "playbooks" / "train.json"))
     lp.add_argument("--resume", action="store_true", help="start from the existing playbook file")
+    lp.add_argument("--lessons", choices=["all", "select"], default="select")
     lp.add_argument("--method", default="loop", choices=["loop"])
     lp.add_argument("--k", type=int, default=2)
     lp.add_argument("--beam", type=int, default=1)
@@ -247,7 +264,23 @@ def main():
     rp.add_argument("--cases", help="restrict to these case ids")
     rp.add_argument("--split", choices=["train", "test"], help="restrict to cases in this split")
     rp.add_argument("--baseline", default="one_shot")
+    ls = sub.add_parser("lessons", help="per-lesson effect on judged runs; optionally prune")
+    ls.add_argument("--playbook", required=True)
+    ls.add_argument("--baseline", nargs="+", required=True, help="judged runs without a playbook")
+    ls.add_argument("--with", dest="with_runs", nargs="+", required=True, help="judged runs with selected lessons")
+    ls.add_argument("--prune-to", help="write a playbook without lessons whose mean effect is negative")
+    ls.add_argument("--min-uses", type=int, default=2)
     args = p.parse_args()
+    if args.cmd == "lessons":
+        from . import lessons as lsn
+        pb = pbk.load(Path(args.playbook))
+        res = lsn.effects(pb, [Path(d) for d in args.baseline], [Path(d) for d in args.with_runs])
+        print(lsn.table(res))
+        if args.prune_to:
+            pruned, drop = lsn.prune(pb, res, args.min_uses)
+            pbk.save(pruned, Path(args.prune_to))
+            print(f"\ndropped {drop or 'nothing'}; {len(pruned['lessons'])} lessons -> {args.prune_to}")
+        return
     if args.cmd == "compare":
         from .compare import write_compare
         print(write_compare([Path(d) for d in args.run_dirs], Path(args.out)))

@@ -86,13 +86,65 @@ def save(pb: dict, path: Path) -> None:
     path.write_text(json.dumps(pb, indent=2) + "\n")
 
 
-def prompt_text(pb: dict | None) -> str:
-    """The playbook as it appears in generator prompts ('' when there is none)."""
+def prompt_text(pb: dict | None, only: list[int] | None = None) -> str:
+    """The playbook as it appears in generator prompts ('' when there is none).
+    `only`: 1-based lesson numbers to include (after selection); None means all."""
     if not pb or not pb.get("lessons"):
         return ""
-    lines = [f"{i + 1}. {l['text']} (applies to: {l['applies_to']})" for i, l in enumerate(pb["lessons"])]
-    return ("Lessons learned from earlier drawings. Apply the ones that fit this drawing; ignore the rest:\n"
-            + "\n".join(lines))
+    picked = [(i + 1, l) for i, l in enumerate(pb["lessons"]) if only is None or i + 1 in only]
+    if not picked:
+        return ""
+    lines = [f"- {l['text']} (applies to: {l['applies_to']})" for _, l in picked]
+    head = ("Lessons learned from earlier drawings that apply to this one:" if only is not None else
+            "Lessons learned from earlier drawings. Apply the ones that fit this drawing; ignore the rest:")
+    return head + "\n" + "\n".join(lines)
+
+
+# ---------------------------------------------------------------- selection
+
+SELECT_MODEL = os.getenv("KSA_SELECT_MODEL", "gpt-5.4-mini")
+
+SELECT_SYSTEM = """\
+You decide which lessons from a playbook apply to animating one specific drawing. The lessons were
+learned on other drawings, so match on the kind of motion and physics the intent asks for, not on the
+object's name: a lesson learned on one oscillator applies to any oscillating system, one learned on a
+rolling object applies to other rolling objects, one about rigging parts to a pivot applies to anything
+that turns about a pivot, one about a logo intro applies to other build-up intros.
+A lesson does not apply when this animation has no such motion. Misapplied lessons make results worse
+(for example, launch-shake or bounce advice applied to a steady rotor). Select every lesson whose
+motion or physics this animation needs, and only those. Selecting none is fine.
+Return the selected lesson numbers and one short reason for each decision you are unsure about.
+"""
+
+SELECT_SCHEMA = {
+    "name": "lesson_selection",
+    "schema": {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["selected", "reasons"],
+        "properties": {
+            "selected": {"type": "array", "items": {"type": "integer"}},
+            "reasons": {"type": "string"},
+        },
+    },
+}
+
+
+async def select(pb: dict, case: dict, png: Path, log: Path, meter: dict | None = None) -> dict:
+    """Pick the lessons that apply to this drawing and intent. Returns
+    {"selected": [1-based numbers], "reasons": str}."""
+    if not pb or not pb.get("lessons"):
+        return {"selected": [], "reasons": "empty playbook"}
+    listing = "\n".join(f"{i + 1}. [{l['applies_to']}] {l['text']}" for i, l in enumerate(pb["lessons"]))
+    text = (f"Drawing category: {case['category']}\nIntent: {case['intent']}\n"
+            f"The drawing is attached.\n\nPlaybook:\n{listing}")
+    raw = await llm.call(role="selector", model=SELECT_MODEL, effort="low", system=SELECT_SYSTEM, text=text,
+                         images=[png], log=log, tags={"case": case["id"], "method": "lesson_selection"},
+                         json_schema=SELECT_SCHEMA, meter=meter)
+    out = llm.extract_json(raw)
+    n = len(pb["lessons"])
+    out["selected"] = sorted({i for i in out["selected"] if 1 <= i <= n})
+    return out
 
 
 def evidence(tree_path: Path) -> str:
