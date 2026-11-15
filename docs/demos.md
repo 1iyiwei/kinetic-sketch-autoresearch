@@ -30,7 +30,7 @@ below names the criterion it serves.
 | 0:00–0:15 | A rough pendulum sketch, then the one-shot animation swinging the wrong way | "Ask a model to animate a drawing and it writes code blind. This pendulum swings away from the arrow." | Problem |
 | 0:15–0:40 | The loop on that sketch: render → contact sheet → critic issues → revision; the pendulum tree (r0n0 → r1n0 → r2n1) | "Our agent renders its program, a vision critic watches the frames, and the agent revises. Here it catches the wrong-way swing and fixes the physics." | Autonomy |
 | 0:40–1:05 | The comparison page: three columns, green winners; the headline numbers | "On 10 drawings, judged by a different model three times each: one-shot 3.58, best-of-6 3.60, loop 3.91. Sampling more doesn't help; looking and revising does." | Results, rigour |
-| 1:05–1:30 | `playbooks/train-v1.json` and its `history`; then the test table | "We also tried learning across drawings: after each one, it writes down general lessons. On new drawings those prompt lessons help when they fit and hurt when they don't, and on a larger test set they don't reliably help; the noise between identical runs is as big as the effect. The loop is what transfers. Next, we distill it into an open model's weights on Tinker." | Rigour, honest failure |
+| 1:05–1:30 | `playbooks/train-v1.json` and its `history`; then the test table | "We also tried learning across drawings: after each one, it writes down general lessons. On new drawings those prompt lessons help when they fit and hurt when they don't, and on a larger test set they don't reliably help; the noise between identical runs is as big as the effect. The loop is what transfers, so we put it in the weights: an open 3B-active model fine-tuned on Tinker on the loop's programs goes from 1.67 to 2.79 on 23 held-out drawings, and costs nothing to run." | Rigour, honest failure |
 | 1:30–1:50 | Two findings, one visual each: the aliasing windmill, and the phantom "smaller and shifted" critique next to a pixel diff | "Vision critics hallucinate, so we measure what we can and keep the judge separate. Every call is logged." | Interpretability |
 | 1:50–2:00 | The repo, and a gallery of the best animations | "Kinetic Sketch Autoresearch: sketches in, animations out, and it learns." | — |
 
@@ -134,6 +134,18 @@ uv run ksa lessons --playbook playbooks/train-v2.json --baseline runs/v2/oneshot
 - [ ] A 2-minute video (shots 1–4), uploaded to YouTube, Drive or Loom.
 - [ ] A short description: the one-sentence story, plus the results table.
 - [ ] Track: Open. Challenges: Originator (upload the Claude Code sessions); Modal if the fan-out lands.
+
+### Open model + voice, no OpenAI
+
+```bash
+S=tinker://eec491ed-63fb-546a-b073-e93480b7ad42:train:0/sampler_weights/r1-e0   # distilled student
+uv run ksa animate ~/Downloads/drawing.svg --gen-model $S --critic-model tinker:Qwen/Qwen3.6-35B-A3B
+KSA_GEN_MODEL=$S KSA_CRITIC_MODEL=tinker:Qwen/Qwen3.6-35B-A3B uv run python -m ksa.voice   # http://localhost:8765, Chrome
+```
+
+In the voice UI, hold the mic to say the intent ("make it swing slower and stop sooner"), or type it. The browser's
+built-in speech recognition transcribes it, the student animates, the critic's verdict is read aloud, and every
+spoken correction is saved to `runs/voice/<session>/feedback.jsonl` as a before/after pair. Needs `TINKER_API_KEY`.
 
 ## Good moments for the demo video
 

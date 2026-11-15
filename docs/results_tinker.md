@@ -49,3 +49,23 @@ scripts/eval_students.sh base=tinker:Qwen/Qwen3.6-35B-A3B r1-e0=tinker://<run>/s
 KSA_GEN_MODEL=tinker://<run>/sampler_weights/r1-e0 KSA_CRITIC_MODEL=tinker:Qwen/Qwen3.6-35B-A3B uv run ksa run --method loop
 uv run ksa judge runs/<run> --model tinker:Qwen/Qwen3.5-397B-A17B --repeats 2
 ```
+
+## Expanded benchmark: all 23 drawings (Qwen3.5-397B judge)
+
+Same protocol on the teammate's 23-drawing benchmark (8 train, 3 val, 7 test, 5 complex). None of these drawings is
+in the Tinker training data. 3 one-shot samples per generator unless noted; `runs/eval23/`.
+
+| Generator | All 23 | Test (7) | Complex (5) | Valid | First-frame F1 | Moves |
+| --- | --- | --- | --- | --- | --- | --- |
+| Qwen3.6-35B-A3B, untrained | 1.67 ± 0.36 | 1.90 | 1.17 | 77% | 0.45 | 51% |
+| student `r1-e0` (seed 0, 1 epoch of a 3-epoch schedule) | 2.95 ± 0.33 | 2.97 | 2.91 | 93% | 0.88 | 80% |
+| student `r1s1-e0` (seed 1, 1-epoch schedule) | 2.80 ± 0.08 | 2.67 | 2.48 | 87% | 0.83 | 72% |
+| student `r1s2-e0` (seed 2, 1-epoch schedule) | 2.63 ± 0.18 | 2.76 | 2.16 | 91% | 0.88 | 81% |
+| **student, mean of 3 training seeds** | **2.79 ± 0.16** | 2.80 | 2.52 | 90% | 0.86 | 78% |
+| open loop: `r1-e0` + Qwen3.6 critic (1 run) | 3.30 | 3.38 | 3.07 | 100% | 0.97 | 91% |
+
+- The distillation gain holds on the larger benchmark: +1.1 over the untrained model.
+- Training-seed spread (±0.16) is about half the sample-to-sample spread. Differences between students under about
+  0.3 are not meaningful; round 2 (3.23 vs 3.27) is within it, while round 2b (2.68) is borderline.
+- Seeds 1 and 2 used a learning rate that decays to 0 within the single epoch; `r1-e0` is the first epoch of a
+  3-epoch schedule (higher learning rate at its end). That difference is confounded with the seed.

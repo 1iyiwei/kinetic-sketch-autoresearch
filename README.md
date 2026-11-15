@@ -21,7 +21,7 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
 | Per-drawing lesson selection; per-lesson credit (`ksa lessons`) | done: `src/ksa/playbook.py`, `src/ksa/lessons.py` |
 | Playbook v2 on 8 train / 3 val / 7 test drawings | done: no reliable gain (see below) |
-| Distill the loop into an open model (Qwen on Tinker) | next |
+| Distill the loop into an open model (Qwen on Tinker) | done: see "Distilling the loop" below; RL running |
 | Parallel rendering and critique on Modal | next |
 
 ## Results (Sat 13:15, 10 cases)
@@ -167,6 +167,10 @@ judge numbers above. Held-out: the original 10 drawings, 3 samples each.
   open critic overrates its own family's programs (4.0–4.7 vs 2.7–3.1 from the 397B judge), so it is a poor
   selector. The gains came only from the stronger teacher.
 - **Judge self-preference is measurable:** the Qwen3.6 judge gives the open loop 4.27, the independent 397B judge 3.51.
+
+**On all 23 drawings** (Qwen3.5-397B judge, 3 samples; `runs/eval23/`): untrained 1.67 ± 0.36, student 2.79 ± 0.16
+(mean of 3 independently trained students: 2.95, 2.80, 2.63), open loop 3.30 (1 run; 3.38 on the 7 test drawings).
+Training seed alone moves a student by about ±0.16, so smaller differences between students are noise.
 
 Details, limitations and commands: [`docs/results_tinker.md`](docs/results_tinker.md). A free demo:
 `KSA_GEN_MODEL=<student> uv run ksa animate drawing.svg --critic-model tinker:Qwen/Qwen3.6-35B-A3B`, or the voice UI
