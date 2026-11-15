@@ -38,7 +38,7 @@ Findings
 - Judge self-preference is real: the critic's own model scores the open loop 4.2–4.3, but the
   independent judge gives 3.5–3.7 and still prefers gpt-5.5 one-shot. Report the independent column.
 
-Not yet done: more gpt-5.5 teacher data, a finished and evaluated RL run (see the RL section below),
+Not yet done: more gpt-5.5 teacher data, a longer RL run (see the RL section below),
 gpt-5.5 loop re-judged with the same open judges (needs the held-out loop run directory).
 
 Reproduce
@@ -70,13 +70,13 @@ in the Tinker training data. 3 one-shot samples per generator unless noted; `run
 - Seeds 1 and 2 used a learning rate that decays to 0 within the single epoch; `r1-e0` is the first epoch of a
   3-epoch schedule (higher learning rate at its end). That difference is confounded with the seed.
 
-## RL on Tinker (`ksa.rl`), incomplete: stopped by Tinker billing
+## RL on Tinker (`ksa.rl`)
 
 GRPO-style RL on the distilled student, no OpenAI: warm-start with one epoch of SFT on `data/sft_r1.jsonl`, then
 each step samples 4 programs for each of 8 training drawings (held-out drawings excluded). Reward is 0 if a sample
 has no program or fails to render, else the Qwen3.6-35B critic's overall score / 5. Advantage is reward minus the
 group mean, and the update uses Tinker's `importance_sampling` loss (LoRA rank 32, lr 2e-5). Both runs stopped when
-the Tinker account hit a billing block (HTTP 402), before the planned 23-drawing evaluation.
+the Tinker account hit a billing block (HTTP 402); `rl3t08` repeated `rl2t08` on a new key and finished.
 Per-step logs: `runs/rl-*/steps.jsonl`.
 
 | Run | Sampling temperature | Steps done | Mean reward per step | Valid renders per step | Groups with no signal |
@@ -90,12 +90,31 @@ Per-step logs: `runs/rl-*/steps.jsonl`.
 - At temperature 0.8, 59–88% render and every group has a usable reward spread. That is the setting to continue with.
   The sampler's logprobs then come from the temperature-scaled distribution, which importance sampling only partly
   corrects for.
-- No RL checkpoint has been evaluated, so there is no claim yet that RL improves the student. Saved checkpoints:
-  `rl1-sft` and `rl1-rl4` (run `179b1700-…`), and `rl2t08-sft` (run `2e889a50-…`).
 
-Resume once Tinker billing is restored:
+### Completed run: `rl3t08` (temperature 0.8, 16 steps)
+
+Training reward per step: 0.53, 0.51, 0.31, 0.48, 0.49, 0.38, 0.57, 0.50, 0.55, 0.51, 0.48, 0.49, 0.48, 0.59, 0.53, 0.53
+(mean 0.46 over steps 1–4, 0.53 over steps 13–16). Valid renders 47–88% per step.
+
+Held-out eval on all 23 drawings, 3 one-shot samples each, Qwen3.5-397B judge (`runs/eval23/e23-rl3-*`):
+
+| Generator | All 23 | per-sample | Test (7) | Complex (5) | Valid | First-frame F1 | Moves |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| warm-start `rl3t08-sft` (1 epoch SFT) | 2.50 ± 0.44 | 2.63, 2.01, 2.87 | 2.52 | 2.18 | 83% | 0.77 | 70% |
+| **RL `rl3t08-rl16`** | **2.72 ± 0.06** | 2.77, 2.65, 2.74 | **3.00** | 2.42 | 91% | 0.84 | 81% |
+| student, mean of 3 training seeds (above) | 2.79 ± 0.16 | | 2.80 | 2.52 | 90% | 0.86 | 78% |
+
+- RL beats its own warm-start by 0.22 on all 23 (0.48 on test), and its three samples are far more consistent
+  (sd 0.06 vs 0.44; every RL sample renders 91% of drawings, the warm-start ranges 70–91%).
+- The gain is within the training-seed noise measured above (about 0.3), and this warm-start (2.50) came out
+  below the 3-seed student mean (2.79); RL lands at that level, not above it. So 16 small RL steps make the student
+  more reliable but do not yet beat plain distillation. A real test needs more steps, more drawings per step, and
+  a reward that is less noisy than one critic call per sample.
+- Checkpoints: `tinker://8130e062-3b7f-549d-b74c-a7cfbf43ea8c:train:0/sampler_weights/rl3t08-{sft,rl4,rl8,rl12,rl16}`.
+
+Reproduce:
 ```bash
-uv run python -m ksa.rl --name rl2t08 --steps 16 --cases 8 --group 4 --save-every 4 --temperature 0.8
+uv run python -m ksa.rl --name rl3t08 --steps 16 --cases 8 --group 4 --save-every 4 --temperature 0.8
 OUT=runs/eval23 JUDGE=tinker:Qwen/Qwen3.5-397B-A17B scripts/eval_students.sh \
-  e23-rl-sft=tinker://<run>/sampler_weights/rl2t08-sft e23-rl-rl16=tinker://<run>/sampler_weights/rl2t08-rl16
+  e23-rl3-sft=tinker://<run>/sampler_weights/rl3t08-sft e23-rl3-rl16=tinker://<run>/sampler_weights/rl3t08-rl16
 ```
