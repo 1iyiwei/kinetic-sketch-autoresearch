@@ -331,6 +331,7 @@ def main():
     et.add_argument("run_dir")
     et.add_argument("case")
     et.add_argument("--name", required=True)
+    sub.add_parser("results-pages", help="rebuild the HTML pages and prompt files in results/")
     args = p.parse_args()
     if args.cmd in ("export", "export-tree"):
         from . import export as exp
@@ -341,6 +342,12 @@ def main():
             print(exp.export_runs(args.run_dirs, out, by_id, CASES_DIR, only))
         else:
             print(exp.export_tree(Path(args.run_dir), args.case, out, by_id, CASES_DIR))
+        exp.write_pages(ROOT / "results", by_id)
+        return
+    if args.cmd == "results-pages":
+        from . import export as exp
+        for f in exp.write_pages(ROOT / "results", {c["id"]: c for c in load_cases(None)}):
+            print(f)
         return
     if args.cmd == "lessons":
         from . import lessons as lsn

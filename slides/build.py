@@ -49,6 +49,10 @@ def drawing(src: str, k: float = .42, label: str = "") -> str:
             f'<div class="cap">{label}</div></div>')
 
 
+def intent(text: str, cls: str = "") -> str:
+    return f'<p class="intent {cls}"><span>intent</span> {e(text)}</p>'
+
+
 def bars(rows: list[tuple[str, str, float, bool]], lo: float = 3.0, hi: float = 4.5, compact: bool = False) -> str:
     out = ['<div class="bars compact">' if compact else '<div class="bars">']
     for lab, sub, v, lead in rows:
@@ -142,7 +146,8 @@ def slides() -> list[tuple[str, str, str]]:
     S.append(("problem", "Writing animation code blind", f"""
 <div class="eyebrow">The problem</div>
 <h2>Code is the right medium for stylized animation, but one-shot generation is blind</h2>
-<div class="row" style="margin-top:8px">
+{intent(tree["intent"])}
+<div class="row">
   {drawing(T + "input.svg", .5, "<b>input:</b> released pendulum, arrow shows the swing")}
   <div class="arrow">→</div>
   {anim(T + "r0n0.html", .5, "<b>first attempt</b> (gpt-5.5, one shot)", n0["score"], "bad")}
@@ -169,6 +174,7 @@ Fidelity to the drawing is measured in code; the vision model judges only the mo
 <div class="eyebrow">Inner loop, one drawing</div>
 <h2>It catches the wrong-way swing and fixes the physics</h2>
 <div class="row center" style="gap:14px">{tiles}</div>
+{intent(tree["intent"])}
 <div class="row">
   <div class="quote grow"><span class="who">critic's suggested fix for r0n0</span>{e(nodes["r0n0"]["fixes"][1])}</div>
   <p class="small muted" style="max-width:34ch">Six candidates in all: 2 samples, then 2 rounds revising the best into 2.
@@ -192,7 +198,7 @@ selects for its noise. The loop's gain holds under both. It wins on 7 of 10 draw
         c = fb["cases"][cid]
         ms = [("one_shot", "one-shot"), ("best_of_6", "best-of-6"), (LOOP, "loop")]
         best = max(c["methods"][m]["judge"] for m, _ in ms)
-        return (f'<div class="col"><h3>{cid.replace("_", "–")}</h3><div class="row" style="gap:12px">'
+        return (f'<div class="col" style="gap:8px"><div class="row" style="gap:14px;align-items:baseline"><h3>{cid.replace("_", "–")}</h3>{intent(c["intent"], "tight")}</div><div class="row" style="gap:12px">'
                 + drawing(f"../results/first-batch/{cid}/input.svg", .3, "input")
                 + "".join(anim(f"../results/first-batch/{c['methods'][m]['file']}", .3, lab, c["methods"][m]["judge"],
                                "win" if c["methods"][m]["judge"] == best and sum(c["methods"][x]["judge"] == best for x, _ in ms) == 1 else "") for m, lab in ms)
@@ -208,10 +214,10 @@ selects for its noise. The loop's gain holds under both. It wins on 7 of 10 draw
     def duo(cid, cases, base):
         c = cases["cases"][cid]
         a, b = c["methods"]["one_shot"], c["methods"][LOOP]
-        return (f'<div class="row" style="gap:12px">' + drawing(f"../results/{base}/{cid}/input.svg", .32, cid.replace("_", " "))
-                + anim(f"../results/{base}/{a['file']}", .32, "one-shot", a["judge"], "win" if a["judge"] > b["judge"] else "")
-                + anim(f"../results/{base}/{b['file']}", .32, "loop", b["judge"], "win" if b["judge"] > a["judge"] else "")
-                + "</div>")
+        return (f'<div class="col" style="gap:6px">{intent(c["intent"], "tight")}<div class="row" style="gap:12px">' + drawing(f"../results/{base}/{cid}/input.svg", .26, cid.replace("_", " "))
+                + anim(f"../results/{base}/{a['file']}", .26, "one-shot", a["judge"], "win" if a["judge"] > b["judge"] else "")
+                + anim(f"../results/{base}/{b['file']}", .26, "loop", b["judge"], "win" if b["judge"] > a["judge"] else "")
+                + "</div></div>")
     S.append(("test", "Held-out test drawings", f"""
 <div class="eyebrow">Held-out test · 7 drawings never used for tuning</div>
 <h2>The gain holds on new drawings</h2>
@@ -244,15 +250,15 @@ selects for its noise. The loop's gain holds under both. It wins on 7 of 10 draw
     def ba(cid):
         c = af["cases"][cid]
         b, a = c["methods"]["before_anchor_fix"], c["methods"]["after_anchor_fix"]
-        return ('<div class="row" style="gap:12px">' + drawing(f"../results/anchor-fix/{cid}/input.svg", .32, "the drawing (end frame)")
-                + anim(f"../results/anchor-fix/{b['file']}", .32, "before: frame 0 forced to match", b["judge"], "bad")
-                + anim(f"../results/anchor-fix/{a['file']}", .32, "after: anchor at the end", a["judge"], "win") + "</div>")
+        return (f'<div class="col" style="gap:6px;width:560px">{intent(c["intent"], "tight")}<div class="row" style="gap:12px">' + drawing(f"../results/anchor-fix/{cid}/input.svg", .3, "the drawing (end frame)")
+                + anim(f"../results/anchor-fix/{b['file']}", .3, "before: frame 0 forced to match", b["judge"], "bad")
+                + anim(f"../results/anchor-fix/{a['file']}", .3, "after: anchor at the end", a["judge"], "win") + "</div></div>")
     S.append(("anchor", "A metric that fought the intent", f"""
 <div class="eyebrow">What we learned · 2</div>
 <h2>Our own metric fought the intent</h2>
 <p>"The sun scales up from nothing" can't start on the finished logo. Requiring frame 0 to match the drawing made the
 generator flash the whole logo, then reset. Each drawing now names its anchor frame: first, or last for build-ups.</p>
-<div class="row" style="gap:40px">{ba("sun_logo")}{ba("bolt_logo")}</div>"""))
+<div class="row" style="gap:28px">{ba("sun_logo")}{ba("bolt_logo")}</div>"""))
 
     # 10. playbook
     v1, v2 = NUMBERS["playbook_v1"], NUMBERS["playbook_v2"]

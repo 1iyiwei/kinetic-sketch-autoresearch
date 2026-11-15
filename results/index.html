@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinetic Sketch Autoresearch results</title>
+<style>
+:root { --bg:#f6f7f9; --panel:#fff; --fg:#1c2230; --muted:#5d6678; --line:#dde1e8; --accent:#2457c5; --win:#e3f3e8; --wink:#1f7a43; }
+@media (prefers-color-scheme: dark) { :root { --bg:#12151c; --panel:#1a1f29; --fg:#e6e9ef; --muted:#9aa3b5; --line:#2b3240; --accent:#7ea2ff; --win:#163524; --wink:#7fd6a0; color-scheme:dark; } }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 Inter,system-ui,sans-serif; padding:24px max(16px,env(safe-area-inset-left)); }
+main { max-width:1180px; margin:0 auto; display:grid; gap:22px; }
+h1 { font:700 28px "Space Grotesk",system-ui,sans-serif; margin:0; } h2 { font:600 19px "Space Grotesk",system-ui,sans-serif; margin:0; }
+p { margin:0; max-width:75ch; } .muted { color:var(--muted); } .small { font-size:13px; }
+a { color:var(--accent); } code,.mono { font-family:"JetBrains Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+.case { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px; display:grid; gap:10px; }
+.intent { font-size:15px; } .intent b { color:var(--muted); font-weight:600; }
+.tiles { display:flex; flex-wrap:wrap; gap:12px; }
+.tile { display:grid; gap:4px; width:206px; padding:6px; border-radius:8px; align-content:start; }
+.tile.win { background:var(--win); } .tile.win .mono { color:var(--wink); font-weight:700; }
+.frame { width:194px; height:194px; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:#fff; }
+.frame iframe { width:512px; height:512px; border:0; transform:scale(.3789); transform-origin:0 0; }
+.frame img { width:100%; height:100%; display:block; }
+.lab { font-size:13px; font-weight:600; } .note { font-size:12px; color:var(--muted); }
+.pill { font:500 12px "JetBrains Mono",monospace; padding:1px 8px; border-radius:99px; border:1px solid var(--line); color:var(--muted); }
+ul { margin:0; padding-left:18px; } li { font-size:13px; }
+</style></head><body><main>
+<h1>Kinetic Sketch Autoresearch: results</h1><p class="muted">Every animation on these pages plays from its committed program (a pure function of time), so it is exactly what the judge scored. Each drawing is given with a text intent; the generator also gets a fixed <a href="system-prompt.txt">system prompt</a>. Slides: <a href="../slides/index.html">slides/index.html</a>.</p><section class="case"><h2><a href="anchor-fix/index.html">Anchor-frame fix: logo intros</a></h2><p class="muted">Loop results for two build-up logo intros, before and after each drawing named its anchor frame (the last frame for build-ups).</p></section><section class="case"><h2><a href="complex/index.html">Complex: 5 drawings</a></h2><p class="muted">Multi-object interactions, an articulated character and a three-beat story; never used for learning. One-shot shows run 1 of 3; the loop ran once.</p></section><section class="case"><h2><a href="first-batch/index.html">First batch: 10 drawings</a></h2><p class="muted">One-shot, best-of-6 and the loop on the first 10 drawings, one run each.</p></section><section class="case"><h2><a href="pendulum-tree/index.html">One search: the pendulum</a></h2><p class="muted">Every candidate of one loop search: 2 first samples, then 2 rounds revising the best into 2 children.</p></section><section class="case"><h2><a href="test/index.html">Held-out test: 7 drawings</a></h2><p class="muted">Drawings never used for tuning. One-shot shows run 1 of 3; the playbook column uses playbook v2 with selected lessons; the loop ran once.</p></section></main></body></html>

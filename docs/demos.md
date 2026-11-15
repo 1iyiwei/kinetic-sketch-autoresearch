@@ -13,7 +13,12 @@ their owner shares them (Share menu on the page).
 They follow the pitch below, and recording them full screen is the simplest way to make the 2-minute video, with no
 API calls.
 
-## Local result pages
+## Result pages (committed)
+
+`open results/index.html`: one page per result set, with each drawing's intent, input SVG and every method's
+animation playing from its committed program. See [`results/README.md`](../results/README.md).
+
+## Local result pages (GIF-based, this machine only)
 
 Run outputs live in `runs/` (gitignored), so these pages exist only on the machine that ran the experiments. Open them
 with `open runs/<page>`.

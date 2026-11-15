@@ -9,7 +9,7 @@ open slides/index.html
 Move with **← / →** (or Page Up / Page Down, or space), or with the previous/next links at the bottom of each slide.
 The stage is 1280 × 720 and scales to the window; use the browser's full screen for recording.
 
-Input drawings are the committed SVGs, and animations play live from the committed programs in
+Each example shows the drawing's text intent next to it (the other half of the input). Input drawings are the committed SVGs, and animations play live from the committed programs in
 [`results/`](../results/README.md), so the slides show the exact animations the judge scored. They work offline,
 except the web fonts (which fall back to system fonts).
 

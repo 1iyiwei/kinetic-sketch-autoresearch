@@ -1,0 +1,16 @@
+Animate this drawing.
+
+Intent: Logo animation: the heart beats twice (quick double pulse) and the highlight glints.
+Category: logo
+DURATION: 4.0 seconds
+ANCHOR: the first frame (t=0) must look exactly like the drawing: the animation starts from it.
+
+The drawing is attached as an image, and here is its SVG source (512x512):
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <path id="p1" d="M256 400 C 120 310, 96 220, 150 170 C 196 128, 244 150, 256 190 C 268 150, 316 128, 362 170 C 416 220, 392 310, 256 400 Z" fill="#e03131"/>
+  <path id="p2" d="M176 196 C 186 176, 206 168, 222 172" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+</svg>
+
+```

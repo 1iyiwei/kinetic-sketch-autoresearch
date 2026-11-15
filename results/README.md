@@ -7,7 +7,20 @@ Each animation is stored as its **program**, not as a video: a self-contained HT
 the frame at time `t`. Because it is a pure function of time, it replays exactly the animation the judge scored, at
 about 8 KB per file (a GIF of the same animation is about 180 KB). `ksa export` appends a small player that loops it.
 
-- Open any `.html` here in a browser to watch it loop.
+**Start at [`index.html`](index.html)** (`open results/index.html`). It links one page per set, showing for every
+drawing its intent, the input SVG, each method's animation playing live, scores, and the critic's first remaining
+issue. These pages replace the GIF-based `runs/compare*.html`, which only work on the machine that ran the
+experiments.
+
+**Inputs.** Each drawing comes with a text *intent* (what should happen), plus its category, duration and anchor
+frame. The generator gets all of these together with the drawing's SVG source and a rendered image, under a fixed
+[`system-prompt.txt`](system-prompt.txt). Each case's `prompt.txt` is that first-generation prompt, as the current
+code builds it. Three differences from what some runs actually sent: the `before_anchor_fix` run predates the
+`ANCHOR:` line; playbook runs append the selected lessons; and revisions use a different prompt that also includes
+the current program, its critique and its rendered frames. The exact prompts of every call are in each run's
+`llm_calls.jsonl` under `runs/`.
+
+- Open any `.html` animation here in a browser to watch it loop.
 - Add `?t=1.5` to the URL to freeze it at t = 1.5 s.
 - Each set has a `manifest.json` with the drawing's intent, category and anchor frame, and per method: the file,
   the held-out judge score (`judge`, gpt-5.4, mean of 3), the in-loop critic score (`critic`), the best score after
@@ -29,4 +42,7 @@ Averages over several runs are in the main [README](../README.md); a set shows o
 uv run ksa export runs/<run A> runs/<run B> ... --name <set>           # final program per case and method
 uv run ksa export runs/<run>=label ... --name <set> --cases a,b          # rename a method, choose drawings
 uv run ksa export-tree runs/<run> <case> --name <set>                    # every candidate of one search
+uv run ksa results-pages                                                 # rebuild the HTML pages and prompts only
 ```
+
+Exporting rebuilds the pages automatically.

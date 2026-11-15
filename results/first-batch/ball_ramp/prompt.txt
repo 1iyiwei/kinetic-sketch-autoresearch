@@ -1,0 +1,16 @@
+Animate this drawing.
+
+Intent: The ball rolls down the ramp, speeds up, and comes to rest on the floor after a small bounce.
+Category: sketch
+DURATION: 4.0 seconds
+ANCHOR: the first frame (t=0) must look exactly like the drawing: the animation starts from it.
+
+The drawing is attached as an image, and here is its SVG source (512x512):
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <path id="s1" d="M39.5,150.5 L62.3,169.3 L84.6,188.4 L107.1,208.1 L128.8,226.6 L151.7,245.8 L174.3,264.4 L196.5,284.1 L218.3,304.1 L241.2,322.6 L262.8,342.0 L285.8,361.1 L307.6,380.3 L329.2,399.2 L340.8,399.4 L352.1,399.1 L363.5,399.2 L374.9,398.7 L387.2,399.0 L399.0,398.8 L411.3,399.5 L422.2,399.4 L434.1,399.8 L446.2,399.7 L458.1,400.0 L469.1,400.2 L481.0,400.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="s2" d="M102.8,120.4 L102.9,123.1 L103.9,126.2 L103.4,129.5 L103.4,133.0 L102.4,136.0 L101.4,139.3 L99.9,141.9 L98.1,143.8 L95.3,146.5 L93.7,148.8 L90.9,150.0 L88.1,152.3 L85.5,153.3 L82.9,153.5 L79.5,154.5 L76.3,154.3 L72.7,153.8 L70.3,152.2 L67.6,151.5 L65.2,150.2 L62.8,148.3 L60.3,145.9 L57.4,143.9 L55.7,140.7 L54.2,137.7 L52.9,134.5 L52.4,131.6 L52.3,128.3 L51.7,124.8 L51.8,121.8 L53.5,119.3 L55.2,116.8 L56.4,114.4 L58.6,111.1 L60.1,108.1 L63.1,105.8 L65.3,104.5 L68.1,102.7 L70.8,102.0 L73.7,101.3 L77.4,101.2 L80.5,101.5 L83.1,102.1 L86.3,102.8 L88.8,104.9 L91.9,106.2 L94.7,108.8 L96.4,110.4 L98.1,113.4 L99.5,116.5 L101.4,119.5 L102.1,123.2 L103.3,126.2 L103.1,129.5 L102.8,132.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+```
