@@ -84,9 +84,9 @@ below names the criterion it serves.
 
 ### Finals (3 minutes on stage, live demo, no Q&A)
 
-- **Live:** a judge draws on `tools/draw.html` and types the intent; you save the SVG and run `ksa animate` with the
-  playbook. The terminal shows the best score after each round, and the result opens when it's done (about 2–3
-  minutes; Modal would make it faster).
+- **Live:** run `uv run ksa serve`; a judge draws on the page that opens, types the intent and presses **Animate**.
+  The page shows the best score after each round and plays the result when it's done (under a minute for one-shot,
+  about 3–4 minutes for the loop; Modal would make it faster).
 - **Fallback:** if anything stalls, switch to a pre-computed run in the gallery and the pendulum tree.
 
 ## Runbook: commands for each demo
@@ -97,10 +97,15 @@ per machine, `uv sync && uv run playwright install chromium-headless-shell`.
 **1. Live: draw something and animate it**
 
 ```bash
-open tools/draw.html
+uv run ksa serve
 ```
 
-Draw, type what should happen, and press **Save SVG**; the file goes to `~/Downloads`. Then:
+This opens the drawing page at http://127.0.0.1:8765. Draw, type what should happen, pick one-shot or loop, and press
+**Animate**. The page streams the run's progress, then plays the animation with the critic's score and notes, and
+links the run page and the program. It uses the models in `.env` (`KSA_GEN_MODEL`, `KSA_CRITIC_MODEL`), which the
+page names before you start. Output goes to `runs/animate/<time>-<name>/`.
+
+Without the server: open `tools/draw.html`, press **Save SVG** (the file goes to `~/Downloads`), then:
 
 ```bash
 uv run ksa animate ~/Downloads/drawing.svg

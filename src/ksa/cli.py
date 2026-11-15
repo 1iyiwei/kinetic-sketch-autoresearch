@@ -334,6 +334,9 @@ def main():
     et.add_argument("case")
     et.add_argument("--name", required=True)
     sub.add_parser("results-pages", help="rebuild the HTML pages and prompt files in results/")
+    sv = sub.add_parser("serve", help="drawing page with an Animate button, on http://127.0.0.1:8765")
+    sv.add_argument("--port", type=int, default=8765)
+    sv.add_argument("--no-open", action="store_true")
     args = p.parse_args()
     if args.cmd in ("export", "export-tree"):
         from . import export as exp
@@ -364,6 +367,10 @@ def main():
     if args.cmd == "compare":
         from .compare import write_compare
         print(write_compare([Path(d) for d in args.run_dirs], Path(args.out), args.title, args.note))
+        return
+    if args.cmd == "serve":
+        from .serve import main as serve_main
+        serve_main(args.port, not args.no_open)
         return
     if args.cmd == "report":
         from .report import table

@@ -192,6 +192,7 @@ uv sync
 uv run playwright install chromium-headless-shell
 export OPENAI_API_KEY=...            # or put it in .env
 uv run python benchmark/make_cases.py   # regenerate the benchmark SVGs (already committed)
+uv run ksa serve                        # drawing page with an Animate button: http://127.0.0.1:8765
 uv run ksa run --method oneshot         # one-shot baseline
 uv run ksa run --method bestof --k 6    # equal-compute baseline: sample 6, keep the critic's best
 uv run ksa run --method loop            # k=2 samples, then 2 rounds of revising the best into 2 children

@@ -117,7 +117,7 @@ async def _tinker_client(base: str):
     if base not in _tinker:
         import tinker  # optional dependency: only needed for tinker: models
         try:
-            sc = await tinker.ServiceClient().create_sampling_client_async(base_model=base)
+            sc = await tinker.ServiceClient().create_sampling_client(base_model=base)
         except Exception as e:  # bad key, unknown model
             raise FatalAPIError(f"tinker:{base}: {e}") from e
         _tinker[base] = (sc, sc.get_tokenizer())

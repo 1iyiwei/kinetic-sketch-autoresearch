@@ -9,7 +9,7 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif;
          display: grid; place-items: start center; padding: 24px 16px; }
-  main { display: grid; gap: 12px; width: min(560px, 100%); }
+  main { display: grid; gap: 12px; width: min(560px, 100%); grid-template-columns: minmax(0, 1fr); }
   h1 { font-size: 20px; margin: 0; }
   p { margin: 0; color: var(--muted); font-size: 13px; }
   canvas { width: 100%; aspect-ratio: 1; background: #fff; border: 1px solid var(--line); border-radius: 8px;
@@ -23,13 +23,28 @@
   .sw[aria-pressed="true"] { border-color: var(--fg); }
   textarea { width: 100%; min-height: 64px; font: inherit; padding: 8px; border-radius: 6px; border: 1px solid var(--line); }
   code { font-size: 12px; }
+  input, select { font: inherit; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); }
+  button:disabled { opacity: .5; cursor: progress; }
+  #animate-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
+  #status { font-size: 13px; color: var(--muted); }
+  #status.err { color: #b4441c; }
+  #log { margin: 0; max-height: 160px; overflow: auto; background: var(--panel); border: 1px solid var(--line);
+         border-radius: 6px; padding: 8px; font: 12px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; }
+  #result { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  #result .stage { width: 100%; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; position: relative; }
+  #result iframe { position: absolute; top: 0; left: 0; width: 512px; height: 512px; border: 0; transform-origin: 0 0; }
+  #result ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+  #code-box summary { cursor: pointer; font-weight: 600; }
+  #code { margin: 8px 0 0; max-height: 420px; overflow: auto; background: #1c2230; color: #e6e9ef; border-radius: 6px;
+          padding: 10px 12px; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre; tab-size: 2; }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <main>
   <h1>Sketch Pad</h1>
-  <p>Draw on the 512 × 512 canvas, describe the motion, then save. Each stroke becomes a path with an id
-     (s1, s2, …). Animate the file with <code>uv run ksa animate drawing.svg</code>.</p>
+  <p>Draw on the 512 × 512 canvas, describe the motion, then press <b>Animate</b> (needs <code>uv run ksa serve</code>),
+     or save the SVG and run <code>uv run ksa animate drawing.svg</code>. Each stroke becomes a path with an id (s1, s2, …).</p>
   <canvas id="pad" width="512" height="512" aria-label="Drawing canvas"></canvas>
   <div class="row" id="tools">
     <span>Ink</span>
@@ -46,9 +61,34 @@
   <textarea id="intent" placeholder="e.g. The ball rolls down the ramp and bounces on the floor."></textarea>
   <div class="row">
     <label for="name">File name</label>
-    <input id="name" value="drawing" style="font:inherit;padding:6px;border:1px solid var(--line);border-radius:6px">
-    <button class="primary" id="save">Save SVG</button>
+    <input id="name" value="drawing">
+    <button id="save">Save SVG</button>
   </div>
+  <section id="animate-panel" aria-labelledby="anim-h">
+    <h1 id="anim-h" style="font-size:17px">Animate</h1>
+    <div class="row">
+      <label>Method <select id="method"><option value="loop" selected>loop (render, critique, revise; ~6 calls)</option>
+        <option value="oneshot">one-shot (1 call)</option></select></label>
+      <label>Type <select id="category"><option>sketch</option><option>diagram</option><option>cartoon</option><option>logo</option></select></label>
+      <label title="Which frame must match your drawing: the first (things move away from it) or the last (a build-up intro)">Drawing is the
+        <select id="anchor"><option value="start" selected>first frame</option><option value="end">last frame</option></select></label>
+      <label>Seconds <input id="duration" type="number" min="1" max="10" step="0.5" value="4" style="width:64px"></label>
+    </div>
+    <div class="row"><button class="primary" id="animate">Animate</button><span id="status" role="status"></span></div>
+    <pre id="log" hidden></pre>
+    <div id="result" hidden>
+      <div class="stage"><iframe id="player" title="Animation"></iframe></div>
+      <div class="row"><span id="score"></span><a id="gallery" target="_blank" rel="noopener">run page</a>
+        <a id="program" target="_blank" rel="noopener">program</a></div>
+      <ul id="issues"></ul>
+      <details id="code-box" open>
+        <summary>Program: <span id="code-size"></span></summary>
+        <div class="row" style="margin-top:8px"><button id="copy">Copy</button><button id="download">Download .html</button>
+          <span id="copy-status" class="small" style="font-size:13px;color:var(--muted)"></span></div>
+        <pre id="code"><code></code></pre>
+      </details>
+    </div>
+  </section>
 </main>
 <script>
 const pad = document.getElementById("pad"), ctx = pad.getContext("2d");
@@ -83,7 +123,7 @@ document.getElementById("undo").addEventListener("click", () => { strokes.pop();
 document.getElementById("clear").addEventListener("click", () => { strokes = []; draw(); });
 
 function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-document.getElementById("save").addEventListener("click", () => {
+function svgText() {
   const paths = strokes.map((s, i) => {
     const d = s.pts.map(([x, y], j) => (j ? "L" : "M") + x.toFixed(1) + "," + y.toFixed(1)).join(" ");
     return `  <path id="s${i + 1}" d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`;
@@ -92,12 +132,74 @@ document.getElementById("save").addEventListener("click", () => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">\n` +
     (intent ? `  <desc>${esc(intent)}</desc>\n` : "") +
     `  <rect width="512" height="512" fill="#ffffff"/>\n${paths}\n</svg>\n`;
+  return svg;
+}
+document.getElementById("save").addEventListener("click", () => {
+  const svg = svgText();
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
   a.download = (document.getElementById("name").value.trim() || "drawing") + ".svg";
   a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
 draw();
+
+// ---- Animate: talks to `uv run ksa serve` (same origin); hidden behind a hint when opened as a file
+const $ = id => document.getElementById(id);
+const served = location.protocol.startsWith("http");
+function status(msg, err) { $("status").textContent = msg; $("status").className = err ? "err" : ""; }
+function fit() { const st = document.querySelector("#result .stage"); $("player").style.transform = `scale(${st.clientWidth / 512})`; }
+window.addEventListener("resize", fit);
+if (!served) {
+  $("animate").disabled = true;
+  status("Start the server to animate here: uv run ksa serve");
+} else {
+  fetch("/api/config").then(r => r.json()).then(c =>
+    status(`Generator ${c.gen_model.replace("tinker:", "")}, critic ${c.critic_model.replace("tinker:", "")}.`)).catch(() => {});
+}
+let polling = null;
+$("animate").addEventListener("click", async () => {
+  const body = { svg: svgText(), intent: $("intent").value, name: $("name").value, method: $("method").value,
+                 category: $("category").value, anchor: $("anchor").value, duration: +$("duration").value };
+  $("animate").disabled = true; $("result").hidden = true; $("log").hidden = false; $("log").textContent = "";
+  status("Starting…");
+  try {
+    const r = await fetch("/api/animate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || r.statusText);
+    poll(j.job);
+  } catch (e) { status(e.message, true); $("animate").disabled = false; $("log").hidden = true; }
+});
+function poll(job) {
+  clearInterval(polling);
+  polling = setInterval(async () => {
+    let s;
+    try { s = await (await fetch(`/api/jobs/${job}`)).json(); } catch (e) { return; }
+    $("log").textContent = s.log; $("log").scrollTop = $("log").scrollHeight;
+    if (s.state === "running") { status(`Working… ${s.elapsed} s (a loop takes a few minutes)`); return; }
+    clearInterval(polling); $("animate").disabled = false;
+    if (!s.has_program) { status(s.state === "failed" ? "Failed: see the log." : "No program was produced: see the log.", true); return; }
+    status(`Done in ${s.elapsed} s.`);
+    $("player").src = `/api/jobs/${job}/program`;
+    $("program").href = `/api/jobs/${job}/program`;
+    $("gallery").href = `/runs/${s.run_dir}/index.html`;
+    $("score").textContent = `critic ${s.score.toFixed(2)} / 5` + (s.rounds && s.rounds.length > 1 ? ` (by round: ${s.rounds.map(x => x.toFixed(2)).join(" → ")})` : "");
+    $("issues").replaceChildren(...(s.issues || []).map(t => { const li = document.createElement("li"); li.textContent = t; return li; }));
+    $("result").hidden = false; fit();
+    const src = await (await fetch(`/api/jobs/${job}/source`)).text();
+    $("code").firstChild.textContent = src;
+    $("code-size").textContent = `${src.split("\n").length} lines, ${(src.length / 1024).toFixed(1)} KB of HTML; ksaRender(t) draws the frame at time t`;
+    $("download").onclick = () => {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([src], { type: "text/html" }));
+      a.download = ($("name").value.trim() || "drawing") + "-animation.html";
+      a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    };
+    $("copy").onclick = async () => {
+      try { await navigator.clipboard.writeText(src); $("copy-status").textContent = "Copied."; }
+      catch (e) { $("copy-status").textContent = "Copy failed; select the code instead."; }
+    };
+  }, 1500);
+}
 </script>
 </body>
 </html>
