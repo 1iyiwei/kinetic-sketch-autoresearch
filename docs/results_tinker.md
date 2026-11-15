@@ -38,7 +38,7 @@ Findings
 - Judge self-preference is real: the critic's own model scores the open loop 4.2–4.3, but the
   independent judge gives 3.5–3.7 and still prefers gpt-5.5 one-shot. Report the independent column.
 
-Not yet done: more gpt-5.5 teacher data, RL with renderer checks as reward (OpenAI credits),
+Not yet done: more gpt-5.5 teacher data, a finished and evaluated RL run (see the RL section below),
 gpt-5.5 loop re-judged with the same open judges (needs the held-out loop run directory).
 
 Reproduce
@@ -69,3 +69,33 @@ in the Tinker training data. 3 one-shot samples per generator unless noted; `run
   0.3 are not meaningful; round 2 (3.23 vs 3.27) is within it, while round 2b (2.68) is borderline.
 - Seeds 1 and 2 used a learning rate that decays to 0 within the single epoch; `r1-e0` is the first epoch of a
   3-epoch schedule (higher learning rate at its end). That difference is confounded with the seed.
+
+## RL on Tinker (`ksa.rl`), incomplete: stopped by Tinker billing
+
+GRPO-style RL on the distilled student, no OpenAI: warm-start with one epoch of SFT on `data/sft_r1.jsonl`, then
+each step samples 4 programs for each of 8 training drawings (held-out drawings excluded). Reward is 0 if a sample
+has no program or fails to render, else the Qwen3.6-35B critic's overall score / 5. Advantage is reward minus the
+group mean, and the update uses Tinker's `importance_sampling` loss (LoRA rank 32, lr 2e-5). Both runs stopped when
+the Tinker account hit a billing block (HTTP 402), before the planned 23-drawing evaluation.
+Per-step logs: `runs/rl-*/steps.jsonl`.
+
+| Run | Sampling temperature | Steps done | Mean reward per step | Valid renders per step | Groups with no signal |
+| --- | --- | --- | --- | --- | --- |
+| `rl1` | 1.0 | 6 / 12 | 0.25, 0.26, 0.10, 0.20, 0.19, 0.20 | 34%, 41%, 16%, 34%, 28%, 25% | 3, 2, 5, 0, 3, 5 of 8 |
+| `rl2t08` | 0.8 | 3 / 16 | 0.57, 0.38, 0.47 | 88%, 59%, 66% | 0, 0, 0 of 8 |
+
+- At temperature 1.0 the student breaks most programs: undefined variables, stray non-ASCII tokens inside
+  identifiers, and duplicate declarations, so only 16–41% render (vs about 90% at the eval temperature of 0.7). Many
+  groups get identical (zero) rewards and carry no signal, and the mean reward did not rise over 6 steps.
+- At temperature 0.8, 59–88% render and every group has a usable reward spread. That is the setting to continue with.
+  The sampler's logprobs then come from the temperature-scaled distribution, which importance sampling only partly
+  corrects for.
+- No RL checkpoint has been evaluated, so there is no claim yet that RL improves the student. Saved checkpoints:
+  `rl1-sft` and `rl1-rl4` (run `179b1700-…`), and `rl2t08-sft` (run `2e889a50-…`).
+
+Resume once Tinker billing is restored:
+```bash
+uv run python -m ksa.rl --name rl2t08 --steps 16 --cases 8 --group 4 --save-every 4 --temperature 0.8
+OUT=runs/eval23 JUDGE=tinker:Qwen/Qwen3.5-397B-A17B scripts/eval_students.sh \
+  e23-rl-sft=tinker://<run>/sampler_weights/rl2t08-sft e23-rl-rl16=tinker://<run>/sampler_weights/rl2t08-rl16
+```

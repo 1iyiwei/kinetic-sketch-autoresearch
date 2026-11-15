@@ -21,7 +21,7 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
 | Per-drawing lesson selection; per-lesson credit (`ksa lessons`) | done: `src/ksa/playbook.py`, `src/ksa/lessons.py` |
 | Playbook v2 on 8 train / 3 val / 7 test drawings | done: no reliable gain (see below) |
-| Distill the loop into an open model (Qwen on Tinker) | done: see "Distilling the loop" below; RL running |
+| Distill the loop into an open model (Qwen on Tinker) | done: see "Distilling the loop" below; RL started, stopped by Tinker billing before eval (docs/results_tinker.md) |
 | Parallel rendering and critique on Modal | next |
 
 ## Results (Sat 13:15, 10 cases)
