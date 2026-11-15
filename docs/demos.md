@@ -7,12 +7,24 @@ their owner shares them (Share menu on the page).
 | --- | --- | --- | --- |
 | Sat Nov 14, 13:50 | First results: loop vs. one-shot vs. best-of-6 on 10 cases. Headline judge scores, the pendulum search tree, all cases side by side, findings | [Kinetic Sketch Autoresearch](https://claude.ai/artifact/52zhVRsQdXewQp3pxPYqPH) | `runs/20261114-131334-{one_shot,best_of_6,loop_k2_b1_c2_r2}` |
 
-## Regenerating locally
+## Local result pages
 
-Run outputs live in `runs/` (gitignored). To rebuild the side-by-side page from any set of runs:
+Run outputs live in `runs/` (gitignored), so these pages exist only on the machine that ran the experiments. Open them
+with `open runs/<page>`.
+
+| Page | Drawings | Columns | Source runs |
+| --- | --- | --- | --- |
+| `runs/compare.html` | First batch (10) | one-shot, best-of-6, loop | `runs/20261114-131334-*` |
+| `runs/compare-test.html` | Test split (7) | one-shot, one-shot + playbook v2, loop | `runs/v2/{oneshot-test-1,pbsel-test-1,loop-test}` |
+| `runs/compare-complex.html` | Complex tier (5) | one-shot, loop | `runs/v2/{oneshot-complex-1,loop-complex}` |
+
+Where a method ran 3 times, the page shows run 1; the averages over all runs are in the README. Every run also has
+its own gallery, `runs/<run>/index.html`, and every case its search tree, `runs/<run>/<case>/tree.json`.
+
+To build a comparison page from any runs over the same drawings:
 
 ```bash
-uv run ksa compare runs/<one_shot> runs/<best_of_6> runs/<loop>   # writes runs/compare.html
+uv run ksa compare runs/<run A> runs/<run B> ... -o runs/compare-x.html --title "Name" --note "What it shows"
 ```
 
 ## Demo plan

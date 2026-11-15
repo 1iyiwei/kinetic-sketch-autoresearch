@@ -27,7 +27,7 @@ def load_run(run_dir: Path) -> dict:
             "judge": jmap, "judge_model": judge["judge"] if judge else None}
 
 
-def write_compare(run_dirs: list[Path], out: Path) -> Path:
+def write_compare(run_dirs: list[Path], out: Path, title: str = "Method comparison", note: str = "") -> Path:
     runs = [load_run(Path(d)) for d in run_dirs]
     cases = list(runs[0]["results"])
     base = out.parent
@@ -57,10 +57,10 @@ def write_compare(run_dirs: list[Path], out: Path) -> Path:
             cells.append(f"<td class='m{win}'>{img}<div>{jtxt} · critic {rec['critique']['overall']:.2f}</div>{ttxt}</td>")
         rows.append(f"<tr>{''.join(cells)}</tr>")
     jm = next((r["judge_model"] for r in runs if r["judge_model"]), None)
-    out.write_text(f"""<!doctype html><meta charset="utf-8"><title>Method comparison</title>
+    out.write_text(f"""<!doctype html><meta charset="utf-8"><title>{html.escape(title)}</title>
 <style>body{{font:14px system-ui;margin:24px;background:#fafafa;color:#222}}table{{border-collapse:collapse}}
 th,td{{padding:8px;text-align:center;vertical-align:top;border-bottom:1px solid #ddd}}img{{width:200px;height:200px;border:1px solid #eee;background:#fff}}
 .win{{background:#e6f4ea}}.mean{{font-weight:600}}.cat,.traj{{color:#777;font-size:12px}}.fail{{width:200px;height:200px;display:grid;place-items:center;color:#c00}}</style>
-<h1>Method comparison</h1><p>Held-out judge: {html.escape(jm or "none")} (mean of repeats). Green = best judge score in the row.</p>
+<h1>{html.escape(title)}</h1><p>{html.escape(note)}</p><p>Held-out judge: {html.escape(jm or "none")} (mean of repeats). Green = best judge score in the row.</p>
 <table><tr><th>input</th>{head}</tr><tr><td></td>{means}</tr>{''.join(rows)}</table>""")
     return out

@@ -71,6 +71,8 @@ Run directories: `runs/v2/oneshot-{val,test,complex}-{1,2,3}`, `runs/v2/loop-{te
 
 ## Playbook: does learning carry over to new drawings? (Sat 14:50)
 
+See [`playbooks/README.md`](playbooks/README.md) for the file format and how the playbook files relate.
+
 `ksa learn` runs the loop on the 5 **train** drawings one at a time. After each one, an analyst model reads that
 search tree: the first attempts' issues, the code diff of the fix that won, and what is still wrong. It then
 rewrites the playbook, keeping at most 12 general lessons and never naming the drawing. Later drawings get the

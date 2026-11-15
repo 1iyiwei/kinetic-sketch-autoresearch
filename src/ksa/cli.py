@@ -308,6 +308,8 @@ def main():
     c = sub.add_parser("compare", help="side-by-side page for several runs")
     c.add_argument("run_dirs", nargs="+")
     c.add_argument("-o", "--out", default=str(ROOT / "runs" / "compare.html"))
+    c.add_argument("--title", default="Method comparison")
+    c.add_argument("--note", default="")
     rp = sub.add_parser("report", help="markdown table of judged runs, grouped by method")
     rp.add_argument("run_dirs", nargs="+")
     rp.add_argument("--cases", help="restrict to these case ids")
@@ -332,7 +334,7 @@ def main():
         return
     if args.cmd == "compare":
         from .compare import write_compare
-        print(write_compare([Path(d) for d in args.run_dirs], Path(args.out)))
+        print(write_compare([Path(d) for d in args.run_dirs], Path(args.out), args.title, args.note))
         return
     if args.cmd == "report":
         from .report import table
