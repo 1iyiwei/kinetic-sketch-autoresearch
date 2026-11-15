@@ -54,6 +54,17 @@ best program ──► held-out judge (different model, repeated) ──► resu
   programs that exploit its blind spots without being better animations. So we report scores from a separate
   *judge* the loop never sees (a different model, repeated 3×). Evidence that the split matters: best-of-6, which
   only selects by critic score, raised the critic's mean (3.75 → 4.03) but not the judge's (3.58 → 3.60).
+- **The judge is never optimized, but it is not fully independent.** No program, prompt or playbook is ever
+  chosen by the judge's score; it only scores final results after a run. But it shares the critic's code: the same
+  rubric, prompt, images and measured fidelity, with only the model swapped (`gpt-5.4` instead of `gpt-5.5`). So it
+  is independent of the critic's model, not of its definition of a good animation: a blind spot in the rubric is a
+  blind spot for both. We also changed that shared code during the hackathon while looking at results (the
+  consecutive-frame strip, measured fidelity, the anchor-frame fix). These fixed clear measurement errors rather
+  than tuning toward a number, but they changed the critic and the judge together. Nothing requires this sharing:
+  the two roles could use separate code (their own rubric, prompt and views of the frames) as well as separate
+  models, and that would be the stronger check. We shared the code to save time. The model matters on its own too:
+  re-judging the 7 test drawings with Nemotron-VL instead of `gpt-5.4` turned the GPT loop's +0.21 gain over
+  one-shot into −0.02, so we report each result with the judge that produced it.
 
 ### Components: model calls vs. plain code
 
