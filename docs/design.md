@@ -48,9 +48,42 @@ best program ──► held-out judge (different model, repeated) ──► resu
   short, general lessons or helper snippets for the playbook. Examples: "rotate rigid assemblies about the hub
   center"; "a released pendulum swings toward the vertical first"; a damped-oscillation helper. The generator
   receives the playbook. Measure on the test cases only.
-- **Critic vs. judge:** the loop optimizes the *critic*. We report scores from a separate *judge* (a
-  different model, repeated 3×, mean ± sd), plus pairwise preference against the baseline, so we don't just
-  report how well the loop overfits its own critic.
+- **Critic vs. judge:** the critic's score is the loop's *objective*, maximized by search, not by training. The loop
+  keeps the candidates the critic scores highest, returns the highest-scoring one, and steers each revision with the
+  critic's issues and fixes; no weights or parameters change. Because the search targets this critic, it can find
+  programs that exploit its blind spots without being better animations. So we report scores from a separate
+  *judge* the loop never sees (a different model, repeated 3×). Evidence that the split matters: best-of-6, which
+  only selects by critic score, raised the critic's mean (3.75 → 4.03) but not the judge's (3.58 → 3.60).
+
+### Components: model calls vs. plain code
+
+The roles below are not separate autonomous agents. One deterministic Python program (`search.py`, driven by
+`cli.py`) runs the search and decides what happens next. It calls a model at fixed points, each with its own
+system prompt and output format. Only the model calls use an LLM.
+
+| Component | What it is | Model (as run on Sat) | Code |
+| --- | --- | --- | --- |
+| Orchestrator | Plain code: beam search, keep the best, stop rules, logging | none | `search.py` |
+| Generator | Writes an animation program from the drawing (SVG + image) and intent | `gpt-5.5` | `generate.one_shot` |
+| Reviser | The same generator model with a different prompt: its program, its own rendered frames, the critique | `gpt-5.5` | `generate.revise` |
+| Renderer | Plain code: headless Chromium steps `ksaRender(t)`, saves frames, GIF, contact sheets | none | `render.py` |
+| Critic | Hybrid: fidelity measured in code (ink-overlap F1); a vision model scores intent, motion, integrity and lists issues and fixes | `gpt-5.5` | `critic.py` |
+| Judge | The same critic code with a different model, run 3× on final results only; never seen by the loop | `gpt-5.4` | `ksa judge` |
+| Analyst | After a training drawing, rewrites the playbook from that drawing's search tree | `gpt-5.5` | `playbook.update` |
+| Selector | Picks the playbook lessons that apply to a drawing | `gpt-5.4-mini` | `playbook.select` |
+
+### What "learning" and "train" mean here
+
+- **No model weights are updated.** All models are used as-is through their APIs.
+- **Inner loop:** search over programs for one drawing. Nothing persists except the best program.
+- **Outer loop:** the *playbook*, a JSON list of text lessons that the analyst rewrites after each training drawing
+  and the generator reads in its prompt. This is learning in the prompt (in-context), not in the weights.
+- **"Train", "val" and "test"** are splits of the benchmark drawings. *Train* drawings are the ones the playbook
+  learns from; *val* drawings are used to prune lessons; *test* drawings are only used to measure.
+- **Result:** prompt lessons did not reliably help (see `playbooks/README.md`); the inner loop did.
+- **Proposed next step, not done yet:** real weight training. Fine-tune an open model (`Qwen/Qwen3.6-35B-A3B`)
+  with LoRA on Tinker, using the best programs the loop found on the train drawings, and compare one-shot before
+  and after on the test drawings.
 
 ## Experiments
 
@@ -78,7 +111,7 @@ test. Optionally add a few drawings from teammates or passers-by, made on the sp
   diffs between parent and child). It is both the demo and the interpretability evidence.
 - **Originator challenge:** develop with Claude Code / Codex and upload the agent sessions.
 
-## Roles (team of 3–5)
+## Team roles (people, team of 3–5)
 
 | Role | Owns |
 | --- | --- |
