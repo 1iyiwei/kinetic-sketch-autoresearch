@@ -38,7 +38,7 @@ Findings
 - Judge self-preference is real: the critic's own model scores the open loop 4.2–4.3, but the
   independent judge gives 3.5–3.7 and still prefers gpt-5.5 one-shot. Report the independent column.
 
-Not yet done: more gpt-5.5 teacher data, a longer RL run (see the RL section below),
+Not yet done: more gpt-5.5 teacher data, RL with a less noisy reward and an RL student inside the loop (see the RL section below),
 gpt-5.5 loop re-judged with the same open judges (needs the held-out loop run directory).
 
 Reproduce
@@ -111,6 +111,28 @@ Held-out eval on all 23 drawings, 3 one-shot samples each, Qwen3.5-397B judge (`
   more reliable but do not yet beat plain distillation. A real test needs more steps, more drawings per step, and
   a reward that is less noisy than one critic call per sample.
 - Checkpoints: `tinker://8130e062-3b7f-549d-b74c-a7cfbf43ea8c:train:0/sampler_weights/rl3t08-{sft,rl4,rl8,rl12,rl16}`.
+
+### Longer run: `rl5t08` (48 steps, temperature 0.8)
+
+Training reward (35B critic, training drawings) by 12-step block: 0.45, 0.52, 0.55, 0.58; valid renders 66%, 74%, 78%, 82%.
+
+| Generator | All 23 | per-sample | Test (7) | Complex (5) | Valid | First-frame F1 | Moves |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| warm-start `rl5t08-sft` (1 epoch SFT) | 2.69 ± 0.24 | 2.84, 2.42, 2.81 | 3.25 | 2.54 | 89% | 0.85 | 80% |
+| **RL `rl5t08-rl48`** | **3.00 ± 0.04** | 3.04, 2.96, 3.00 | 2.97 | **3.21** | 93% | 0.90 | 78% |
+| student, mean of 3 training seeds (above) | 2.79 ± 0.16 | | 2.80 | 2.52 | 90% | 0.86 | 78% |
+
+- 3.00 is the best one-shot open-model score so far: 0.31 above its own warm-start and 0.21 above the 3-seed
+  student mean, and the three samples are very consistent (sd 0.04).
+- Per drawing (mean of 3 samples), RL beats its warm-start on 14 of 23 and loses on 9; a paired bootstrap gives
+  +0.31 with 95% CI [-0.18, +0.76]. The gain is suggestive, not yet conclusive. It comes from the complex drawings
+  (2.54 to 3.21); the 7 test drawings went down (3.25 to 2.97, sd 0.41 across samples).
+- Still below the open loop (student + critic, 3.30) and the GPT loop (3.99 on the 7 test drawings).
+- Tinker's free checkpoint storage fills quickly: each optimizer state (`save_state`) is 6.7 GB. Once it is full,
+  the save succeeds but the training client is closed, so this run resumed from its last state 4 times
+  (`--resume <state> --start-step N`). Delete old states during long runs.
+- Checkpoints: `tinker://e22ea335-b01f-5752-9942-71840c9280a4:train:0/sampler_weights/rl5t08-sft`,
+  `tinker://0d7cbffb-ffd3-538f-a890-577fc431d968:train:0/sampler_weights/rl5t08-rl48`.
 
 Reproduce:
 ```bash
