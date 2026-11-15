@@ -33,4 +33,4 @@ Best use of Modal: training, inference, or running large numbers of experiments 
 https://github.com/1iyiwei/kinetic-sketch-autoresearch
 
 ## Video link
-https://youtu.be/tlc-K5Y3oQs
+https://youtu.be/q5HoxP6mZOM

@@ -18,7 +18,8 @@ An edit list is a JSON object (paths are relative to the edit list's folder):
 
 Each segment is cropped (optional), scaled and padded to `size` at `fps`, with a 40 ms audio fade at each cut so
 splices don't click. Sped-up segments get a small label, so the edit stays honest about time. Up to 2× they keep
-their audio, sped up at the same pitch so speech stays clear; beyond that they're silent.
+their audio, sped up at the same pitch so speech stays clear; beyond that they're silent. `"label": false` on a
+segment drops the speed label (e.g. when a whole talk is played uniformly faster).
 Sources without an audio track (e.g. silent screen recordings) contribute silence.
 An optional top-level `"tighten": {"silence_db": -35, "min_gap": 0.35, "pad": 0.12}` shortens pauses: inside every
 normal-speed segment, each stretch quieter than `silence_db` for at least `min_gap` seconds is cut, keeping `pad`
@@ -210,7 +211,7 @@ def main() -> None:
         v += (f",scale={W}:{H}:force_original_aspect_ratio=decrease:flags=lanczos,"
               f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color={bg},fps={fps},setsar=1")
         overlays = []  # (text, corner, plain_size, overlay position)
-        if speed != 1:
+        if speed != 1 and seg.get("label", True):
             overlays.append((f"{speed:g}× speed", True, None, "x=W-w-28:y=28"))
         if seg.get("caption"):
             overlays.append((seg["caption"], False, None, "x=(W-w)/2:y=H-h-48"))
