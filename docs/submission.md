@@ -14,7 +14,7 @@ Used OpenAI and Tinker-hosted models to create an autoresearch loop, with Exa we
 
 ## Track
 
-1 Build your own autoresearch framework
+5 Open track
 
 ## Challenges (pick any)
 
