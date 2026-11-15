@@ -24,6 +24,7 @@ import time
 from pathlib import Path
 
 from . import generate, llm
+from .paths import resolve
 
 ROOT = Path(__file__).resolve().parents[2]
 BENCHMARK = ROOT / "benchmark" / "cases" / "cases.json"
@@ -192,7 +193,7 @@ def report(args):
         allt = sum(sum(m["input_tokens"] + m["output_tokens"] for m in r.get("meter", {}).values()) for r in res) / len(res)
         secs = sum(r.get("seconds", 0) for r in res) / len(res)
         f1 = sum(r["critique"].get("measured", {}).get("fidelity_f1", 0) for r in res) / len(res)
-        moving = sum(motion(r["render"].get("frames", [])) > args.motion_min
+        moving = sum(motion([str(resolve(f, rd)) for f in r["render"].get("frames", [])]) > args.motion_min
                      for r in res if r.get("render", {}).get("ok")) / len(res)
         model = meta.get("gen_model", "?").replace("sampler_weights/", "")[-40:]
         rows.append(f"| {rd.name} | {model} | {meta['method']} | "
