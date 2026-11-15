@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sun Logo Intro</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff8e7;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#fff8e7"/>
+  <g id="logo">
+    <circle id="p1" cx="256" cy="256" r="86" fill="#f59f00"/>
+    <polygon id="p2" points="367.1,241.5 446.0,256.0 367.1,270.5" fill="#fab005"/>
+    <polygon id="p3" points="344.8,324.3 390.4,390.4 324.3,344.8" fill="#fab005"/>
+    <polygon id="p4" points="270.5,367.1 256.0,446.0 241.5,367.1" fill="#fab005"/>
+    <polygon id="p5" points="187.7,344.8 121.6,390.4 167.2,324.3" fill="#fab005"/>
+    <polygon id="p6" points="144.9,270.5 66.0,256.0 144.9,241.5" fill="#fab005"/>
+    <polygon id="p7" points="167.2,187.7 121.6,121.6 187.7,167.2" fill="#fab005"/>
+    <polygon id="p8" points="241.5,144.9 256.0,66.0 270.5,144.9" fill="#fab005"/>
+    <polygon id="p9" points="324.3,167.2 390.4,121.6 344.8,187.7" fill="#fab005"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+
+  const logo = document.getElementById("logo");
+  const disc = document.getElementById("p1");
+
+  const rays = [
+    { id: "p8", px: 256.0, py: 144.9, angle: 0 },
+    { id: "p9", px: 334.55, py: 177.45, angle: 45 },
+    { id: "p2", px: 367.1, py: 256.0, angle: 90 },
+    { id: "p3", px: 334.55, py: 334.55, angle: 135 },
+    { id: "p4", px: 256.0, py: 367.1, angle: 180 },
+    { id: "p5", px: 177.45, py: 334.55, angle: 225 },
+    { id: "p6", px: 144.9, py: 256.0, angle: 270 },
+    { id: "p7", px: 177.45, py: 177.45, angle: 315 }
+  ].map(r => ({
+    ...r,
+    el: document.getElementById(r.id)
+  }));
+
+  function clamp(x, a, b) {
+    return Math.max(a, Math.min(b, x));
+  }
+
+  function smoothstep(x) {
+    x = clamp(x, 0, 1);
+    return x * x * (3 - 2 * x);
+  }
+
+  function backOut(x) {
+    x = clamp(x, 0, 1);
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+
+  function elasticPop(x) {
+    x = clamp(x, 0, 1);
+    if (x === 0 || x === 1) return x;
+    return 1 + Math.sin(x * Math.PI * 3.2) * Math.pow(1 - x, 2.2) * 0.42 - Math.pow(1 - x, 3) * 0.05;
+  }
+
+  function tfAround(px, py, s, rotDeg) {
+    return `translate(${px} ${py}) rotate(${rotDeg}) scale(${s}) rotate(${-rotDeg}) translate(${-px} ${-py})`;
+  }
+
+  window.ksaRender = function (t) {
+    t = clamp(Number(t) || 0, 0, DURATION);
+
+    /*
+      The renderer requires frame 0 to be the supplied drawing.
+      So the exact static SVG is preserved at t=0, then the intro begins immediately after.
+    */
+    if (t <= 0.00001) {
+      logo.setAttribute("transform", "");
+      logo.setAttribute("opacity", "1");
+      disc.setAttribute("transform", "");
+      disc.setAttribute("opacity", "1");
+      rays.forEach(r => {
+        r.el.setAttribute("transform", "");
+        r.el.setAttribute("opacity", "1");
+      });
+      return;
+    }
+
+    const cx = 256, cy = 256;
+
+    // Whole-mark settling pulse after the build.
+    let pulse = 1;
+    if (t > 2.35) {
+      const u = t - 2.35;
+      pulse = 1 + Math.sin(u * Math.PI * 3.0) * Math.exp(-u * 2.25) * 0.032;
+    }
+    logo.setAttribute(
+      "transform",
+      `translate(${cx} ${cy}) scale(${pulse}) translate(${-cx} ${-cy})`
+    );
+    logo.setAttribute("opacity", "1");
+
+    // Sun disc grows from nothing with a soft overshoot.
+    const discStart = 0.12;
+    const discDur = 0.78;
+    const du = clamp((t - discStart) / discDur, 0, 1);
+    let discScale = backOut(du);
+    if (t < discStart) discScale = 0;
+    disc.setAttribute(
+      "transform",
+      `translate(${cx} ${cy}) scale(${discScale}) translate(${-cx} ${-cy})`
+    );
+    disc.setAttribute("opacity", discScale <= 0.001 ? "0" : "1");
+
+    // Rays pop in one by one, starting at the top and moving clockwise.
+    const rayStart = 0.88;
+    const rayStep = 0.145;
+    const rayDur = 0.36;
+
+    rays.forEach((r, i) => {
+      const local = (t - (rayStart + i * rayStep)) / rayDur;
+
+      if (local <= 0) {
+        r.el.setAttribute("opacity", "0");
+        r.el.setAttribute("transform", tfAround(r.px, r.py, 0.001, r.angle));
+        return;
+      }
+
+      const u = clamp(local, 0, 1);
+      const pop = elasticPop(u);
+
+      // A tiny rotational snap makes each triangular ray feel like it clicks into place.
+      const wobble = Math.sin(u * Math.PI * 2.4) * Math.pow(1 - u, 2) * 8;
+      const s = Math.max(0.001, pop);
+
+      r.el.setAttribute("opacity", "1");
+      r.el.setAttribute("transform", tfAround(r.px, r.py, s, wobble));
+    });
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing animation code blind · Kinetic Sketch Autoresearch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css"></head>
+<body><main class="stage">
+
+<div class="eyebrow">The problem</div>
+<h2>Code is the right medium for stylized animation, but one-shot generation is blind</h2>
+<div class="row" style="margin-top:8px">
+  <div class="tile"><div class="frame" style="--k:0.5"><img src="../results/pendulum-tree/input.svg" alt="&lt;b&gt;input:&lt;/b&gt; released pendulum, arrow shows the swing"></div><div class="cap"><b>input:</b> released pendulum, arrow shows the swing</div></div>
+  <div class="arrow">→</div>
+  <div class="tile bad"><div class="frame" style="--k:0.5"><iframe src="../results/pendulum-tree/r0n0.html" title="&lt;b&gt;first attempt&lt;/b&gt; (gpt-5.5, one shot)" loading="lazy" tabindex="-1"></iframe></div><div class="cap"><span class="score">3.00</span> <b>first attempt</b> (gpt-5.5, one shot)</div></div>
+  <div class="col grow">
+    <p>Programs are exact, editable and keep the drawing's own strokes. But the model never sees the result.</p>
+    <div class="quote"><span class="who">critic, after watching the frames</span>At 0.00s the pendulum is at the drawn right-hand release position, but by 0.08s-0.58s it moves farther right instead of swinging back left toward the vertical equilibrium line.</div>
+  </div>
+</div>
+<nav class="nav"><a rel="prev" href="01-title.html" class="">← previous</a><span>2 / 12</span><a rel="next" href="03-system.html" class="">next →</a></nav>
+</main><script src="nav.js"></script></body></html>

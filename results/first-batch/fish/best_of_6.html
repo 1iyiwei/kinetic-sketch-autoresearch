@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Fish Swim Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <g id="fishAll">
+    <g id="bodyGroup">
+      <path id="s1" d="M125.2,225.5 L130.3,220.4 L135.5,216.3 L142.1,212.5 L149.3,209.1 L156.8,206.1 L165.6,202.8 L174.4,200.4 L183.0,198.3 L192.9,196.2 L202.9,195.3 L213.0,194.3 L222.0,194.6 L232.2,194.7 L241.2,195.0 L250.9,196.1 L260.7,198.1 L269.1,200.5 L277.4,203.8 L286.1,206.8 L293.8,210.4 L301.1,214.8 L306.6,218.5 L312.4,222.6 L317.4,226.6 L322.1,231.7 L324.8,237.1 L327.1,242.0 L328.8,246.9 L329.3,253.1 L329.7,257.9 L329.3,262.9 L327.3,269.2 L324.9,274.3 L321.3,279.4 L316.6,285.2 L311.1,289.8 L306.0,294.2 L300.4,298.0 L294.1,302.5 L286.6,306.5 L278.2,309.9 L270.0,312.4 L260.8,314.7 L251.3,315.7 L242.1,316.6 L232.3,317.9 L221.9,317.5 L211.6,317.6 L201.9,316.7 L192.4,316.3 L182.8,314.5 L174.4,312.6 L165.4,310.1 L157.2,306.6 L149.3,303.1 L142.6,299.3 L136.2,296.1 L130.8,291.5 L125.6,286.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="s3" d="M169.0,235.4 L168.8,239.2 L167.2,242.8 L164.1,246.3 L160.5,247.6 L156.9,247.1 L154.0,244.5 L152.1,241.7 L151.2,237.6 L152.4,233.1 L154.7,230.7 L158.2,229.7 L161.8,230.0 L164.7,232.2 L167.5,235.2 L168.1,239.9" fill="none" stroke="#1d1d1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="s4" d="M269.7,216.1 L273.8,219.4 L276.7,222.8 L279.3,225.7 L282.9,229.1 L285.8,233.9 L287.8,238.9 L289.3,243.3 L290.0,247.9 L290.9,253.4 L291.1,258.1 L290.5,262.9 L289.8,268.3 L288.8,273.4 L286.8,278.4 L283.6,282.7 L280.1,286.4 L276.5,290.7 L272.5,294.3 L269.7,296.8" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g id="tailGroup">
+      <path id="s2" d="M315.9,228.0 L322.8,225.7 L328.9,221.9 L335.3,218.4 L341.1,216.1 L347.1,213.5 L353.6,211.2 L360.8,207.5 L366.9,205.2 L373.7,202.1 L380.7,199.5 L387.1,196.4 L393.0,193.2 L399.0,190.4 L398.2,194.9 L397.2,199.4 L395.5,204.8 L394.4,210.6 L393.5,215.9 L391.8,221.3 L390.1,226.4 L389.7,231.9 L389.2,236.7 L388.2,242.0 L386.3,247.4 L385.7,252.1 L384.8,256.9 L385.5,262.1 L386.1,267.4 L388.1,271.9 L389.9,276.3 L391.4,281.0 L393.1,286.1 L394.6,290.6 L394.8,296.3 L396.0,301.5 L396.4,306.1 L397.4,310.7 L399.4,316.4 L401.2,321.9 L394.2,318.4 L388.0,315.0 L381.4,312.3 L374.8,308.9 L367.6,306.3 L360.5,303.6 L353.6,300.6 L346.9,297.9 L340.6,294.7 L334.0,292.1 L328.4,289.2 L321.5,286.1 L314.9,283.5" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <g id="bubble1Group">
+    <path id="s5" d="M140.5,329.4 L139.0,332.8 L136.0,335.7 L133.0,337.6 L129.0,338.1 L124.5,337.0 L121.1,335.3 L119.4,331.7 L119.6,327.8 L121.4,323.7 L124.1,321.6 L127.8,320.2 L132.6,320.7 L136.9,323.2 L139.4,325.9 L140.3,329.9" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g id="bubble2Group">
+    <path id="s6" d="M117.5,370.0 L116.9,373.7 L114.5,376.6 L111.8,377.2 L108.9,377.2 L106.4,375.0 L104.1,371.4 L103.8,368.6 L105.0,364.9 L107.4,362.5 L111.0,362.7 L114.7,363.3 L116.6,365.5 L117.9,369.5" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+
+  const fishAll = document.getElementById("fishAll");
+  const bodyGroup = document.getElementById("bodyGroup");
+  const tailGroup = document.getElementById("tailGroup");
+  const bubble1Group = document.getElementById("bubble1Group");
+  const bubble2Group = document.getElementById("bubble2Group");
+
+  function clamp01(x) {
+    return Math.max(0, Math.min(1, x));
+  }
+
+  window.ksaRender = function (t) {
+    t = Math.max(0, Math.min(DURATION, t));
+    const p = clamp01(t / DURATION);
+
+    /*
+      Anchor rule:
+      At t = 0 every sinusoid is zero and every progress offset is zero,
+      so all transforms are identity and the drawing matches the supplied SVG.
+    */
+
+    // The whole fish travels right-to-left with a gentle swimming bob.
+    const swimX = -175 * p;
+    const swimY = 6 * Math.sin(Math.PI * 3 * p);
+    const wholeTilt = 1.4 * Math.sin(Math.PI * 6 * p);
+
+    fishAll.setAttribute(
+      "transform",
+      "translate(" + swimX.toFixed(3) + " " + swimY.toFixed(3) + ") rotate(" + wholeTilt.toFixed(3) + " 255 256)"
+    );
+
+    // Slight body counter-roll gives the hand-drawn fish some buoyancy.
+    const bodyRoll = 1.0 * Math.sin(Math.PI * 6 * p + 0.15) - 1.0 * Math.sin(0.15);
+    bodyGroup.setAttribute(
+      "transform",
+      "rotate(" + bodyRoll.toFixed(3) + " 235 256)"
+    );
+
+    // Tail wags around the narrow base where it joins the body.
+    // Phase chosen so t=0 is exactly neutral.
+    const tailAngle = 16 * Math.sin(2 * Math.PI * 3.25 * t);
+    const tailStretch = 1 + 0.035 * Math.abs(Math.sin(2 * Math.PI * 3.25 * t));
+    tailGroup.setAttribute(
+      "transform",
+      "translate(316 256) rotate(" + tailAngle.toFixed(3) + ") scale(" + tailStretch.toFixed(4) + " 1) translate(-316 -256)"
+    );
+
+    // Bubbles drift upward, with tiny side-to-side wobble.
+    const b1Y = -92 * p;
+    const b1X = 7 * Math.sin(Math.PI * 2.5 * p);
+    const b1Scale = 1 + 0.05 * Math.sin(Math.PI * 4 * p);
+    bubble1Group.setAttribute(
+      "transform",
+      "translate(" + b1X.toFixed(3) + " " + b1Y.toFixed(3) + ") scale(" + b1Scale.toFixed(4) + ")"
+    );
+
+    const b2Y = -122 * p;
+    const b2X = -6 * Math.sin(Math.PI * 3 * p);
+    const b2Scale = 1 + 0.06 * Math.sin(Math.PI * 5 * p);
+    bubble2Group.setAttribute(
+      "transform",
+      "translate(" + b2X.toFixed(3) + " " + b2Y.toFixed(3) + ") scale(" + b2Scale.toFixed(4) + ")"
+    );
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

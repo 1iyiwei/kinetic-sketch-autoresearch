@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What we learned about critics · Kinetic Sketch Autoresearch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css"></head>
+<body><main class="stage">
+
+<div class="eyebrow">What we learned · 1</div>
+<h2>Vision critics need help seeing motion</h2>
+<div class="cards">
+  <div class="card"><span class="pill">aliasing</span><h3>Eight evenly spaced frames lie about rotation</h3>
+    <div class="row" style="gap:12px"><img src="assets/windmill-sheet.png" alt="overview sheet" style="width:250px;border:1px solid var(--line);border-radius:6px">
+    <img src="assets/windmill-strip.png" alt="consecutive strip" style="width:250px;border:1px solid var(--line);border-radius:6px"></div>
+    <p>A correct 4-blade spin looked "jumpy" (3.25). Adding consecutive frames fixed the verdict (4.25).</p></div>
+  <div class="card"><span class="pill">hallucination</span><h3>Critics invent fidelity errors, and revisers chase them</h3>
+    <p>The critic called pixel-identical first frames "smaller and shifted"; revising against that made programs worse
+    (pendulum 2.25 → 1.75). Fidelity is now measured in code (ink-overlap F1), and the vision model judges only motion.</p>
+    <span class="pill">judge noise</span>
+    <p>The same render scored 4.00, then 2.50. Final scores average 3 runs of a separate judge model.</p></div>
+</div>
+<nav class="nav"><a rel="prev" href="07-test.html" class="">← previous</a><span>8 / 12</span><a rel="next" href="09-anchor.html" class="">next →</a></nav>
+</main><script src="nav.js"></script></body></html>

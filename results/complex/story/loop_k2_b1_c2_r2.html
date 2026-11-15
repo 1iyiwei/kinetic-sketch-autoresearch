@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <path id="s1" d="M29.8,450.6 L50.0,450.1 L70.1,450.3 L89.0,450.9 L108.3,450.4 L127.9,450.5 L147.1,450.6 L167.4,450.5 L187.5,450.6 L207.5,450.0 L226.9,450.0 L245.9,450.7 L265.8,449.9 L285.6,449.8 L304.7,449.4 L324.4,448.9 L344.2,449.1 L363.4,449.8 L382.5,449.4 L402.9,449.1 L422.5,449.4 L442.2,449.5 L461.9,449.6 L481.0,450.1" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g id="sun">
+    <path id="s2" d="M409.9,99.5 L411.1,105.5 L411.9,110.9 L411.6,116.0 L410.8,121.3 L408.5,126.1 L405.6,131.5 L403.3,136.5 L399.3,140.1 L395.8,143.6 L390.7,146.8 L385.9,149.2 L380.6,150.5 L375.2,151.4 L370.0,151.5 L364.3,151.6 L358.5,150.5 L353.4,148.7 L349.1,145.8 L345.0,141.8 L340.5,138.2 L337.1,133.0 L335.2,128.3 L332.7,123.2 L331.2,118.3 L330.7,113.4 L331.5,107.0 L332.6,102.3 L334.9,96.4 L337.3,91.2 L339.9,86.8 L344.2,82.4 L348.6,79.5 L353.9,76.2 L358.3,74.6 L363.4,72.6 L369.4,71.6 L375.2,72.0 L380.3,72.7 L385.2,74.7 L390.0,76.5 L395.3,79.1 L399.5,82.7 L402.5,86.5 L406.1,91.8 L408.4,96.6 L409.6,101.8 L410.7,107.1 L410.9,112.3 L411.3,118.2" fill="none" stroke="#e8590c" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s3" d="M423.8,111.4 L426.8,110.9 L430.0,111.3 L433.9,110.9 L438.2,111.3 L442.2,112.0" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s4" d="M408.5,149.3 L411.8,152.4 L413.6,155.2 L416.9,156.9 L419.9,159.8 L421.5,162.5" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s5" d="M372.4,164.4 L371.7,168.6 L371.1,171.4 L371.9,174.9 L371.5,178.3 L371.8,181.6" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s6" d="M335.8,149.0 L333.0,151.3 L329.8,154.6 L327.1,157.6 L324.7,160.0 L321.7,162.3" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s7" d="M319.4,111.9 L316.1,112.6 L312.2,112.0 L309.1,111.5 L305.1,111.5 L301.5,112.3" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s8" d="M334.6,75.8 L332.1,72.6 L329.3,70.7 L326.5,67.9 L323.5,65.3 L321.5,63.0" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s9" d="M371.8,59.9 L372.3,56.9 L372.1,52.5 L372.8,48.8 L372.6,44.6 L371.8,40.6" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s10" d="M408.8,74.9 L411.8,71.9 L414.5,68.8 L416.7,67.2 L418.8,64.4 L420.7,62.6" fill="none" stroke="#e8590c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g id="cloud">
+    <!-- temporary white body used only once the cloud moves over the sun -->
+    <path id="cloudMask" d="M70.0,149.6 L68.1,143.4 L66.6,137.4 L63.9,131.1 L61.3,125.7 L58.8,119.7 L65.2,114.4 L71.6,109.9 L78.3,105.9 L84.9,101.0 L90.7,96.1 L96.0,91.0 L102.7,85.8 L109.1,80.2 L114.7,74.9 L121.2,69.6 L129.4,70.4 L137.5,71.7 L145.9,72.3 L153.2,74.4 L160.8,75.3 L166.0,79.8 L171.1,84.3 L175.0,88.3 L180.2,93.4 L184.3,98.6 L190.7,99.7 L197.0,100.9 L202.1,101.7 L207.9,103.4 L213.6,104.8 L215.4,109.7 L217.0,115.3 L219.0,120.7 L221.2,126.8 L222.0,132.8 L217.8,136.9 L212.9,140.6 L208.9,143.8 L204.3,147.3 L200.6,151.0 L174.7,151.1 L149.0,151.0 L123.1,150.1 L97.4,150.8 L71.3,150.7" fill="#ffffff" stroke="none" opacity="0"/>
+    <path id="s11" d="M70.0,149.6 L68.1,143.4 L66.6,137.4 L63.9,131.1 L61.3,125.7 L58.8,119.7 L65.2,114.4 L71.6,109.9 L78.3,105.9 L84.9,101.0 L90.7,96.1 L96.0,91.0 L102.7,85.8 L109.1,80.2 L114.7,74.9 L121.2,69.6 L129.4,70.4 L137.5,71.7 L145.9,72.3 L153.2,74.4 L160.8,75.3 L166.0,79.8 L171.1,84.3 L175.0,88.3 L180.2,93.4 L184.3,98.6 L190.7,99.7 L197.0,100.9 L202.1,101.7 L207.9,103.4 L213.6,104.8 L215.4,109.7 L217.0,115.3 L219.0,120.7 L221.2,126.8 L222.0,132.8 L217.8,136.9 L212.9,140.6 L208.9,143.8 L204.3,147.3 L200.6,151.0 L174.7,151.1 L149.0,151.0 L123.1,150.1 L97.4,150.8 L71.3,150.7" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g id="rain" opacity="0" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path id="r1" d="M332,176 L326,195"/>
+    <path id="r2" d="M365,171 L359,191"/>
+    <path id="r3" d="M397,179 L391,199"/>
+    <path id="r4" d="M346,211 L340,231"/>
+    <path id="r5" d="M380,208 L374,229"/>
+    <path id="r6" d="M414,213 L408,233"/>
+    <path id="r7" d="M318,231 L312,251"/>
+    <path id="r8" d="M362,248 L356,268"/>
+    <path id="r9" d="M401,246 L395,267"/>
+  </g>
+
+  <g id="plant">
+    <path id="s12" d="M256.6,450.1 L257.1,447.1 L257.0,444.6 L257.4,441.5 L257.2,438.3 L256.9,434.9 L256.3,431.5 L255.8,429.1 L255.7,426.4 L255.8,423.8 L255.9,420.2 L255.8,416.6 L255.6,413.1 L255.4,409.9" fill="none" stroke="#2b8a3e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s13" d="M255.3,424.6 L254.5,423.2 L253.6,421.4 L252.3,420.6 L251.4,420.2 L250.0,419.5 L248.7,417.7 L246.6,416.0 L245.5,415.0 L243.8,414.0 L243.0,412.9 L241.9,411.7 L240.5,411.1 L238.5,410.6 L237.6,410.6 L238.0,410.9 L237.5,412.2 L236.7,413.0 L236.7,412.9 L235.8,414.2 L236.0,415.0 L235.9,415.4 L236.1,415.3 L235.3,415.6 L235.1,417.0 L234.3,417.0 L233.7,418.2 L235.6,418.1 L237.6,418.5 L238.6,418.8 L240.9,420.0 L242.4,420.9 L244.7,420.6 L245.9,420.9 L247.3,421.6 L249.7,421.7 L251.0,422.2 L253.0,422.3 L254.7,423.1 L256.7,423.4" fill="none" stroke="#2b8a3e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s14" d="M255.7,414.1 L257.0,412.9 L258.9,412.5 L260.9,410.9 L262.2,409.8 L263.5,408.3 L264.6,407.1 L265.4,406.1 L267.5,405.3 L268.3,403.9 L269.5,403.4 L270.3,401.7 L272.4,400.5 L273.3,399.6 L273.1,400.6 L274.2,400.6 L274.6,401.9 L274.7,402.3 L275.7,402.2 L275.3,403.1 L276.2,404.0 L276.8,404.5 L277.7,404.9 L277.9,405.2 L277.8,406.2 L277.4,407.3 L277.4,408.3 L275.3,408.9 L273.8,408.9 L272.7,409.7 L270.9,410.1 L269.2,410.9 L266.9,410.6 L265.5,410.5 L264.5,411.7 L262.4,411.7 L261.3,411.6 L259.6,411.7 L258.6,412.3 L256.9,412.7" fill="none" stroke="#2b8a3e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <g id="bud">
+      <path id="s15" d="M262.3,402.6 L261.4,405.5 L259.1,408.3 L255.1,409.8 L251.2,408.9 L249.5,405.8 L249.2,402.8 L251.6,400.0 L254.4,398.1 L257.9,398.8 L261.0,401.9 L261.8,404.8" fill="none" stroke="#c2255c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <g id="petals" opacity="0" fill="none" stroke="#c2255c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path id="p1" d="M256,404 C250,397 251,390 256,386 C261,391 262,397 256,404"/>
+        <path id="p2" d="M256,404 C264,398 272,400 275,406 C268,410 262,410 256,404"/>
+        <path id="p3" d="M256,404 C249,410 242,409 238,403 C244,398 250,399 256,404"/>
+        <path id="p4" d="M256,404 C253,413 257,419 264,421 C267,413 263,408 256,404"/>
+      </g>
+    </g>
+  </g>
+
+  <rect id="dim" width="512" height="512" fill="#1d1d1f" opacity="0" pointer-events="none"/>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 6.0;
+  const $ = (id) => document.getElementById(id);
+
+  const cloud = $("cloud");
+  const cloudMask = $("cloudMask");
+  const sun = $("sun");
+  const rain = $("rain");
+  const plant = $("plant");
+  const bud = $("bud");
+  const petals = $("petals");
+  const dim = $("dim");
+
+  const rainDrops = ["r1","r2","r3","r4","r5","r6","r7","r8","r9"].map($);
+
+  function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  function smooth(x) {
+    x = clamp(x, 0, 1);
+    return x * x * (3 - 2 * x);
+  }
+  function easeOutBack(x) {
+    x = clamp(x, 0, 1);
+    const c1 = 1.70158, c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+  function easeOutCubic(x) {
+    x = clamp(x, 0, 1);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  window.ksaRender = function(t) {
+    t = clamp(t, 0, DURATION);
+
+    /* Beat 1: cloud drifts right, slightly bobbing, to cover the sun */
+    const drift = smooth(t / 2.0);
+    const cloudX = 225 * drift;
+    const cloudY = drift === 0 ? 0 : Math.sin(t * Math.PI * 1.25) * 2.2 * drift;
+    cloud.setAttribute("transform", (cloudX === 0 && cloudY === 0) ? "" : `translate(${cloudX.toFixed(3)} ${cloudY.toFixed(3)})`);
+    cloudMask.setAttribute("opacity", t <= 0 ? "0" : (0.98 * drift).toFixed(3));
+
+    /* Sun loses cheer while covered */
+    const sunFade = smooth((t - 0.65) / 1.25);
+    sun.setAttribute("opacity", (1 - 0.55 * sunFade).toFixed(3));
+
+    const dimIn = smooth((t - 0.75) / 1.25);
+    const dimOutForFlower = smooth((t - 4.15) / 1.3);
+    const dimAmt = 0.20 * dimIn * (1 - 0.75 * dimOutForFlower);
+    dim.setAttribute("opacity", dimAmt.toFixed(3));
+
+    /* Beat 2: rain falls from the cloud; each drop is offset for looping motion */
+    const rainWindow = smooth((t - 1.85) / 0.35) * (1 - smooth((t - 3.85) / 0.45));
+    rain.setAttribute("opacity", rainWindow.toFixed(3));
+    const baseX = cloudX;
+    for (let i = 0; i < rainDrops.length; i++) {
+      const phase = (t * 1.65 + i * 0.23) % 1;
+      const fall = phase * 82;
+      const sway = Math.sin((phase + i) * Math.PI * 2) * 2.5;
+      const op = rainWindow * (0.25 + 0.75 * (1 - Math.abs(phase - 0.5) * 1.2));
+      rainDrops[i].setAttribute("transform", `translate(${(baseX + sway).toFixed(3)} ${fall.toFixed(3)})`);
+      rainDrops[i].setAttribute("opacity", clamp(op, 0, 1).toFixed(3));
+    }
+
+    /* Beat 3: sprout grows taller, then bud opens */
+    const growP = easeOutBack((t - 3.95) / 1.35);
+    const settle = t > 5.05 ? Math.sin((t - 5.05) * 12) * Math.exp(-(t - 5.05) * 3.3) * 0.035 : 0;
+    const sy = 1 + 0.62 * growP + settle;
+    const sx = 1 - 0.07 * growP;
+    const plantRot = growP > 0 ? Math.sin((t - 4.05) * 5.5) * (1 - clamp((t - 4.05) / 1.8, 0, 1)) * 2.4 : 0;
+    if (t <= 0) {
+      plant.setAttribute("transform", "");
+    } else {
+      plant.setAttribute(
+        "transform",
+        `translate(256.6 450.1) rotate(${plantRot.toFixed(3)}) scale(${sx.toFixed(3)} ${sy.toFixed(3)}) translate(-256.6 -450.1)`
+      );
+    }
+
+    const openP = easeOutCubic((t - 4.75) / 0.95);
+    const petalScale = 0.15 + 0.85 * openP;
+    petals.setAttribute("opacity", openP <= 0 ? "0" : openP.toFixed(3));
+    petals.setAttribute(
+      "transform",
+      `translate(256 404) scale(${petalScale.toFixed(3)} ${petalScale.toFixed(3)}) rotate(${(-8 + 8 * openP).toFixed(3)}) translate(-256 -404)`
+    );
+
+    /* Bud gives a tiny pop as petals appear */
+    const budPop = openP > 0 ? 1 + Math.sin(openP * Math.PI) * 0.12 : 1;
+    bud.setAttribute(
+      "transform",
+      budPop === 1 ? "" : `translate(256 404) scale(${budPop.toFixed(3)} ${budPop.toFixed(3)}) translate(-256 -404)`
+    );
+
+    /* Keep first frame exactly the supplied drawing */
+    if (t === 0) {
+      cloud.setAttribute("transform", "");
+      cloudMask.setAttribute("opacity", "0");
+      sun.setAttribute("opacity", "1");
+      rain.setAttribute("opacity", "0");
+      for (let i = 0; i < rainDrops.length; i++) {
+        rainDrops[i].setAttribute("transform", "");
+        rainDrops[i].setAttribute("opacity", "1");
+      }
+      plant.setAttribute("transform", "");
+      bud.setAttribute("transform", "");
+      petals.setAttribute("opacity", "0");
+      petals.setAttribute("transform", "");
+      dim.setAttribute("opacity", "0");
+    }
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 6.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

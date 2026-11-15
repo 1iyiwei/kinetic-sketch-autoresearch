@@ -1,0 +1,291 @@
+{
+  "cases": {
+    "spring_mass": {
+      "intent": "Textbook diagram: the block oscillates horizontally on the spring, which stretches and compresses with it.",
+      "category": "diagram",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 3.75,
+          "judge": 3.67,
+          "best_score_by_round": [
+            3.75
+          ],
+          "issue": "The block and spring do move horizontally, but the 4 s overview does not read as a clean repeated oscillator. The block reaches a rightward position by 0.58s, then later poses at 1.17s, 1.75s, 2.25s, 2.83s, 3.42s, and 4.00s are irregular rather than a clear sinusoidal back-and-forth cycle.",
+          "file": "spring_mass/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 3.0,
+          "judge": 3.33,
+          "best_score_by_round": [
+            3.0
+          ],
+          "issue": "The block does not visibly oscillate horizontally over the full 4.0 s. In the overview it drifts only slightly rightward from t=0.00s to about t=1.75s, then slightly left/right, but there is no clear back-and-forth periodic motion.",
+          "file": "spring_mass/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.75,
+          "judge": 4.08,
+          "best_score_by_round": [
+            3.75,
+            4.5,
+            4.75
+          ],
+          "issue": "The block does oscillate horizontally and the spring stretches/compresses with it throughout the overview, e.g. stretched at 0.58s and more compressed around 1.17s/3.42s.",
+          "file": "spring_mass/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "windmill": {
+      "intent": "The windmill blades spin steadily around the hub while the tower stays still.",
+      "category": "sketch",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.5,
+          "judge": 4.5,
+          "best_score_by_round": [
+            4.5
+          ],
+          "issue": "The blades do spin continuously around the hub, and the tower/base remain essentially still throughout the overview and the 0.00s\u20130.58s consecutive strip.",
+          "file": "windmill/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 4.5,
+          "judge": 4.58,
+          "best_score_by_round": [
+            4.5
+          ],
+          "issue": "The blades do spin steadily around the hub through the full 4.0 s, and the tower/ground remain essentially still.",
+          "file": "windmill/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.75,
+          "judge": 4.58,
+          "best_score_by_round": [
+            3.75,
+            4.5,
+            4.75
+          ],
+          "issue": "The blades do spin steadily around the central hub for the full 4.0s, and the tower/base remain essentially still.",
+          "file": "windmill/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "fish": {
+      "intent": "The fish swims across the frame from right to left, wagging its tail; the bubbles drift upward.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 3.0,
+          "judge": 3.25,
+          "best_score_by_round": [
+            3.0
+          ],
+          "issue": "The fish does not swim across the frame from right to left. In the overview it stays near the same horizontal position early, then only around 2.25s\u20134.00s the body drifts left until it is partly cut off by the left edge; it never performs a clear full right-to-left traverse across the frame.",
+          "file": "fish/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 3.5,
+          "judge": 2.92,
+          "best_score_by_round": [
+            3.5
+          ],
+          "issue": "The fish does travel from right to left across the frame, especially visible from 0.58s through 4.00s, and the tail changes shape enough to read as wagging.",
+          "file": "fish/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 3.75,
+          "judge": 3.5,
+          "best_score_by_round": [
+            3.5,
+            3.75,
+            3.75
+          ],
+          "issue": "The fish does swim from right to left over 4.0s and the tail wags visibly in the consecutive strip from 0.08s to 0.58s, but the body mostly slides rigidly with little body undulation, making the swimming feel mechanical.",
+          "file": "fish/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "heart_logo": {
+      "intent": "Logo animation: the heart beats twice (quick double pulse) and the highlight glints.",
+      "category": "logo",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.0,
+          "judge": 2.5,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The heart does beat/pulse, but the intended quick double pulse is not clearly readable in the sampled timing. In the overview, the heart is larger around 1.17s, returns by 1.75s, then appears smaller/lower at 2.25s and normal again later, which reads more like a slow single swell with a later dip rather than two quick beats.",
+          "file": "heart_logo/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 3.75,
+          "judge": 3.5,
+          "best_score_by_round": [
+            3.75
+          ],
+          "issue": "Only one beat is visible: the heart grows to a larger pose around 0.50\u20130.58s, then is back to normal by 1.17s and remains essentially static through 4.00s. The requested quick double pulse does not happen.",
+          "file": "heart_logo/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 3.33,
+          "best_score_by_round": [
+            3.75,
+            4.0,
+            4.0
+          ],
+          "issue": "The heart does perform a quick double pulse in the first half-second: it enlarges around 0.17s, contracts by 0.33s, enlarges again around 0.42s, and returns near normal by 0.58s. However, the beats are very subtle and the second pulse is only slightly distinct from the settle, so the 'double beat' could read weakly.",
+          "file": "heart_logo/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "bolt_logo": {
+      "intent": "Logo animation: the cloud drifts in, the lightning bolt strikes down with a flash, and everything settles.",
+      "category": "logo",
+      "anchor": "end",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.5,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.5
+          ],
+          "issue": "At 0.00s the frame is completely blank, and the cloud only becomes faintly visible around 0.17s; this makes the entrance feel like a fade-in plus drift rather than a clearly staged cloud drifting in from offscreen.",
+          "file": "bolt_logo/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 4.0,
+          "judge": 3.58,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "0.00s\u20130.25s: the frame is essentially blank, so the cloud drift-in has a delayed start and the logo reads inactive for the first quarter second.",
+          "file": "bolt_logo/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 4.0,
+          "best_score_by_round": [
+            4.0,
+            4.0,
+            4.0
+          ],
+          "issue": "At 0.00s the frame is blank, then the cloud appears very faint and partially off the left edge at 0.08s before drifting in through 0.58s. The cloud drift-in intent is clear, but the start feels more like a fade/slide combined than a clean drift.",
+          "file": "bolt_logo/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "car": {
+      "intent": "The car drives to the right and out of the frame, its wheels rolling in step with its speed and the body bobbing slightly.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.75,
+          "judge": 4.08,
+          "best_score_by_round": [
+            4.75
+          ],
+          "issue": "The car clearly drives to the right and exits the frame by about 2.8s, with wheels rotating in step with the translation in the consecutive strip from 0.00s to 0.58s.",
+          "file": "car/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 4.0,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The car does drive right and fully exits by 4.00s, but it starts with a long near-hold: from 0.00s to about 0.25s in the consecutive strip the body barely advances, so the departure feels delayed rather than a clean drive-off.",
+          "file": "car/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.25,
+            4.5,
+            4.5
+          ],
+          "issue": "The car clearly drives right and exits by 4.00s, with wheels rotating consistently in the consecutive strip from 0.00s to 0.58s.",
+          "file": "car/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "wave_logo": {
+      "intent": "Logo intro: the three wave stripes draw on from left to right one after another, then the finished logo ripples gently once and settles.",
+      "category": "logo",
+      "anchor": "end",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.0,
+          "judge": 4.0,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The stripes do draw on sequentially: the top stripe begins around 0.25s and is mostly complete by 0.58s; the middle appears by 1.17s and the bottom by 2.25s. However, the draw-on is not cleanly left-to-right at the very start: at 0.25s the first visible top-stripe segment appears as a short floating piece around the middle-right rather than starting from the left end.",
+          "file": "wave_logo/one_shot.html"
+        },
+        "one_shot+train-v2_select": {
+          "run": "20261114-154104-one_shot+train-v2_select",
+          "critic": 3.75,
+          "judge": 4.17,
+          "best_score_by_round": [
+            3.75
+          ],
+          "issue": "At 0.00s\u20130.17s the logo is blank, then the top stripe appears as a small segment around 0.17s rather than beginning visibly at the far left edge of the stripe; the draw-on start feels delayed and not clearly anchored to the stripe\u2019s left endpoint.",
+          "file": "wave_logo/one_shot+train-v2_select.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 4.17,
+          "best_score_by_round": [
+            4.5,
+            4.5,
+            4.5
+          ],
+          "issue": "At 0.00s the logo area is completely blank, then the top stripe begins drawing between 0.08s and 0.17s; this fits the build-on intro, but the very first visible mark pops in as a short dash at 0.17s rather than starting from a tiny tapered/rounded left endpoint.",
+          "file": "wave_logo/loop_k2_b1_c2_r2.html"
+        }
+      }
+    }
+  }
+}

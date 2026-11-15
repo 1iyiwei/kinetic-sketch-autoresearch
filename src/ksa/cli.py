@@ -323,7 +323,25 @@ def main():
     ls.add_argument("--with", dest="with_runs", nargs="+", required=True, help="judged runs with selected lessons")
     ls.add_argument("--prune-to", help="write a playbook without lessons whose mean effect is negative")
     ls.add_argument("--min-uses", type=int, default=2)
+    ex = sub.add_parser("export", help="copy final programs of runs into results/<name>, playable")
+    ex.add_argument("run_dirs", nargs="+", help="run folders; append =label to rename a method")
+    ex.add_argument("--name", required=True)
+    ex.add_argument("--cases", help="only these case ids")
+    et = sub.add_parser("export-tree", help="copy every candidate of one search into results/<name>, playable")
+    et.add_argument("run_dir")
+    et.add_argument("case")
+    et.add_argument("--name", required=True)
     args = p.parse_args()
+    if args.cmd in ("export", "export-tree"):
+        from . import export as exp
+        by_id = {c["id"]: c for c in load_cases(None)}
+        out = ROOT / "results" / args.name
+        if args.cmd == "export":
+            only = set(args.cases.split(",")) if args.cases else None
+            print(exp.export_runs(args.run_dirs, out, by_id, CASES_DIR, only))
+        else:
+            print(exp.export_tree(Path(args.run_dir), args.case, out, by_id, CASES_DIR))
+        return
     if args.cmd == "lessons":
         from . import lessons as lsn
         pb = pbk.load(Path(args.playbook))

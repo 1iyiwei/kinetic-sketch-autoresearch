@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning across drawings · Kinetic Sketch Autoresearch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css"></head>
+<body><main class="stage">
+
+<div class="eyebrow">Outer loop · the playbook</div>
+<h2>Lessons in the prompt help when they fit, but don't reliably transfer</h2>
+<div class="row">
+  <div class="col grow">
+    <p>After each training drawing, an analyst reads the search tree and writes general lessons, e.g. <i>"for a released
+    oscillator drawn at an extreme, start from that pose with zero velocity"</i>. A selector gives each new drawing only the
+    lessons that match its motion.</p>
+    <p class="small muted">Helped where a lesson fit: the spring–mass gained in every run from the pendulum's lessons.
+    Hurt where one didn't: the windmill got launch and bounce advice and turned "strobey".</p>
+  </div>
+  <table>
+    <tr><th>One-shot on held-out drawings</th><th>5 test</th><th>7 test</th></tr>
+    <tr><td>no playbook</td><td class="num">3.60</td><td class="num">3.78</td></tr>
+    <tr><td>all lessons</td><td class="num">3.68</td><td class="num">—</td></tr>
+    <tr><td>selected lessons</td><td class="num">3.74</td><td class="num">3.63</td></tr>
+    <tr><td>selected, pruned on val (identical lessons)</td><td class="num">—</td><td class="num">3.74</td></tr>
+  </table>
+</div>
+<p class="small">Two runs with identical lessons differ by 0.11: run-to-run noise is as large as every playbook effect.
+The inner loop's gain (+0.21 to +0.33) is the one that holds.</p>
+<nav class="nav"><a rel="prev" href="09-anchor.html" class="">← previous</a><span>10 / 12</span><a rel="next" href="11-limits.html" class="">next →</a></nav>
+</main><script src="nav.js"></script></body></html>

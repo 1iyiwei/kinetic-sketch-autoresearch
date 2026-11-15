@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <!-- original ramp / floor path, reused verbatim -->
+  <path id="s1" d="M39.5,150.5 L62.3,169.3 L84.6,188.4 L107.1,208.1 L128.8,226.6 L151.7,245.8 L174.3,264.4 L196.5,284.1 L218.3,304.1 L241.2,322.6 L262.8,342.0 L285.8,361.1 L307.6,380.3 L329.2,399.2 L340.8,399.4 L352.1,399.1 L363.5,399.2 L374.9,398.7 L387.2,399.0 L399.0,398.8 L411.3,399.5 L422.2,399.4 L434.1,399.8 L446.2,399.7 L458.1,400.0 L469.1,400.2 L481.0,400.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- little sketchy motion accents, invisible on anchor frame -->
+  <g id="accents" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0">
+    <path id="speed1" d="M42 122 L31 113"/>
+    <path id="speed2" d="M50 105 L37 98"/>
+    <path id="dust1" d="M353 392 C347 389 342 389 337 393"/>
+    <path id="dust2" d="M379 393 C373 390 367 391 363 395"/>
+    <path id="bounceMark" d="M418 393 C424 389 431 389 437 394"/>
+  </g>
+
+  <!-- original ball path, reused verbatim -->
+  <path id="s2" d="M102.8,120.4 L102.9,123.1 L103.9,126.2 L103.4,129.5 L103.4,133.0 L102.4,136.0 L101.4,139.3 L99.9,141.9 L98.1,143.8 L95.3,146.5 L93.7,148.8 L90.9,150.0 L88.1,152.3 L85.5,153.3 L82.9,153.5 L79.5,154.5 L76.3,154.3 L72.7,153.8 L70.3,152.2 L67.6,151.5 L65.2,150.2 L62.8,148.3 L60.3,145.9 L57.4,143.9 L55.7,140.7 L54.2,137.7 L52.9,134.5 L52.4,131.6 L52.3,128.3 L51.7,124.8 L51.8,121.8 L53.5,119.3 L55.2,116.8 L56.4,114.4 L58.6,111.1 L60.1,108.1 L63.1,105.8 L65.3,104.5 L68.1,102.7 L70.8,102.0 L73.7,101.3 L77.4,101.2 L80.5,101.5 L83.1,102.1 L86.3,102.8 L88.8,104.9 L91.9,106.2 L94.7,108.8 L96.4,110.4 L98.1,113.4 L99.5,116.5 L101.4,119.5 L102.1,123.2 L103.3,126.2 L103.1,129.5 L102.8,132.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+<script>
+(function () {
+  const ball = document.getElementById("s2");
+  const accents = document.getElementById("accents");
+  const speed1 = document.getElementById("speed1");
+  const speed2 = document.getElementById("speed2");
+  const dust1 = document.getElementById("dust1");
+  const dust2 = document.getElementById("dust2");
+  const bounceMark = document.getElementById("bounceMark");
+
+  const DURATION = 4.0;
+
+  // Approximate visual center of the original sketched ball.
+  const cx0 = 77.8;
+  const cy0 = 127.8;
+  const r = 26.0;
+
+  function clamp(x, a, b) {
+    return Math.max(a, Math.min(b, x));
+  }
+
+  function smoothstep(x) {
+    x = clamp(x, 0, 1);
+    return x * x * (3 - 2 * x);
+  }
+
+  function easeInQuad(x) {
+    x = clamp(x, 0, 1);
+    return x * x;
+  }
+
+  function easeOutCubic(x) {
+    x = clamp(x, 0, 1);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  function easeInCubic(x) {
+    x = clamp(x, 0, 1);
+    return x * x * x;
+  }
+
+  function lerp(a, b, p) {
+    return a + (b - a) * p;
+  }
+
+  function setPathOpacity(el, op) {
+    el.setAttribute("opacity", String(clamp(op, 0, 1)));
+  }
+
+  window.ksaRender = function(t) {
+    t = clamp(t, 0, DURATION);
+
+    let x = cx0;
+    let y = cy0;
+    let angle = 0;
+    let sx = 1;
+    let sy = 1;
+
+    // The path is staged so t=0 is absolutely identical to the supplied drawing.
+    if (t <= 0) {
+      ball.setAttribute("transform", "");
+      accents.setAttribute("opacity", "0");
+      return;
+    }
+
+    /*
+      Motion plan:
+      0.00-0.35: tiny anticipation into the slope, just enough to start rolling.
+      0.35-2.45: accelerates down the ramp.
+      2.45-3.15: leaves the ramp/floor corner and makes a small bounce.
+      3.15-4.00: rolls out, wobble decays, comes to rest.
+    */
+
+    if (t < 0.35) {
+      const p = smoothstep(t / 0.35);
+      // A tiny nudge, preserving the hand-drawn sketch feel.
+      x = lerp(cx0, 86, p);
+      y = lerp(cy0, 135, p);
+      angle = lerp(0, 12, p);
+      sx = 1 + 0.025 * Math.sin(p * Math.PI);
+      sy = 1 - 0.025 * Math.sin(p * Math.PI);
+    } else if (t < 2.45) {
+      const u = (t - 0.35) / 2.10;
+      const p = easeInCubic(u); // speeds up down the ramp
+
+      const x1 = 86, y1 = 135;
+      const x2 = 344, y2 = 373;
+      x = lerp(x1, x2, p);
+      y = lerp(y1, y2, p);
+
+      // Roll angle proportional to distance travelled.
+      const dist = Math.hypot(x - x1, y - y1);
+      angle = 12 + (dist / r) * 180 / Math.PI;
+
+      // Very slight squash when it gains speed near the bottom.
+      const squash = 0.018 * Math.sin(clamp(u,0,1) * Math.PI) * u;
+      sx = 1 + squash;
+      sy = 1 - squash;
+    } else if (t < 3.15) {
+      const u = (t - 2.45) / 0.70;
+      const p = easeOutCubic(u);
+
+      const x1 = 344, yFloor = 373;
+      const x2 = 405;
+      x = lerp(x1, x2, p);
+
+      // One small cartoon bounce above the floor, returning to floor contact.
+      const bounce = Math.sin(Math.PI * u) * 24 * (1 - 0.25 * u);
+      y = yFloor - bounce;
+
+      const dist = Math.hypot(x - x1, bounce);
+      angle = 12 + (Math.hypot(344 - 86, 373 - 135) / r) * 180 / Math.PI
+            + (dist / r) * 180 / Math.PI;
+
+      // Squash at the landing end of the bounce.
+      const landing = Math.exp(-Math.pow((u - 0.96) / 0.12, 2));
+      sx = 1 + 0.09 * landing;
+      sy = 1 - 0.08 * landing;
+    } else {
+      const u = (t - 3.15) / 0.85;
+      const p = easeOutCubic(u);
+      const x1 = 405, x2 = 433;
+      x = lerp(x1, x2, p);
+      y = 373;
+
+      const baseAngle = 12 + (Math.hypot(344 - 86, 373 - 135) / r) * 180 / Math.PI
+                      + (Math.hypot(405 - 344, 0) / r) * 180 / Math.PI;
+      angle = baseAngle + ((x - x1) / r) * 180 / Math.PI;
+
+      // Settling wobble fades out.
+      const wob = Math.sin(u * Math.PI * 5) * (1 - u);
+      angle += wob * 7;
+      sx = 1 + 0.025 * Math.abs(wob);
+      sy = 1 - 0.020 * Math.abs(wob);
+    }
+
+    const dx = x - cx0;
+    const dy = y - cy0;
+
+    // Scale around the original center, then rotate around the same center, then translate.
+    ball.setAttribute(
+      "transform",
+      "translate(" + dx.toFixed(3) + " " + dy.toFixed(3) + ") " +
+      "rotate(" + angle.toFixed(3) + " " + cx0 + " " + cy0 + ") " +
+      "translate(" + cx0 + " " + cy0 + ") " +
+      "scale(" + sx.toFixed(4) + " " + sy.toFixed(4) + ") " +
+      "translate(" + (-cx0) + " " + (-cy0) + ")"
+    );
+
+    // Hand-drawn motion accents, kept invisible at the anchor.
+    let accOp = 0;
+
+    const speedOp = Math.max(
+      0,
+      Math.sin(clamp((t - 0.55) / 1.45, 0, 1) * Math.PI)
+    ) * 0.45;
+
+    const dustOp = Math.max(
+      0,
+      Math.sin(clamp((t - 2.25) / 0.65, 0, 1) * Math.PI)
+    ) * 0.65;
+
+    const bounceOp = Math.max(
+      0,
+      Math.sin(clamp((t - 2.85) / 0.65, 0, 1) * Math.PI)
+    ) * 0.55;
+
+    accOp = Math.max(speedOp, dustOp, bounceOp);
+    accents.setAttribute("opacity", String(accOp.toFixed(3)));
+
+    setPathOpacity(speed1, speedOp);
+    setPathOpacity(speed2, speedOp * 0.8);
+    setPathOpacity(dust1, dustOp);
+    setPathOpacity(dust2, dustOp * 0.75);
+    setPathOpacity(bounceMark, bounceOp);
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

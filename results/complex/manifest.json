@@ -1,0 +1,159 @@
+{
+  "cases": {
+    "newtons_cradle": {
+      "intent": "Newton's cradle: the raised left ball swings down and strikes the row; the right ball swings out and back, and the exchange repeats while the middle balls stay nearly still.",
+      "category": "diagram",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "complex",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 3.0,
+          "judge": 2.33,
+          "best_score_by_round": [
+            3.0
+          ],
+          "issue": "The left ball does not swing down into the row in the visible first motion. In the consecutive strip from 0.00s to 0.58s it moves further left and partially off-frame instead of descending toward the middle balls; by 0.58s it has vanished off the left edge while the row remains still.",
+          "file": "newtons_cradle/one_shot.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 3.0,
+          "judge": 2.33,
+          "best_score_by_round": [
+            3.0,
+            3.0,
+            3.0
+          ],
+          "issue": "The left raised ball does swing inward over the first half-second: in the consecutive strip it moves from far left at 0.00s toward the row by 0.58s, but it is still well short of contacting the row at 0.58s.",
+          "file": "newtons_cradle/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "gears": {
+      "intent": "The two meshing gears turn in opposite directions; the small gear turns faster in proportion to its size, and the teeth stay meshed without passing through each other.",
+      "category": "diagram",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "complex",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 3.25,
+          "judge": 4.0,
+          "best_score_by_round": [
+            3.25
+          ],
+          "issue": "The gears do rotate in opposite directions, visible in the orientation marks from 0.00s to 0.58s and across the overview, but the tooth contact is not mechanically meshed: at the contact point around 0.58s, 1.17s, and 2.25s the teeth visually overlap or pass through one another instead of alternating tooth-to-gap contact.",
+          "file": "gears/one_shot.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.25,
+          "judge": 3.67,
+          "best_score_by_round": [
+            4.25,
+            4.25,
+            4.25
+          ],
+          "issue": "The gears do rotate in opposite directions: the large gear's marker advances clockwise while the small gear's marker advances counterclockwise, and the small gear visibly turns faster, especially from 0.00s to 0.58s.",
+          "file": "gears/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "dominoes": {
+      "intent": "The ball rolls right into the first domino; the dominoes topple one after another in a chain, and the last one falls flat.",
+      "category": "sketch",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "complex",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 2.75,
+          "judge": 3.67,
+          "best_score_by_round": [
+            2.75
+          ],
+          "issue": "The ball does roll right in the first 0.58s, but it stops short of visibly striking the first domino; at 0.58s there is still a small gap, and by 1.17s the first domino has already fallen without a clear contact moment.",
+          "file": "dominoes/one_shot.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 3.75,
+          "judge": 4.0,
+          "best_score_by_round": [
+            3.75,
+            3.75,
+            3.75
+          ],
+          "issue": "The ball does move right in the consecutive strip from 0.00s to 0.58s, but the actual impact with the first domino is not clearly shown; by 1.17s several dominoes are already falling while the ball appears only just at the start of the row.",
+          "file": "dominoes/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "cat_box": {
+      "intent": "The cat crouches, leaps in an arc onto the box, lands with a little squash, and sits on top.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "complex",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.0,
+          "judge": 3.5,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The cat does crouch before takeoff: in the consecutive strip the body/head lower gradually from 0.33s to 0.58s, and the overview shows the crouch at 0.58s.",
+          "file": "cat_box/one_shot.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 3.58,
+          "best_score_by_round": [
+            4.0,
+            4.0,
+            4.0
+          ],
+          "issue": "The crouch/anticipation is very weak: from 0.00s to 0.50s in the consecutive strip the cat barely lowers or compresses before takeoff, so the leap feels under-prepared.",
+          "file": "cat_box/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "story": {
+      "intent": "A three-beat story: the cloud drifts over the sun and the scene dims, rain falls from the cloud, then the sprout grows taller and its bud opens into a flower.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 6.0,
+      "split": "complex",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-151647-one_shot",
+          "critic": 4.0,
+          "judge": 4.17,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "At 1.75s through 6.00s the cloud reaches the sun area and the scene dims, but the sun disk and rays remain visibly drawn on top of/through the cloud, so the cloud does not convincingly pass over and occlude the sun.",
+          "file": "story/one_shot.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-151647-loop_k2_b1_c2_r2",
+          "critic": 3.75,
+          "judge": 4.0,
+          "best_score_by_round": [
+            3.75,
+            3.75,
+            3.75
+          ],
+          "issue": "No rain is visible at any sampled time; the cloud covers the sun from about 1.75s onward, but there are no falling drops between the cloud and ground during the intended rain beat.",
+          "file": "story/loop_k2_b1_c2_r2.html"
+        }
+      }
+    }
+  }
+}

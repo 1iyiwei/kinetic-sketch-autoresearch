@@ -1,0 +1,70 @@
+{
+  "cases": {
+    "sun_logo": {
+      "intent": "Logo intro: the sun disc scales up from nothing, the rays pop in one by one around it, then the whole logo settles with a gentle pulse.",
+      "category": "logo",
+      "anchor": "end",
+      "duration": 4.0,
+      "split": "train",
+      "methods": {
+        "before_anchor_fix": {
+          "run": "20261114-130842-loop_k2_b1_c2_r2",
+          "critic": 3.75,
+          "judge": 2.75,
+          "best_score_by_round": [
+            3.75,
+            3.75,
+            3.75
+          ],
+          "issue": "At 0.00s the full completed logo is visible, then by 0.08s it disappears to blank before the disc begins scaling up at 0.17s. Even though the measured first frame matches the drawing, this creates a visible flash/reset rather than a clean logo intro starting from nothing.",
+          "file": "sun_logo/before_anchor_fix.html"
+        },
+        "after_anchor_fix": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.5,
+            4.5,
+            4.5
+          ],
+          "issue": "At 1.17s the rays are not clearly popping in one by one: multiple rays are already present at the same time around the disc, including the right, bottom, lower-right, and a very faint lower-left ray.",
+          "file": "sun_logo/after_anchor_fix.html"
+        }
+      }
+    },
+    "bolt_logo": {
+      "intent": "Logo animation: the cloud drifts in, the lightning bolt strikes down with a flash, and everything settles.",
+      "category": "logo",
+      "anchor": "end",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "before_anchor_fix": {
+          "run": "20261114-130842-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 2.92,
+          "best_score_by_round": [
+            3.5,
+            3.5,
+            4.0
+          ],
+          "issue": "Cloud drift-in is visible, but it starts from the exact logo pose at 0.00s, then immediately jumps/teleports leftward: in the consecutive strip the bolt is present at 0.00s, but by 0.08s the bolt has vanished and the cloud is partly clipped off the left edge. This makes the opening read as a reset rather than a smooth drift-in from offscreen.",
+          "file": "bolt_logo/before_anchor_fix.html"
+        },
+        "after_anchor_fix": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.0,
+            4.5,
+            4.5
+          ],
+          "issue": "At 0.00s the scene is completely empty, then the cloud appears partially from the left at 0.08s and drifts into place by about 0.33\u20130.58s. The cloud drift reads clearly, but the first appearance is more of a fade/slide-in than a fully continuous offscreen entrance.",
+          "file": "bolt_logo/after_anchor_fix.html"
+        }
+      }
+    }
+  }
+}

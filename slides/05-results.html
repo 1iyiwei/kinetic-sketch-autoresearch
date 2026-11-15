@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sampling more vs. revising · Kinetic Sketch Autoresearch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css"></head>
+<body><main class="stage">
+
+<div class="eyebrow">Results · 10 drawings · equal generator calls</div>
+<h2>Sampling more doesn't help. Looking and revising does.</h2>
+<div class="bars"><div class="lab">One-shot<small>1 program</small></div><div class="track"><div class="fill" style="width:38.7%"></div></div><div class="val">3.58</div><div class="lab">Best-of-6<small>6 programs, keep the critic's best</small></div><div class="track"><div class="fill" style="width:40.0%"></div></div><div class="val">3.60</div><div class="lab">Loop<small>2 samples + 4 revisions</small></div><div class="track"><div class="fill lead" style="width:60.7%"></div></div><div class="val">3.91</div><div></div><div class="axis"><span>3.0</span><span>held-out judge score (1–5)</span><span>4.5</span></div><div></div></div>
+<p class="small">Held-out judge: a different model (gpt-5.4), 3× per animation. Best-of-6 raises the in-loop critic's score
+(3.75 → 4.03) but not the judge's: picking the max of a noisy critic mostly
+selects for its noise. The loop's gain holds under both. It wins on 7 of 10 drawings.</p>
+<nav class="nav"><a rel="prev" href="04-loop.html" class="">← previous</a><span>5 / 12</span><a rel="next" href="06-side-by-side.html" class="">next →</a></nav>
+</main><script src="nav.js"></script></body></html>

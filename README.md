@@ -208,7 +208,7 @@ scores zero, and its errors are fed back.
   scored that as jarring; the loop lost on both intro logos. Each case now declares an *anchor* frame (the first
   frame, or the last for build-up intros). Sun went 2.75 → 4.25 and bolt 2.92 → 4.25 under the judge.
 
-Design, metrics and team roles: [docs/design.md](docs/design.md). Shareable result pages and demo material: [docs/demos.md](docs/demos.md).
+Slides: [`slides/`](slides/README.md) (`open slides/index.html`). Replayable results: [`results/`](results/README.md). Design, metrics and team roles: [docs/design.md](docs/design.md). Shareable result pages and demo material: [docs/demos.md](docs/demos.md).
 
 ## Provenance
 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <path id="s1" d="M39.5,150.5 L62.3,169.3 L84.6,188.4 L107.1,208.1 L128.8,226.6 L151.7,245.8 L174.3,264.4 L196.5,284.1 L218.3,304.1 L241.2,322.6 L262.8,342.0 L285.8,361.1 L307.6,380.3 L329.2,399.2 L340.8,399.4 L352.1,399.1 L363.5,399.2 L374.9,398.7 L387.2,399.0 L399.0,398.8 L411.3,399.5 L422.2,399.4 L434.1,399.8 L446.2,399.7 L458.1,400.0 L469.1,400.2 L481.0,400.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- small sketchy motion accents, invisible at t=0 -->
+  <g id="speedLines" opacity="0" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path id="m1" d="M38,114 L22,101"/>
+    <path id="m2" d="M48,96 L35,87"/>
+    <path id="m3" d="M34,133 L17,119"/>
+  </g>
+
+  <g id="dust" opacity="0" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path id="d1" d="M343,396 C338,392 333,392 329,396"/>
+    <path id="d2" d="M363,400 C359,396 354,396 350,400"/>
+    <path id="d3" d="M386,399 C382,396 377,396 373,400"/>
+  </g>
+
+  <path id="s2" d="M102.8,120.4 L102.9,123.1 L103.9,126.2 L103.4,129.5 L103.4,133.0 L102.4,136.0 L101.4,139.3 L99.9,141.9 L98.1,143.8 L95.3,146.5 L93.7,148.8 L90.9,150.0 L88.1,152.3 L85.5,153.3 L82.9,153.5 L79.5,154.5 L76.3,154.3 L72.7,153.8 L70.3,152.2 L67.6,151.5 L65.2,150.2 L62.8,148.3 L60.3,145.9 L57.4,143.9 L55.7,140.7 L54.2,137.7 L52.9,134.5 L52.4,131.6 L52.3,128.3 L51.7,124.8 L51.8,121.8 L53.5,119.3 L55.2,116.8 L56.4,114.4 L58.6,111.1 L60.1,108.1 L63.1,105.8 L65.3,104.5 L68.1,102.7 L70.8,102.0 L73.7,101.3 L77.4,101.2 L80.5,101.5 L83.1,102.1 L86.3,102.8 L88.8,104.9 L91.9,106.2 L94.7,108.8 L96.4,110.4 L98.1,113.4 L99.5,116.5 L101.4,119.5 L102.1,123.2 L103.3,126.2 L103.1,129.5 L102.8,132.6" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+
+  const ball = document.getElementById("s2");
+  const speedLines = document.getElementById("speedLines");
+  const dust = document.getElementById("dust");
+
+  // Approximate drawn ball center and radius from the original sketch.
+  const cx0 = 77.8;
+  const cy0 = 127.9;
+  const r = 26.5;
+
+  function clamp(x, a, b) {
+    return Math.max(a, Math.min(b, x));
+  }
+
+  function mix(a, b, u) {
+    return a + (b - a) * u;
+  }
+
+  function easeInQuad(u) {
+    return u * u;
+  }
+
+  function easeOutCubic(u) {
+    return 1 - Math.pow(1 - u, 3);
+  }
+
+  function smoothstep(u) {
+    return u * u * (3 - 2 * u);
+  }
+
+  window.ksaRender = function (t) {
+    t = clamp(t, 0, DURATION);
+
+    // The anchor frame must be the untouched SVG.
+    if (t === 0) {
+      ball.removeAttribute("transform");
+      speedLines.setAttribute("opacity", "0");
+      dust.setAttribute("opacity", "0");
+      return;
+    }
+
+    let cx, cy, dist, angleDeg;
+    let sx = 1, sy = 1;
+
+    const rampEndT = 2.45;
+
+    if (t < rampEndT) {
+      // Accelerating roll down the sketched ramp.
+      const u = t / rampEndT;
+      const s = easeInQuad(u);
+
+      cx = mix(cx0, 329.5, s);
+      cy = mix(cy0, 373.0, s);
+
+      // A tiny hand-drawn bob keeps it lively while still following the ramp.
+      cy += Math.sin(u * Math.PI * 2.2) * 1.4 * u * (1 - u);
+
+      const dx = cx - cx0;
+      const dy = cy - cy0;
+      dist = Math.sqrt(dx * dx + dy * dy);
+      angleDeg = dist / r * 180 / Math.PI;
+
+      // Slight stretch at higher speed.
+      const speedStretch = 0.035 * smoothstep(clamp((u - 0.35) / 0.65, 0, 1));
+      sx = 1 + speedStretch;
+      sy = 1 - speedStretch;
+
+      speedLines.setAttribute("opacity", String(0.55 * smoothstep(clamp((u - 0.18) / 0.55, 0, 1))));
+      speedLines.setAttribute(
+        "transform",
+        "translate(" + (cx - cx0) + " " + (cy - cy0) + ") rotate(" + angleDeg + " " + cx0 + " " + cy0 + ")"
+      );
+
+      dust.setAttribute("opacity", "0");
+    } else {
+      // Contact with the flat floor: squash, small bounce, then settle.
+      const v = (t - rampEndT) / (DURATION - rampEndT);
+      const u = clamp(v, 0, 1);
+      const e = easeOutCubic(u);
+
+      cx = mix(329.5, 424.0, e);
+
+      // Small bounce off the floor, quickly damped.
+      const bounce = Math.sin(Math.PI * 2.15 * u) * Math.exp(-3.1 * u);
+      cy = 373.0 - Math.max(0, bounce) * 21.0;
+
+      const dx1 = 329.5 - cx0;
+      const dy1 = 373.0 - cy0;
+      const preDist = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+      const floorDist = cx - 329.5;
+      dist = preDist + floorDist;
+      angleDeg = dist / r * 180 / Math.PI;
+
+      // Impact squash and rebound stretch.
+      const impact = Math.exp(-38 * u);
+      const rebound = Math.max(0, Math.sin(Math.PI * 2.15 * u)) * Math.exp(-3.0 * u);
+      sx = 1 + 0.16 * impact - 0.05 * rebound;
+      sy = 1 - 0.16 * impact + 0.05 * rebound;
+
+      speedLines.setAttribute("opacity", String(0.25 * (1 - u)));
+      speedLines.setAttribute(
+        "transform",
+        "translate(" + (cx - cx0 - 16) + " " + (cy - cy0 - 8) + ") rotate(" + angleDeg + " " + cx0 + " " + cy0 + ")"
+      );
+
+      const dustOpacity = Math.max(0, Math.sin(Math.PI * u * 2.2)) * Math.exp(-2.7 * u) * 0.75;
+      dust.setAttribute("opacity", String(dustOpacity));
+      dust.setAttribute("transform", "translate(" + (cx - 344) + " 0)");
+    }
+
+    const tx = cx - cx0;
+    const ty = cy - cy0;
+
+    // Transform keeps the original path intact: translate along path, rotate about its drawn center,
+    // then squash/stretch around the same center.
+    ball.setAttribute(
+      "transform",
+      "translate(" + tx.toFixed(3) + " " + ty.toFixed(3) + ") " +
+      "rotate(" + angleDeg.toFixed(3) + " " + cx0 + " " + cy0 + ") " +
+      "translate(" + cx0 + " " + cy0 + ") " +
+      "scale(" + sx.toFixed(4) + " " + sy.toFixed(4) + ") " +
+      "translate(" + (-cx0) + " " + (-cy0) + ")"
+    );
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

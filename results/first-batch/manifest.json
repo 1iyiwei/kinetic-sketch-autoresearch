@@ -1,0 +1,412 @@
+{
+  "cases": {
+    "ball_ramp": {
+      "intent": "The ball rolls down the ramp, speeds up, and comes to rest on the floor after a small bounce.",
+      "category": "sketch",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "train",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 3.75,
+          "judge": 3.25,
+          "best_score_by_round": [
+            3.75
+          ],
+          "issue": "The ball does move down the ramp and ends on the floor, but the roll is not visually communicated: the ball has no surface markings or deformation, so it reads more like a sliding circle than a rolling ball throughout 0.00s\u20134.00s.",
+          "file": "ball_ramp/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.0,
+          "judge": 3.5,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The ball does travel down the ramp and ends resting on the floor, but the small bounce is not clearly readable: between 2.25s and 2.83s it appears to go from the ramp/corner area to sitting on the flat floor with only speed/action lines, not a distinct compressed contact, airborne hop, and settling arc.",
+          "file": "ball_ramp/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 3.5,
+          "best_score_by_round": [
+            4.0,
+            4.0,
+            4.0
+          ],
+          "issue": "The ball does roll down the ramp and reaches the floor, but it starts almost completely still: in the consecutive strip from 0.00s to 0.25s there is essentially no visible displacement, so the acceleration is delayed rather than continuously building from the start.",
+          "file": "ball_ramp/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "pendulum": {
+      "intent": "Textbook diagram: the pendulum is released from the drawn position and swings back and forth, slowly losing amplitude.",
+      "category": "diagram",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "train",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 3.0,
+          "judge": 3.08,
+          "best_score_by_round": [
+            3.0
+          ],
+          "issue": "The pendulum is released from the drawn right-side position, but it never swings back and forth across the vertical. In the overview it stays on the right side from 0.00s through 4.00s, instead of passing through center and reaching a left-side extreme.",
+          "file": "pendulum/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 3.25,
+          "judge": 3.0,
+          "best_score_by_round": [
+            3.25
+          ],
+          "issue": "From 0.00s to 0.58s in the consecutive strip, the bob moves farther to the right instead of swinging back toward the center/left from the drawn released position.",
+          "file": "pendulum/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.25,
+          "judge": 4.25,
+          "best_score_by_round": [
+            3.0,
+            4.0,
+            4.25
+          ],
+          "issue": "The pendulum does swing from the drawn right-hand release position through center to the left and back, and the amplitude generally decays, but the damping is not fully even: by 2.25s the right swing is much smaller, while the later left swing at 3.42s still reads comparatively large.",
+          "file": "pendulum/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "spring_mass": {
+      "intent": "Textbook diagram: the block oscillates horizontally on the spring, which stretches and compresses with it.",
+      "category": "diagram",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 3.25,
+          "judge": 3.17,
+          "best_score_by_round": [
+            3.25
+          ],
+          "issue": "The block does move horizontally to the right from 0.00s to 0.58s and the spring stretches with it, but it never completes a clear oscillation. In the overview at 1.17s, 1.75s, 2.25s, 2.83s, 3.42s, and 4.00s the block stays near the displaced-right position instead of returning left and compressing the spring.",
+          "file": "spring_mass/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.25,
+          "judge": 3.17,
+          "best_score_by_round": [
+            4.25
+          ],
+          "issue": "The block does oscillate horizontally and the spring length changes with it, but the amplitude is quite small; in the overview the block only shifts a modest distance between 0.00s, 0.58s, 1.75s, and 3.42s, so the stretch/compression reads weakly for a textbook mass-spring demo.",
+          "file": "spring_mass/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.25,
+          "judge": 4.17,
+          "best_score_by_round": [
+            4.0,
+            4.25,
+            4.25
+          ],
+          "issue": "The block does oscillate horizontally and the spring visibly stretches and compresses with it, especially from 0.00s to 0.58s in the consecutive strip.",
+          "file": "spring_mass/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "windmill": {
+      "intent": "The windmill blades spin steadily around the hub while the tower stays still.",
+      "category": "sketch",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 4.0,
+          "judge": 4.5,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The blades do rotate around the hub while the tower and ground line remain essentially still throughout 0.00s\u20134.00s, satisfying the main intent.",
+          "file": "windmill/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.5,
+          "judge": 4.42,
+          "best_score_by_round": [
+            4.5
+          ],
+          "issue": "The blades do spin around the central hub for the full 4.0 s, and the tower/ground remain essentially still.",
+          "file": "windmill/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.75,
+          "judge": 4.5,
+          "best_score_by_round": [
+            4.75
+          ],
+          "issue": "The blades do spin continuously around the central hub while the tower and ground line remain essentially still throughout 0.00s\u20134.00s.",
+          "file": "windmill/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "stick_wave": {
+      "intent": "The stick figure waves hello with the raised arm, with a little bounce in the body.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "train",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 4.0,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The raised right arm does wave hello: by 0.33s-0.58s the hand/forearm changes angle and the pale motion arcs make the gesture readable.",
+          "file": "stick_wave/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.0,
+          "judge": 3.83,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The raised arm does wave: it moves from the outward raised pose at 0.00s toward a more vertical pose by 0.58s, and the overview shows repeated side-to-side positions through 4.00s. However, the requested little body bounce is barely visible; the head, torso, hips, and feet stay essentially locked in place across the overview frames from 0.00s to 4.00s.",
+          "file": "stick_wave/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 3.75,
+          "best_score_by_round": [
+            4.0,
+            4.0,
+            4.0
+          ],
+          "issue": "The raised arm does wave and greeting motion lines appear, but the actual hand/forearm movement is very small; in the overview the arm pose at 0.58s, 1.17s, 1.75s, 2.83s, and 3.42s is nearly the same, so the wave reads more from the added motion lines than from a clear oscillating hand.",
+          "file": "stick_wave/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "fish": {
+      "intent": "The fish swims across the frame from right to left, wagging its tail; the bubbles drift upward.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 3.5,
+          "judge": 2.92,
+          "best_score_by_round": [
+            3.5
+          ],
+          "issue": "The fish does swim from right to left and the tail wag is visible, especially in the consecutive strip from 0.00s to 0.58s.",
+          "file": "fish/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 3.75,
+          "judge": 3.25,
+          "best_score_by_round": [
+            3.75
+          ],
+          "issue": "The fish does travel from right to left over the 4.0 s, ending partly off the left edge by 3.42s-4.00s, and the tail wag is visible in the consecutive strip from 0.08s to 0.58s.",
+          "file": "fish/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 3.75,
+          "judge": 2.83,
+          "best_score_by_round": [
+            3.75,
+            3.75,
+            3.75
+          ],
+          "issue": "The fish does travel from right to left overall, but it exits the frame very early: by 2.25s most of the body is already off the left edge, leaving only the rear/body edge and tail visible for the second half of the animation.",
+          "file": "fish/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "rocket": {
+      "intent": "The rocket shakes on the pad with flickering flames, then launches up and out of the frame.",
+      "category": "cartoon",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "train",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 4.0,
+          "judge": 3.67,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The rocket does shake on the pad in the first strip, but the shake is very small and mostly reads as a slight positional jitter from 0.00s to 0.58s rather than a strong pre-launch vibration.",
+          "file": "rocket/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.0,
+          "judge": 3.83,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The rocket does shake on the pad early on, but the shake is extremely subtle in the consecutive strip from 0.00s to 0.58s; it reads more like slight vertical jitter than an energetic pre-launch vibration.",
+          "file": "rocket/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.0,
+          "judge": 3.83,
+          "best_score_by_round": [
+            4.0,
+            4.0,
+            4.0
+          ],
+          "issue": "The rocket does not visibly shake on the pad in the consecutive strip from 0.00s to 0.58s; its body, fins, and window remain essentially locked in the same position while only the flame changes slightly.",
+          "file": "rocket/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "sun_logo": {
+      "intent": "Logo intro: the sun disc scales up from nothing, the rays pop in one by one around it, then the whole logo settles with a gentle pulse.",
+      "category": "logo",
+      "anchor": "end",
+      "duration": 4.0,
+      "split": "train",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 4.25,
+          "judge": 3.92,
+          "best_score_by_round": [
+            4.25
+          ],
+          "issue": "Intent mostly reads: the sun disc grows from nothing at 0.00s to a full disc by about 0.58s, rays appear sequentially between about 1.17s and 2.25s, and the completed logo gently pulses from roughly 2.25s to 4.00s.",
+          "file": "sun_logo/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.5,
+          "judge": 4.08,
+          "best_score_by_round": [
+            4.5
+          ],
+          "issue": "At 0.00s to 0.58s the sun disc scales up cleanly from nothing, but the first visible change is delayed until a tiny speck at 0.08s, making the opening feel slightly empty before the growth reads.",
+          "file": "sun_logo/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.5,
+            4.5,
+            4.5
+          ],
+          "issue": "At 1.17s the rays are not clearly popping in one by one: multiple rays are already present at the same time around the disc, including the right, bottom, lower-right, and a very faint lower-left ray.",
+          "file": "sun_logo/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "heart_logo": {
+      "intent": "Logo animation: the heart beats twice (quick double pulse) and the highlight glints.",
+      "category": "logo",
+      "anchor": "start",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 3.75,
+          "judge": 3.25,
+          "best_score_by_round": [
+            3.75
+          ],
+          "issue": "The heart does pulse, but the timing does not read as a quick double beat. In the consecutive strip from 0.00s to 0.58s it mostly performs one gradual scale-up, rather than two fast thumps.",
+          "file": "heart_logo/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.0,
+          "judge": 3.25,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The heart scales up smoothly from 0.00s to 0.58s, then returns by about 1.17s, but the requested quick double pulse is not clearly visible. The overview does not show a second distinct beat; frames at 1.75s, 2.83s, 3.42s, and 4.00s are essentially idle.",
+          "file": "heart_logo/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 3.75,
+          "best_score_by_round": [
+            4.0,
+            4.25,
+            4.5
+          ],
+          "issue": "The heart does perform a quick double pulse in the first 0.5s: it expands at 0.08s\u20130.17s, contracts around 0.25s, expands again around 0.33s\u20130.42s, then settles by 0.50s\u20130.58s.",
+          "file": "heart_logo/loop_k2_b1_c2_r2.html"
+        }
+      }
+    },
+    "bolt_logo": {
+      "intent": "Logo animation: the cloud drifts in, the lightning bolt strikes down with a flash, and everything settles.",
+      "category": "logo",
+      "anchor": "end",
+      "duration": 4.0,
+      "split": "test",
+      "methods": {
+        "one_shot": {
+          "run": "20261114-131334-one_shot",
+          "critic": 4.0,
+          "judge": 3.75,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "The cloud drift-in is present and continuous in the first 0.58s strip, moving from partly off-screen at 0.00s to centered by 0.58s, but it feels mechanically linear with little visible easing or overshoot.",
+          "file": "bolt_logo/one_shot.html"
+        },
+        "best_of_6": {
+          "run": "20261114-131334-best_of_6",
+          "critic": 4.0,
+          "judge": 3.67,
+          "best_score_by_round": [
+            4.0
+          ],
+          "issue": "0.00s\u20130.17s: the frame is completely blank, then the cloud first becomes visible at 0.25s. The drift-in intent is present, but the beginning reads more like a delayed fade/pop-in than a continuous entrance.",
+          "file": "bolt_logo/best_of_6.html"
+        },
+        "loop_k2_b1_c2_r2": {
+          "run": "20261114-131334-loop_k2_b1_c2_r2",
+          "critic": 4.5,
+          "judge": 4.25,
+          "best_score_by_round": [
+            4.0,
+            4.5,
+            4.5
+          ],
+          "issue": "At 0.00s the scene is completely empty, then the cloud appears partially from the left at 0.08s and drifts into place by about 0.33\u20130.58s. The cloud drift reads clearly, but the first appearance is more of a fade/slide-in than a fully continuous offscreen entrance.",
+          "file": "bolt_logo/loop_k2_b1_c2_r2.html"
+        }
+      }
+    }
+  }
+}

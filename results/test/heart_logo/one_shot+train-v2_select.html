@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=512, height=512, initial-scale=1.0" />
+  <title>Heart Logo Beat</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+  <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <rect width="512" height="512" fill="#ffffff"/>
+
+    <g id="heartLogo">
+      <path id="p1" d="M256 400 C 120 310, 96 220, 150 170 C 196 128, 244 150, 256 190 C 268 150, 316 128, 362 170 C 416 220, 392 310, 256 400 Z" fill="#e03131"/>
+      <path id="p2" d="M176 196 C 186 176, 206 168, 222 172" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+    </g>
+
+    <!-- animation-only glint overlay, hidden on anchor frame -->
+    <path id="highlightGlint"
+      d="M176 196 C 186 176, 206 168, 222 172"
+      fill="none"
+      stroke="#ffffff"
+      stroke-width="17"
+      stroke-linecap="round"
+      stroke-opacity="0"
+      stroke-dasharray="1 200"
+      stroke-dashoffset="0"/>
+
+    <g id="sparkle" opacity="0" transform="translate(222 172) scale(0)">
+      <path d="M0 -18 L4 -4 L18 0 L4 4 L0 18 L-4 4 L-18 0 L-4 -4 Z" fill="#ffffff"/>
+      <path d="M0 -9 L2 -2 L9 0 L2 2 L0 9 L-2 2 L-9 0 L-2 -2 Z" fill="#fff7d6"/>
+    </g>
+
+    <!-- subtle beat accents, hidden on anchor frame -->
+    <g id="beatTicks" opacity="0" fill="none" stroke="#e03131" stroke-width="5" stroke-linecap="round">
+      <path d="M115 198 C101 191, 91 181, 86 168"/>
+      <path d="M397 198 C411 191, 421 181, 426 168"/>
+      <path d="M114 295 C99 301, 87 310, 78 323"/>
+      <path d="M398 295 C413 301, 425 310, 434 323"/>
+    </g>
+  </svg>
+
+  <script>
+    const DURATION = 4.0;
+
+    const heartLogo = document.getElementById("heartLogo");
+    const glint = document.getElementById("highlightGlint");
+    const sparkle = document.getElementById("sparkle");
+    const beatTicks = document.getElementById("beatTicks");
+
+    const glintLength = glint.getTotalLength();
+
+    function clamp(x, a, b) {
+      return Math.max(a, Math.min(b, x));
+    }
+
+    function smoothstep(x) {
+      x = clamp(x, 0, 1);
+      return x * x * (3 - 2 * x);
+    }
+
+    function pulseWindow(t, start, dur) {
+      const u = clamp((t - start) / dur, 0, 1);
+      if (t < start || t > start + dur) return 0;
+      return Math.sin(Math.PI * u);
+    }
+
+    function beatPulse(t, start) {
+      if (t < start || t > start + 0.42) return 0;
+
+      const u = (t - start) / 0.42;
+
+      if (u < 0.20) {
+        // tiny anticipation tuck
+        return -0.035 * smoothstep(u / 0.20);
+      } else if (u < 0.52) {
+        // fast swell
+        return -0.035 + 0.175 * smoothstep((u - 0.20) / 0.32);
+      } else if (u < 0.78) {
+        // snap back past center
+        return 0.140 - 0.165 * smoothstep((u - 0.52) / 0.26);
+      } else {
+        // settle
+        return -0.025 + 0.025 * smoothstep((u - 0.78) / 0.22);
+      }
+    }
+
+    function render(t) {
+      t = clamp(t, 0, DURATION);
+
+      // Anchor: first frame is exactly the supplied drawing.
+      if (t === 0) {
+        heartLogo.setAttribute("transform", "");
+        glint.setAttribute("stroke-opacity", "0");
+        glint.setAttribute("stroke-dasharray", "1 200");
+        glint.setAttribute("stroke-dashoffset", "0");
+        sparkle.setAttribute("opacity", "0");
+        sparkle.setAttribute("transform", "translate(222 172) scale(0)");
+        beatTicks.setAttribute("opacity", "0");
+        beatTicks.setAttribute("transform", "");
+        return;
+      }
+
+      // Two quick logo heartbeat pulses.
+      const b1 = beatPulse(t, 0.34);
+      const b2 = beatPulse(t, 0.82);
+      const b = b1 + b2;
+
+      const cx = 256;
+      const cy = 276;
+
+      // Slight squash/stretch: vertical swell leads, horizontal follows.
+      const sx = 1 + b * 0.72;
+      const sy = 1 + b;
+      const lift = b > 0 ? -5.5 * b : 1.5 * Math.abs(b);
+
+      heartLogo.setAttribute(
+        "transform",
+        `translate(${cx} ${cy + lift}) scale(${sx} ${sy}) translate(${-cx} ${-cy})`
+      );
+
+      // Beat ticks appear only around the two impacts, attached symmetrically to the heart.
+      const tickA = pulseWindow(t, 0.44, 0.22);
+      const tickB = pulseWindow(t, 0.92, 0.22);
+      const tick = Math.max(tickA, tickB);
+      beatTicks.setAttribute("opacity", (0.42 * tick).toFixed(3));
+      const tickScale = 1 + 0.12 * tick;
+      beatTicks.setAttribute(
+        "transform",
+        `translate(256 256) scale(${tickScale}) translate(-256 -256)`
+      );
+
+      // Glint sweeps along the existing highlight after the double beat.
+      const gs = 1.42;
+      const gd = 0.62;
+      let gu = (t - gs) / gd;
+      if (gu >= 0 && gu <= 1) {
+        const e = smoothstep(gu);
+        const dash = 19;
+        glint.setAttribute("stroke-dasharray", `${dash} ${glintLength + 80}`);
+        glint.setAttribute("stroke-dashoffset", String(glintLength * (1 - e) + 12));
+        glint.setAttribute("stroke-opacity", String((0.95 * Math.sin(Math.PI * gu)).toFixed(3)));
+      } else {
+        glint.setAttribute("stroke-opacity", "0");
+      }
+
+      // Small sparkle at the end of the highlight, with quick expand-contract.
+      const ss = 1.84;
+      const sd = 0.42;
+      let su = (t - ss) / sd;
+      if (su >= 0 && su <= 1) {
+        const pop = Math.sin(Math.PI * su);
+        const rot = -18 + 72 * su;
+        const sc = 0.15 + 0.95 * pop;
+        sparkle.setAttribute("opacity", String((0.9 * pop).toFixed(3)));
+        sparkle.setAttribute("transform", `translate(222 172) rotate(${rot}) scale(${sc})`);
+      } else {
+        sparkle.setAttribute("opacity", "0");
+        sparkle.setAttribute("transform", "translate(222 172) scale(0)");
+      }
+
+      // By the end, return exactly to the original logo pose, with all accents hidden.
+      if (t >= 2.35) {
+        heartLogo.setAttribute("transform", "");
+        glint.setAttribute("stroke-opacity", "0");
+        sparkle.setAttribute("opacity", "0");
+        sparkle.setAttribute("transform", "translate(222 172) scale(0)");
+        beatTicks.setAttribute("opacity", "0");
+        beatTicks.setAttribute("transform", "");
+      }
+    }
+
+    window.ksaRender = render;
+    render(0);
+  </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

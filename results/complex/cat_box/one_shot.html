@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Cat Leap Animation</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    width: 512px;
+    height: 512px;
+    overflow: hidden;
+  }
+  svg {
+    display: block;
+    width: 512px;
+    height: 512px;
+  }
+</style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <path id="s1" d="M40.3,440.5 L58.6,441.1 L77.0,441.1 L95.3,441.3 L113.8,441.3 L133.1,441.4 L152.0,441.7 L171.6,440.8 L190.4,441.3 L209.5,441.0 L227.9,441.4 L246.1,441.5 L265.5,440.7 L284.0,440.3 L302.9,440.0 L322.2,440.6 L340.7,441.1 L358.8,440.3 L377.9,440.7 L397.2,441.2 L416.4,440.7 L435.4,441.1 L453.4,440.9 L471.7,440.2" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g id="box">
+    <path id="s2" d="M300.0,440.2 L300.7,426.1 L300.5,413.3 L300.8,399.7 L300.3,386.3 L299.9,372.8 L300.1,359.0 L300.5,345.2 L300.4,332.1 L299.9,318.0 L316.3,317.9 L333.0,317.6 L348.9,317.0 L365.0,316.9 L381.2,317.5 L396.7,318.3 L413.4,318.7 L429.7,318.7 L445.8,318.4 L445.4,331.6 L445.2,344.9 L446.0,358.9 L446.2,371.7 L445.8,385.5 L446.1,399.0 L446.3,413.2 L445.9,426.5 L446.3,439.8" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s3" d="M300.3,317.9 L305.9,317.8 L311.7,318.3 L318.8,318.3 L325.7,317.8 L331.9,317.4 L337.6,318.0 L343.4,318.6 L350.0,318.8 L355.9,319.2 L362.9,318.4 L368.9,317.8 L375.4,317.2 L382.4,317.4 L389.0,317.1 L395.6,317.3 L402.1,317.3 L409.0,317.9 L415.6,317.7 L421.3,317.3 L426.9,318.1 L433.0,318.6 L439.0,318.7 L445.1,318.2" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s4" d="M372.4,318.2 L372.9,321.0 L372.4,323.6 L371.9,327.7 L372.0,330.9 L371.8,334.5 L372.1,337.2 L371.4,340.0 L372.0,343.7 L371.6,346.6 L371.4,350.1 L371.9,353.0 L371.7,356.0 L372.4,359.4" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <ellipse id="jumpShadow" cx="150" cy="441" rx="42" ry="4" fill="#1d1d1f" opacity="0"/>
+
+  <g id="cat">
+    <path id="s5" d="M206.0,383.2 L207.8,388.4 L209.1,393.3 L208.4,399.0 L208.1,404.1 L205.8,408.4 L203.0,413.9 L199.4,418.3 L195.3,422.1 L189.9,426.0 L185.3,429.9 L179.0,433.1 L173.2,435.3 L166.2,436.5 L159.5,437.8 L151.9,437.7 L144.3,438.1 L138.0,437.3 L131.3,436.2 L124.2,434.2 L118.0,432.1 L111.9,429.3 L106.4,425.7 L102.7,420.9 L98.9,415.8 L95.9,411.2 L94.4,406.4 L93.5,401.8 L93.3,396.4 L92.8,391.5 L93.3,386.6 L95.0,381.8 L98.3,377.7 L101.6,372.6 L105.9,369.2 L110.6,365.3 L116.2,361.4 L122.5,358.5 L129.0,356.8 L136.2,354.9 L143.4,354.1 L150.8,353.1 L157.5,353.9 L164.6,355.0 L171.3,356.8 L178.1,359.5 L184.4,362.7 L189.9,365.3 L194.5,369.4 L199.1,373.6 L201.9,377.4 L204.9,382.0 L206.4,387.6 L207.1,393.2 L207.7,398.7 L207.5,403.1" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s6" d="M182.1,312.5 L183.2,317.6 L184.0,322.9 L183.9,328.2 L182.2,333.6 L179.5,338.6 L177.2,342.5 L173.0,347.0 L168.7,350.3 L164.0,352.4 L158.9,353.8 L154.5,355.5 L149.7,355.4 L144.2,354.5 L139.6,354.1 L135.2,352.6 L130.7,349.7 L126.0,345.5 L122.7,342.1 L120.6,337.4 L118.4,333.0 L116.7,328.1 L116.4,322.5 L116.6,316.6 L117.3,311.1 L120.1,306.7 L122.1,302.5 L125.1,298.5 L130.0,295.5 L135.1,293.2 L140.1,290.2 L144.8,289.1 L150.2,289.1 L155.0,289.9 L160.3,290.9 L164.7,292.5 L169.4,295.5 L173.8,298.9 L177.6,302.5 L180.1,307.6 L182.5,312.3 L184.4,317.8 L185.0,323.5 L184.2,329.1" fill="none" stroke="#1d1d1f" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s7" d="M124.1,299.9 L123.5,296.8 L123.6,295.2 L122.9,293.3 L121.8,290.7 L122.1,288.3 L121.1,285.9 L120.0,283.6 L119.8,281.2 L119.7,278.0 L119.8,275.9 L119.8,272.9 L118.8,270.8 L118.9,268.4 L120.2,270.0 L121.6,271.8 L124.1,273.9 L125.4,276.3 L127.8,277.8 L128.8,279.8 L130.5,280.9 L133.0,282.6 L134.3,284.2 L136.9,285.9 L138.6,287.5 L139.8,289.0 L141.1,291.0" fill="none" stroke="#1d1d1f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s8" d="M157.9,292.3 L160.2,290.9 L161.5,289.0 L162.9,286.7 L164.7,284.7 L167.2,282.7 L168.5,281.0 L170.1,279.7 L171.6,277.3 L173.0,275.1 L175.6,272.7 L177.8,271.6 L179.3,270.1 L181.7,268.9 L181.8,271.4 L181.2,273.5 L180.1,275.2 L180.0,277.4 L179.1,279.9 L178.2,282.6 L178.6,284.9 L177.5,287.0 L176.9,290.1 L177.3,292.8 L176.7,294.6 L176.8,296.5 L175.9,299.5" fill="none" stroke="#1d1d1f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s9" d="M141.1,318.7 L141.3,321.7 L138.9,322.5 L136.7,320.5 L136.4,317.3 L138.7,315.9 L141.2,316.7 L142.3,318.9" fill="none" stroke="#1d1d1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s10" d="M164.4,318.4 L164.1,320.7 L161.0,322.6 L158.5,321.0 L158.9,318.2 L161.6,317.3 L163.7,317.6 L164.0,319.9" fill="none" stroke="#1d1d1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s11" d="M146.1,334.7 L146.8,335.2 L146.5,335.9 L146.8,336.4 L146.7,337.1 L146.9,336.7 L147.9,337.0 L148.0,337.0 L148.7,337.0 L149.0,337.2 L149.1,337.2 L149.1,337.9 L149.7,337.6 L149.5,337.8 L150.0,337.5 L150.6,337.6 L150.6,336.6 L151.2,336.4 L151.3,336.7 L151.1,335.8 L151.8,335.4 L152.4,334.6 L152.7,334.7 L152.9,333.9 L152.6,333.6 L152.8,334.0 L152.7,334.1" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s12" d="M206.7,412.0 L208.7,411.0 L211.9,409.6 L214.7,407.9 L216.8,406.5 L219.5,406.1 L221.5,404.1 L223.8,403.2 L226.8,402.1 L229.8,400.8 L231.8,400.3 L234.3,398.2 L236.5,396.7 L239.6,395.3 L240.2,392.9 L241.5,390.4 L242.1,388.3 L243.4,385.3 L245.0,382.1 L245.5,379.5 L246.6,376.8 L246.9,374.3 L248.6,371.3 L249.9,367.9 L250.2,365.4 L251.7,362.7 L252.1,359.5 L251.8,358.3 L251.4,356.5 L250.6,354.5 L248.9,353.0 L247.6,352.0 L246.5,350.3 L246.2,349.4 L245.0,348.2 L243.4,346.3 L243.1,344.7 L241.6,342.8 L241.2,341.1 L241.0,340.4" fill="none" stroke="#1d1d1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s13" d="M122.1,436.5 L122.2,435.1 L121.9,433.3 L121.6,431.1 L122.8,429.6 L122.6,428.3 L123.6,427.1 L123.9,424.6 L124.6,423.0 L124.3,421.2 L124.8,419.8 L125.4,417.7 L125.1,415.3 L125.0,413.5" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="s14" d="M175.8,436.6 L175.6,435.3 L175.5,433.7 L175.7,432.3 L175.5,430.3 L175.6,428.0 L174.7,425.7 L173.8,423.5 L173.1,421.7 L173.2,420.8 L173.1,419.4 L172.8,417.2 L172.8,415.6 L172.3,414.4" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g id="motionLines" opacity="0" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M95,405 C73,397 65,386 58,374"/>
+    <path d="M105,424 C80,421 64,413 50,403"/>
+    <path d="M190,346 C207,333 223,328 238,325"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const cat = document.getElementById("cat");
+  const box = document.getElementById("box");
+  const shadow = document.getElementById("jumpShadow");
+  const lines = document.getElementById("motionLines");
+
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const easeInOut = p => p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;
+  const easeOut = p => 1 - Math.pow(1 - p, 3);
+  const easeIn = p => p*p*p;
+
+  function catTransform(tx, ty, rot, sx, sy) {
+    const px = 150, py = 438;
+    return `translate(${tx.toFixed(3)} ${ty.toFixed(3)}) translate(${px} ${py}) rotate(${rot.toFixed(3)}) scale(${sx.toFixed(4)} ${sy.toFixed(4)}) translate(${-px} ${-py})`;
+  }
+
+  window.ksaRender = function(t) {
+    t = clamp(t, 0, 4.0);
+
+    let tx = 0, ty = 0, rot = 0, sx = 1, sy = 1;
+    let shadowOpacity = 0, shadowRx = 42, shadowCx = 150;
+    let lineOpacity = 0;
+    let boxTransform = "";
+
+    if (t <= 0) {
+      cat.setAttribute("transform", "");
+      box.setAttribute("transform", "");
+      shadow.setAttribute("opacity", "0");
+      lines.setAttribute("opacity", "0");
+      return;
+    }
+
+    if (t < 0.7) {
+      // Anticipation: crouch lower, compressing around the paws.
+      const p = easeInOut(t / 0.7);
+      tx = lerp(0, -6, p);
+      ty = 0;
+      sx = lerp(1, 1.10, p);
+      sy = lerp(1, 0.82, p);
+      rot = lerp(0, -3, p);
+      shadowOpacity = 0;
+      lineOpacity = 0;
+    } else if (t < 2.25) {
+      // Leap: broad parabolic arc from ground to box top.
+      const raw = (t - 0.7) / 1.55;
+      const p = easeInOut(raw);
+
+      tx = lerp(-6, 223, p);
+      ty = lerp(0, -120, p) - Math.sin(Math.PI * raw) * 128;
+
+      // Recover from crouch into a stretched airborne pose.
+      const stretch = Math.sin(Math.PI * raw);
+      sx = 1.02 - 0.08 * stretch;
+      sy = 0.98 + 0.16 * stretch;
+
+      // Little cartoon body rotation following the arc.
+      rot = lerp(-8, 10, raw);
+      if (raw > 0.62) rot = lerp(10, -2, (raw - 0.62) / 0.38);
+
+      shadowOpacity = 0.16 * Math.sin(Math.PI * raw);
+      shadowRx = lerp(32, 18, Math.sin(Math.PI * raw));
+      shadowCx = lerp(150, 373, p);
+
+      lineOpacity = raw < 0.28 ? (1 - raw / 0.28) * 0.55 : 0;
+    } else if (t < 3.05) {
+      // Landing: squash, overshoot, and settle on the box.
+      const p = (t - 2.25) / 0.8;
+      tx = 223;
+      ty = -120;
+
+      const wobble = Math.exp(-4.2 * p) * Math.sin(p * Math.PI * 4.5);
+      sx = 1 + 0.18 * Math.exp(-5 * p) * Math.sin(p * Math.PI);
+      sy = 1 - 0.18 * Math.exp(-5 * p) * Math.sin(p * Math.PI);
+      rot = -2 * (1 - p) + wobble * 4;
+
+      // Box gives a tiny soft bounce under the cat.
+      const bp = Math.exp(-5 * p) * Math.sin(p * Math.PI * 2.2);
+      boxTransform = `translate(373 440) scale(${(1 + 0.006 * bp).toFixed(4)} ${(1 - 0.018 * Math.abs(bp)).toFixed(4)}) translate(-373 -440)`;
+
+      shadowOpacity = 0;
+      lineOpacity = 0;
+    } else {
+      // Final: seated calmly on top.
+      const p = (t - 3.05) / 0.95;
+      tx = 223;
+      ty = -120;
+      rot = 0.6 * Math.exp(-4 * p) * Math.sin(p * Math.PI * 3);
+      sx = 1;
+      sy = 1;
+      shadowOpacity = 0;
+      lineOpacity = 0;
+    }
+
+    cat.setAttribute("transform", catTransform(tx, ty, rot, sx, sy));
+    box.setAttribute("transform", boxTransform);
+    shadow.setAttribute("cx", shadowCx.toFixed(2));
+    shadow.setAttribute("rx", shadowRx.toFixed(2));
+    shadow.setAttribute("opacity", shadowOpacity.toFixed(3));
+    lines.setAttribute("opacity", lineOpacity.toFixed(3));
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

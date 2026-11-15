@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff8e7;
+    }
+    #stage {
+      width: 512px;
+      height: 512px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#fff8e7"/>
+  <g id="logo">
+    <circle id="p1" cx="256" cy="256" r="86" fill="#f59f00"/>
+    <polygon id="p2" points="367.1,241.5 446.0,256.0 367.1,270.5" fill="#fab005"/>
+    <polygon id="p3" points="344.8,324.3 390.4,390.4 324.3,344.8" fill="#fab005"/>
+    <polygon id="p4" points="270.5,367.1 256.0,446.0 241.5,367.1" fill="#fab005"/>
+    <polygon id="p5" points="187.7,344.8 121.6,390.4 167.2,324.3" fill="#fab005"/>
+    <polygon id="p6" points="144.9,270.5 66.0,256.0 144.9,241.5" fill="#fab005"/>
+    <polygon id="p7" points="167.2,187.7 121.6,121.6 187.7,167.2" fill="#fab005"/>
+    <polygon id="p8" points="241.5,144.9 256.0,66.0 270.5,144.9" fill="#fab005"/>
+    <polygon id="p9" points="324.3,167.2 390.4,121.6 344.8,187.7" fill="#fab005"/>
+  </g>
+
+  <!-- subtle same-style pop accents, hidden at the final anchor frame -->
+  <g id="accents" fill="none" stroke="#fab005" stroke-width="5" stroke-linecap="round" opacity="0">
+    <path id="a1" d="M256 164 L256 151"/>
+    <path id="a2" d="M348 256 L361 256"/>
+    <path id="a3" d="M256 348 L256 361"/>
+    <path id="a4" d="M164 256 L151 256"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+  const CX = 256, CY = 256;
+
+  const $ = (id) => document.getElementById(id);
+
+  const logo = $("logo");
+  const disc = $("p1");
+  const rays = [
+    { id: "p2", pivot: [367.1, 256.0], delay: 0.80, dir:   0 },
+    { id: "p3", pivot: [334.55,334.55], delay: 0.92, dir:  45 },
+    { id: "p4", pivot: [256.0,367.1], delay: 1.04, dir:  90 },
+    { id: "p5", pivot: [177.45,334.55], delay: 1.16, dir: 135 },
+    { id: "p6", pivot: [144.9,256.0], delay: 1.28, dir: 180 },
+    { id: "p7", pivot: [177.45,177.45], delay: 1.40, dir: 225 },
+    { id: "p8", pivot: [256.0,144.9], delay: 1.52, dir: 270 },
+    { id: "p9", pivot: [334.55,177.45], delay: 1.64, dir: 315 }
+  ].map(r => ({ ...r, el: $(r.id) }));
+
+  const accents = $("accents");
+  const accentEls = ["a1","a2","a3","a4"].map($);
+
+  function clamp01(x) {
+    return Math.max(0, Math.min(1, x));
+  }
+
+  function easeOutCubic(x) {
+    x = clamp01(x);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  function easeInOutSine(x) {
+    x = clamp01(x);
+    return 0.5 - 0.5 * Math.cos(Math.PI * x);
+  }
+
+  function backOut(x) {
+    x = clamp01(x);
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+
+  function elasticPop(x) {
+    x = clamp01(x);
+    if (x === 0 || x === 1) return x;
+    return 1 + Math.sin(x * Math.PI * 3.2) * Math.pow(1 - x, 2) * 0.34;
+  }
+
+  function setTransformAbout(el, px, py, scale, extraRotateDeg, extraTranslateX, extraTranslateY) {
+    const tx = extraTranslateX || 0;
+    const ty = extraTranslateY || 0;
+    const rot = extraRotateDeg || 0;
+    el.setAttribute(
+      "transform",
+      `translate(${tx.toFixed(3)} ${ty.toFixed(3)}) translate(${px} ${py}) rotate(${rot.toFixed(3)}) scale(${scale.toFixed(4)}) translate(${-px} ${-py})`
+    );
+  }
+
+  function clearFinal() {
+    logo.removeAttribute("transform");
+    disc.removeAttribute("transform");
+    disc.setAttribute("opacity", "1");
+    rays.forEach(r => {
+      r.el.removeAttribute("transform");
+      r.el.setAttribute("opacity", "1");
+    });
+    accents.setAttribute("opacity", "0");
+    accentEls.forEach(a => a.removeAttribute("transform"));
+  }
+
+  window.ksaRender = function(t) {
+    t = Math.max(0, Math.min(DURATION, Number(t) || 0));
+
+    if (Math.abs(t - DURATION) < 1e-9) {
+      clearFinal();
+      return;
+    }
+
+    /*
+      Whole-logo settling pulse.
+      Starts after the build, then decays cleanly to identity before the final anchor.
+    */
+    let logoScale = 1;
+    if (t >= 2.25 && t < 3.85) {
+      const u = (t - 2.25) / 1.60;
+      const decay = Math.pow(1 - clamp01(u), 1.35);
+      logoScale = 1 + Math.sin(u * Math.PI * 4.0) * 0.038 * decay;
+    }
+    logo.setAttribute(
+      "transform",
+      `translate(${CX} ${CY}) scale(${logoScale.toFixed(5)}) translate(${-CX} ${-CY})`
+    );
+
+    /*
+      Sun disc: grows from nothing, overshoots slightly, then lands.
+      The final state is the original circle with no transform.
+    */
+    let discScale = 0;
+    if (t < 0.12) {
+      discScale = 0;
+    } else if (t < 0.95) {
+      const u = (t - 0.12) / 0.83;
+      discScale = backOut(u);
+    } else if (t < 1.25) {
+      const u = (t - 0.95) / 0.30;
+      discScale = 1 + 0.035 * Math.sin((1 - u) * Math.PI) * (1 - u);
+    } else {
+      discScale = 1;
+    }
+    disc.setAttribute("opacity", discScale <= 0.001 ? "0" : "1");
+    setTransformAbout(disc, CX, CY, Math.max(0.0001, discScale), 0, 0, 0);
+
+    /*
+      Rays pop in clockwise, each scaling from its inner base point.
+      A tiny radial overshoot and rotation gives a snappy logo-intro feel.
+    */
+    rays.forEach((r, i) => {
+      const dur = 0.46;
+      const u = (t - r.delay) / dur;
+
+      if (u <= 0) {
+        r.el.setAttribute("opacity", "0");
+        setTransformAbout(r.el, r.pivot[0], r.pivot[1], 0.0001, -10, 0, 0);
+        return;
+      }
+
+      if (u >= 1) {
+        r.el.setAttribute("opacity", "1");
+        r.el.removeAttribute("transform");
+        return;
+      }
+
+      const p = clamp01(u);
+      const s = Math.max(0.0001, elasticPop(p));
+      const fade = easeOutCubic(p);
+      const angle = r.dir * Math.PI / 180;
+      const kick = Math.sin(p * Math.PI) * 9 * (1 - p);
+      const tx = Math.cos(angle) * kick;
+      const ty = Math.sin(angle) * kick;
+      const wiggle = Math.sin(p * Math.PI * 2.2) * 7 * Math.pow(1 - p, 1.7);
+
+      r.el.setAttribute("opacity", fade.toFixed(3));
+      setTransformAbout(r.el, r.pivot[0], r.pivot[1], s, wiggle, tx, ty);
+    });
+
+    /*
+      Brief accent ticks after the last ray arrives.
+      They fade out completely and are invisible at the final anchor frame.
+    */
+    const au = (t - 1.82) / 0.70;
+    if (au > 0 && au < 1) {
+      const a = Math.sin(clamp01(au) * Math.PI);
+      accents.setAttribute("opacity", (0.55 * a).toFixed(3));
+      accentEls.forEach((el, i) => {
+        const grow = 0.75 + 0.55 * easeInOutSine(clamp01(au));
+        el.setAttribute(
+          "transform",
+          `translate(${CX} ${CY}) scale(${grow.toFixed(3)}) translate(${-CX} ${-CY})`
+        );
+      });
+    } else {
+      accents.setAttribute("opacity", "0");
+      accentEls.forEach(a => a.removeAttribute("transform"));
+    }
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

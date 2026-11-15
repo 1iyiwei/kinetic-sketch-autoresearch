@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Cloud Lightning Logo Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #f1f3f5;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#f1f3f5"/>
+
+  <defs>
+    <clipPath id="boltClip">
+      <rect id="boltClipRect" x="0" y="0" width="512" height="512"/>
+    </clipPath>
+  </defs>
+
+  <!-- added flash elements, hidden in the final frame -->
+  <g id="flashLayer" opacity="0">
+    <circle id="flashCircle" cx="255" cy="250" r="24" fill="#fff3bf"/>
+    <path id="flashStar" d="M255 205 L270 240 L310 250 L270 260 L255 295 L240 260 L200 250 L240 240 Z"
+          fill="#fff9db"/>
+  </g>
+
+  <!-- original artwork, paths reused verbatim -->
+  <g id="cloudGroup">
+    <path id="p1" d="M150 250 C 120 250, 110 200, 150 190 C 150 140, 220 130, 240 170 C 270 130, 350 150, 340 200 C 390 200, 390 250, 350 250 Z" fill="#868e96"/>
+  </g>
+
+  <g id="boltGroup" clip-path="url(#boltClip)">
+    <polygon id="p2" points="250,240 200,350 245,350 220,440 310,320 262,320 290,240" fill="#fcc419"/>
+  </g>
+
+  <!-- small motion accents, hidden in the final frame -->
+  <g id="accentLayer" opacity="0" fill="none" stroke="#fcc419" stroke-width="5" stroke-linecap="round">
+    <path id="line1" d="M188 294 L158 318"/>
+    <path id="line2" d="M318 282 L354 300"/>
+    <path id="line3" d="M238 452 L224 482"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+
+  const cloudGroup = document.getElementById("cloudGroup");
+  const boltGroup = document.getElementById("boltGroup");
+  const flashLayer = document.getElementById("flashLayer");
+  const flashCircle = document.getElementById("flashCircle");
+  const flashStar = document.getElementById("flashStar");
+  const accentLayer = document.getElementById("accentLayer");
+  const clipRect = document.getElementById("boltClipRect");
+  const p1 = document.getElementById("p1");
+  const p2 = document.getElementById("p2");
+
+  function clamp(x, a, b) {
+    return Math.max(a, Math.min(b, x));
+  }
+
+  function smoothstep(x) {
+    x = clamp(x, 0, 1);
+    return x * x * (3 - 2 * x);
+  }
+
+  function easeOutCubic(x) {
+    x = clamp(x, 0, 1);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  function easeInCubic(x) {
+    x = clamp(x, 0, 1);
+    return x * x * x;
+  }
+
+  function backOut(x) {
+    x = clamp(x, 0, 1);
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+
+  function setFinalFrame() {
+    cloudGroup.setAttribute("transform", "");
+    boltGroup.setAttribute("transform", "");
+    flashLayer.setAttribute("opacity", "0");
+    accentLayer.setAttribute("opacity", "0");
+    clipRect.setAttribute("x", "0");
+    clipRect.setAttribute("y", "0");
+    clipRect.setAttribute("width", "512");
+    clipRect.setAttribute("height", "512");
+    p1.setAttribute("opacity", "1");
+    p2.setAttribute("opacity", "1");
+  }
+
+  window.ksaRender = function (t) {
+    t = clamp(t, 0, DURATION);
+
+    if (t >= DURATION) {
+      setFinalFrame();
+      return;
+    }
+
+    /* CLOUD: drifts in from the left, eases, then gives a small recoil from the strike */
+    let cloudOpacity = 0;
+    let cloudTransform = "";
+
+    if (t < 0.15) {
+      cloudOpacity = 0;
+      cloudTransform = "translate(-170 0)";
+    } else {
+      const u = clamp((t - 0.15) / 1.25, 0, 1);
+      const e = easeOutCubic(u);
+      let x = -170 * (1 - e);
+      let y = -8 * Math.sin(e * Math.PI);
+
+      /* tiny impact wobble after the bolt hits */
+      if (t > 2.0 && t < 3.35) {
+        const w = (t - 2.0);
+        const amp = Math.exp(-2.2 * w);
+        y += Math.sin(w * 18) * 4 * amp;
+        x += Math.sin(w * 15) * 2 * amp;
+      }
+
+      cloudOpacity = smoothstep((t - 0.15) / 0.45);
+      cloudTransform = "translate(" + x.toFixed(3) + " " + y.toFixed(3) + ")";
+    }
+
+    p1.setAttribute("opacity", cloudOpacity.toFixed(3));
+    cloudGroup.setAttribute("transform", cloudTransform);
+
+    /* BOLT: drops/reveals from cloud with anticipation, strike, and settling shake */
+    let boltOpacity = 0;
+    let boltTransform = "";
+    let clipY = 512;
+    let clipH = 0;
+
+    if (t < 1.25) {
+      boltOpacity = 0;
+      clipY = 512;
+      clipH = 0;
+      boltTransform = "translate(0 -60) scale(1 0.65)";
+    } else {
+      const r = clamp((t - 1.25) / 0.75, 0, 1);
+      const e = backOut(r);
+
+      boltOpacity = smoothstep((t - 1.25) / 0.18);
+
+      /* reveal downward along the strike */
+      clipY = 240;
+      clipH = 200 * easeOutCubic(r);
+
+      const drop = -88 * (1 - e);
+      const sx = 1 + 0.08 * Math.sin(r * Math.PI);
+      const sy = 0.82 + 0.18 * e;
+
+      boltTransform =
+        "translate(255 240) translate(0 " + drop.toFixed(3) + ") " +
+        "scale(" + sx.toFixed(3) + " " + sy.toFixed(3) + ") translate(-255 -240)";
+    }
+
+    /* post-strike vibration that decays around the top of the bolt */
+    if (t >= 2.0 && t < 3.45) {
+      const w = t - 2.0;
+      const amp = Math.exp(-2.4 * w);
+      const rot = Math.sin(w * 26) * 4.5 * amp;
+      const tx = Math.sin(w * 22) * 4 * amp;
+      const ty = Math.cos(w * 18) * 2 * amp;
+      boltTransform =
+        "translate(255 240) translate(" + tx.toFixed(3) + " " + ty.toFixed(3) + ") " +
+        "rotate(" + rot.toFixed(3) + ") translate(-255 -240)";
+      clipY = 0;
+      clipH = 512;
+      boltOpacity = 1;
+    }
+
+    if (t >= 3.45) {
+      boltOpacity = 1;
+      boltTransform = "";
+      clipY = 0;
+      clipH = 512;
+    }
+
+    p2.setAttribute("opacity", boltOpacity.toFixed(3));
+    boltGroup.setAttribute("transform", boltTransform);
+    clipRect.setAttribute("x", "0");
+    clipRect.setAttribute("y", clipY.toFixed(3));
+    clipRect.setAttribute("width", "512");
+    clipRect.setAttribute("height", clipH.toFixed(3));
+
+    /* FLASH: one bright pop at impact, then fades */
+    let flashOpacity = 0;
+    let flashScale = 1;
+
+    if (t >= 1.82 && t <= 2.45) {
+      const f = (t - 1.82) / 0.63;
+      flashOpacity = Math.sin(clamp(f, 0, 1) * Math.PI);
+      flashOpacity = Math.pow(flashOpacity, 1.8) * 0.9;
+      flashScale = 0.45 + 1.35 * easeOutCubic(f);
+    }
+
+    flashLayer.setAttribute("opacity", flashOpacity.toFixed(3));
+    flashCircle.setAttribute(
+      "transform",
+      "translate(255 250) scale(" + flashScale.toFixed(3) + ") translate(-255 -250)"
+    );
+    flashStar.setAttribute(
+      "transform",
+      "translate(255 250) scale(" + (flashScale * 1.08).toFixed(3) + ") translate(-255 -250)"
+    );
+
+    /* ACCENTS: quick strike lines, gone by the final logo frame */
+    let accentOpacity = 0;
+    if (t >= 1.95 && t <= 2.65) {
+      const a = (t - 1.95) / 0.7;
+      accentOpacity = Math.sin(clamp(a, 0, 1) * Math.PI) * 0.75;
+    }
+    accentLayer.setAttribute("opacity", accentOpacity.toFixed(3));
+
+    if (t > 3.75) {
+      const settle = smoothstep((t - 3.75) / 0.25);
+      flashLayer.setAttribute("opacity", (flashOpacity * (1 - settle)).toFixed(3));
+      accentLayer.setAttribute("opacity", (accentOpacity * (1 - settle)).toFixed(3));
+      if (settle > 0.999) {
+        cloudGroup.setAttribute("transform", "");
+        boltGroup.setAttribute("transform", "");
+        clipRect.setAttribute("x", "0");
+        clipRect.setAttribute("y", "0");
+        clipRect.setAttribute("width", "512");
+        clipRect.setAttribute("height", "512");
+        p1.setAttribute("opacity", "1");
+        p2.setAttribute("opacity", "1");
+      }
+    }
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

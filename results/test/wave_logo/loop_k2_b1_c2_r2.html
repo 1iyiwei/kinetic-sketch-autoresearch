@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Wave Logo Intro</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 512px;
+      height: 512px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <rect width="512" height="512" fill="#ffffff"/>
+    <polyline id="p1" points="96,200.0 104,204.1 112,208.0 120,211.8 128,215.3 136,218.4 144,221.0 152,223.2 160,224.7 168,225.7 176,226.0 184,225.7 192,224.7 200,223.2 208,221.0 216,218.4 224,215.3 232,211.8 240,208.0 248,204.1 256,200.0 264,195.9 272,192.0 280,188.2 288,184.7 296,181.6 304,179.0 312,176.8 320,175.3 328,174.3 336,174.0 344,174.3 352,175.3 360,176.8 368,179.0 376,181.6 384,184.7 392,188.2 400,192.0 408,195.9 416,200.0" fill="none" stroke="#1c7ed6" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline id="p2" points="96,256.0 104,260.1 112,264.0 120,267.8 128,271.3 136,274.4 144,277.0 152,279.2 160,280.7 168,281.7 176,282.0 184,281.7 192,280.7 200,279.2 208,277.0 216,274.4 224,271.3 232,267.8 240,264.0 248,260.1 256,256.0 264,251.9 272,248.0 280,244.2 288,240.7 296,237.6 304,235.0 312,232.8 320,231.3 328,230.3 336,230.0 344,230.3 352,231.3 360,232.8 368,235.0 376,237.6 384,240.7 392,244.2 400,248.0 408,251.9 416,256.0" fill="none" stroke="#339af0" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline id="p3" points="96,312.0 104,316.1 112,320.0 120,323.8 128,327.3 136,330.4 144,333.0 152,335.2 160,336.7 168,337.7 176,338.0 184,337.7 192,336.7 200,335.2 208,333.0 216,330.4 224,327.3 232,323.8 240,320.0 248,316.1 256,312.0 264,307.9 272,304.0 280,300.2 288,296.7 296,293.6 304,291.0 312,288.8 320,287.3 328,286.3 336,286.0 344,286.3 352,287.3 360,288.8 368,291.0 376,293.6 384,296.7 392,300.2 400,304.0 408,307.9 416,312.0" fill="none" stroke="#74c0fc" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+
+  <script>
+    const DURATION = 4.0;
+
+    const stripes = [
+      { el: document.getElementById("p1"), start: 0.15, dur: 0.85, cy: 200, phase: 0.00 },
+      { el: document.getElementById("p2"), start: 0.78, dur: 0.85, cy: 256, phase: 0.55 },
+      { el: document.getElementById("p3"), start: 1.41, dur: 0.85, cy: 312, phase: 1.10 }
+    ];
+
+    for (const s of stripes) {
+      s.len = s.el.getTotalLength();
+    }
+
+    function clamp01(x) {
+      return Math.max(0, Math.min(1, x));
+    }
+
+    function easeOutCubic(x) {
+      x = clamp01(x);
+      return 1 - Math.pow(1 - x, 3);
+    }
+
+    function easeInOutSine(x) {
+      x = clamp01(x);
+      return 0.5 - 0.5 * Math.cos(Math.PI * x);
+    }
+
+    function setFinalExact() {
+      for (const s of stripes) {
+        s.el.removeAttribute("stroke-dasharray");
+        s.el.removeAttribute("stroke-dashoffset");
+        s.el.removeAttribute("transform");
+        s.el.removeAttribute("opacity");
+      }
+    }
+
+    window.ksaRender = (t) => {
+      t = Math.max(0, Math.min(DURATION, t));
+
+      if (t >= DURATION) {
+        setFinalExact();
+        return;
+      }
+
+      for (const s of stripes) {
+        const raw = (t - s.start) / s.dur;
+        const p = easeOutCubic(raw);
+
+        if (raw <= 0) {
+          s.el.setAttribute("opacity", "0");
+          s.el.setAttribute("stroke-dasharray", s.len);
+          s.el.setAttribute("stroke-dashoffset", s.len);
+        } else {
+          s.el.setAttribute("opacity", "1");
+          s.el.setAttribute("stroke-dasharray", s.len);
+          s.el.setAttribute("stroke-dashoffset", s.len * (1 - p));
+        }
+
+        s.el.removeAttribute("transform");
+      }
+
+      /*
+        Finished-logo ripple:
+        after the three strokes have drawn, the whole mark breathes once like water.
+        Each stripe is offset with a slight phase delay, then the motion decays to zero.
+      */
+      const rippleStart = 2.32;
+      const rippleEnd = 3.72;
+      const r = clamp01((t - rippleStart) / (rippleEnd - rippleStart));
+
+      if (r > 0 && r < 1) {
+        const envelope = Math.sin(Math.PI * r) * Math.pow(1 - r, 0.35);
+        for (let i = 0; i < stripes.length; i++) {
+          const s = stripes[i];
+
+          const y = Math.sin(r * Math.PI * 2.15 + s.phase) * 7.5 * envelope;
+          const sx = 1 + Math.sin(r * Math.PI * 2.15 + s.phase + 0.8) * 0.010 * envelope;
+          const sy = 1 + Math.sin(r * Math.PI * 2.15 + s.phase + 1.7) * 0.030 * envelope;
+
+          /*
+            Transform around the center of the logo. Kept subtle so the original
+            SVG paths remain visually intact, then cleared completely at the end.
+          */
+          s.el.setAttribute(
+            "transform",
+            "translate(256 256) scale(" + sx.toFixed(5) + " " + sy.toFixed(5) + ") translate(-256 -256) translate(0 " + y.toFixed(3) + ")"
+          );
+        }
+      } else if (r >= 1) {
+        for (const s of stripes) {
+          s.el.removeAttribute("transform");
+        }
+      }
+    };
+
+    window.ksaRender(0);
+  </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

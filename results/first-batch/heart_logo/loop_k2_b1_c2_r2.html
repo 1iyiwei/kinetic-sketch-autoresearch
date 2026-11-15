@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <g id="heartGroup">
+    <path id="p1" d="M256 400 C 120 310, 96 220, 150 170 C 196 128, 244 150, 256 190 C 268 150, 316 128, 362 170 C 416 220, 392 310, 256 400 Z" fill="#e03131"/>
+    <path id="p2" d="M176 196 C 186 176, 206 168, 222 172" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <!-- Animation-only shine elements. They are fully invisible at t=0, so the anchor frame matches the SVG exactly. -->
+  <g id="glintGroup" opacity="0" pointer-events="none">
+    <!-- A fat traveling white dash makes the existing highlight visibly "catch" light. -->
+    <path id="glintWide"
+          d="M176 196 C 186 176, 206 168, 222 172"
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="20"
+          stroke-linecap="round"
+          stroke-dasharray="0 200"
+          stroke-dashoffset="0"/>
+    <!-- A narrow hot core gives the glint a clearer sweep direction. -->
+    <path id="glintCore"
+          d="M176 196 C 186 176, 206 168, 222 172"
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-dasharray="0 200"
+          stroke-dashoffset="0"/>
+    <g id="spark" transform="translate(176 196) scale(0)">
+      <path id="sparkShape"
+            d="M0,-16 L3.7,-3.7 L16,0 L3.7,3.7 L0,16 L-3.7,3.7 L-16,0 L-3.7,-3.7 Z"
+            fill="#ffffff"/>
+    </g>
+  </g>
+
+  <!-- A tiny late logo twinkle to avoid a completely inactive hold; invisible at t=0. -->
+  <g id="finalTwinkle" opacity="0" pointer-events="none" transform="translate(220 173) scale(0)">
+    <path d="M0,-10 L2.2,-2.2 L10,0 L2.2,2.2 L0,10 L-2.2,2.2 L-10,0 L-2.2,-2.2 Z"
+          fill="#ffffff"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+
+  const heartGroup = document.getElementById("heartGroup");
+  const glintGroup = document.getElementById("glintGroup");
+  const glintWide = document.getElementById("glintWide");
+  const glintCore = document.getElementById("glintCore");
+  const spark = document.getElementById("spark");
+  const finalTwinkle = document.getElementById("finalTwinkle");
+
+  /*
+    The pulse is anchored a little below the center of mass: the heart feels like it
+    swells from its body rather than merely resizing around the page center.
+  */
+  const pivotX = 256;
+  const pivotY = 292;
+
+  function clamp(v, a, b) {
+    return Math.max(a, Math.min(b, v));
+  }
+
+  function mix(a, b, u) {
+    return a + (b - a) * u;
+  }
+
+  function smoother(x) {
+    x = clamp(x, 0, 1);
+    return x * x * x * (x * (x * 6 - 15) + 10);
+  }
+
+  function easeOutCubic(x) {
+    x = clamp(x, 0, 1);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  function easeInCubic(x) {
+    x = clamp(x, 0, 1);
+    return x * x * x;
+  }
+
+  function easeOutBack(x) {
+    x = clamp(x, 0, 1);
+    const c1 = 1.72;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+
+  function easeInOutSine(x) {
+    x = clamp(x, 0, 1);
+    return -(Math.cos(Math.PI * x) - 1) / 2;
+  }
+
+  function fadeWindow(t, a, b, c, d) {
+    return smoother((t - a) / (b - a)) * (1 - smoother((t - c) / (d - c)));
+  }
+
+  /*
+    Double heartbeat with anticipation and rebound:
+    - tiny squeeze inward before each thump
+    - fast pop with horizontal/vertical squash-stretch difference
+    - undershoot and soft settle
+  */
+  const beatKeys = [
+    { t: 0.000, sx: 1.000, sy: 1.000, y: 0.0, r: 0.00 },
+    { t: 0.028, sx: 1.000, sy: 1.000, y: 0.0, r: 0.00 },
+
+    /* anticipation: slightly narrow/tall and down */
+    { t: 0.070, sx: 0.955, sy: 1.030, y: 4.8, r: -0.35 },
+    /* first strong thump: wider, lifted, with a little overshoot */
+    { t: 0.145, sx: 1.165, sy: 1.105, y: -10.5, r: 1.15 },
+    /* elastic rebound */
+    { t: 0.225, sx: 0.978, sy: 0.990, y: 3.4, r: -0.48 },
+    { t: 0.282, sx: 1.012, sy: 1.006, y: -1.0, r: 0.18 },
+
+    /* second anticipation */
+    { t: 0.322, sx: 0.966, sy: 1.024, y: 3.8, r: -0.25 },
+    /* second thump, slightly smaller and quicker */
+    { t: 0.405, sx: 1.128, sy: 1.086, y: -7.8, r: 0.78 },
+    { t: 0.505, sx: 0.962, sy: 0.982, y: 4.2, r: -0.45 },
+    { t: 0.620, sx: 1.020, sy: 1.010, y: -1.4, r: 0.16 },
+    { t: 0.810, sx: 1.000, sy: 1.000, y: 0.0, r: 0.00 }
+  ];
+
+  function heartbeat(t) {
+    if (t <= beatKeys[0].t || t >= beatKeys[beatKeys.length - 1].t) {
+      return { sx: 1, sy: 1, y: 0, r: 0 };
+    }
+
+    for (let i = 0; i < beatKeys.length - 1; i++) {
+      const a = beatKeys[i];
+      const b = beatKeys[i + 1];
+      if (t >= a.t && t <= b.t) {
+        let u = (t - a.t) / (b.t - a.t);
+
+        if ((a.t === 0.070 && b.t === 0.145) || (a.t === 0.322 && b.t === 0.405)) {
+          u = easeOutBack(u);
+        } else if ((a.t === 0.145 && b.t === 0.225) || (a.t === 0.405 && b.t === 0.505)) {
+          u = easeInCubic(u);
+        } else {
+          u = smoother(u);
+        }
+
+        return {
+          sx: mix(a.sx, b.sx, u),
+          sy: mix(a.sy, b.sy, u),
+          y: mix(a.y, b.y, u),
+          r: mix(a.r, b.r, u)
+        };
+      }
+    }
+
+    return { sx: 1, sy: 1, y: 0, r: 0 };
+  }
+
+  /*
+    Extremely subtle logo hold motion, kept below the level of a new beat.
+    It begins after the double pulse and dies away before the end.
+  */
+  function idleBreath(t) {
+    if (t < 1.35 || t > 3.68) return 0;
+    const env = fadeWindow(t, 1.35, 1.85, 3.10, 3.68);
+    return 0.0065 * env * Math.sin((t - 1.35) * Math.PI * 1.05);
+  }
+
+  function setDash(path, dashLen, offset) {
+    const len = path.getTotalLength ? path.getTotalLength() : 58;
+    const gap = len + 90;
+    path.setAttribute("stroke-dasharray", dashLen.toFixed(2) + " " + gap.toFixed(2));
+    path.setAttribute("stroke-dashoffset", offset.toFixed(3));
+    return len;
+  }
+
+  function pointOnHighlight(path, u) {
+    if (path.getPointAtLength && path.getTotalLength) {
+      const len = path.getTotalLength();
+      return path.getPointAtLength(clamp(u, 0, 1) * len);
+    }
+    return {
+      x: 176 + 46 * u,
+      y: 196 - 22 * Math.sin(u * Math.PI * 0.75)
+    };
+  }
+
+  window.ksaRender = function (t) {
+    t = clamp(t, 0, DURATION);
+
+    const b = heartbeat(t);
+    const breath = idleBreath(t);
+
+    const sx = b.sx + breath;
+    const sy = b.sy + breath * 0.70;
+    const y = b.y - breath * 3.0;
+    const r = b.r + breath * 0.18;
+
+    if (
+      Math.abs(sx - 1) < 0.000001 &&
+      Math.abs(sy - 1) < 0.000001 &&
+      Math.abs(y) < 0.000001 &&
+      Math.abs(r) < 0.000001
+    ) {
+      heartGroup.setAttribute("transform", "");
+    } else {
+      heartGroup.setAttribute(
+        "transform",
+        "translate(" + pivotX + " " + pivotY + ") " +
+        "translate(0 " + y.toFixed(4) + ") " +
+        "rotate(" + r.toFixed(4) + ") " +
+        "scale(" + sx.toFixed(5) + " " + sy.toFixed(5) + ") " +
+        "translate(" + (-pivotX) + " " + (-pivotY) + ")"
+      );
+    }
+
+    /*
+      Clear glint sweep after the second beat.
+      The moving dash is longer and brighter than before, and the sparkle rides
+      the leading edge of the existing highlight curve.
+    */
+    const gStart = 1.05;
+    const gEnd = 1.48;
+    const gEnv = fadeWindow(t, gStart, gStart + 0.07, gEnd - 0.10, gEnd);
+    glintGroup.setAttribute("opacity", gEnv.toFixed(4));
+
+    if (gEnv <= 0.0001) {
+      glintWide.setAttribute("stroke-dasharray", "0 200");
+      glintCore.setAttribute("stroke-dasharray", "0 200");
+      glintWide.setAttribute("stroke-dashoffset", "0");
+      glintCore.setAttribute("stroke-dashoffset", "0");
+      spark.setAttribute("transform", "translate(176 196) scale(0)");
+    } else {
+      const uRaw = clamp((t - gStart) / (gEnd - gStart), 0, 1);
+      const u = easeInOutSine(uRaw);
+
+      const len = glintCore.getTotalLength ? glintCore.getTotalLength() : 58;
+      const travel = (1 - u) * (len + 24);
+
+      setDash(glintWide, 18, travel);
+      setDash(glintCore, 8, travel - 1.5);
+
+      const pt = pointOnHighlight(glintCore, u);
+      const pop = Math.sin(Math.PI * uRaw);
+      const peak = Math.pow(pop, 0.65);
+      const sc = 0.20 + 0.74 * peak;
+      const spin = -35 + 205 * uRaw;
+
+      spark.setAttribute(
+        "transform",
+        "translate(" + pt.x.toFixed(3) + " " + pt.y.toFixed(3) + ") " +
+        "rotate(" + spin.toFixed(3) + ") " +
+        "scale(" + sc.toFixed(4) + ")"
+      );
+    }
+
+    /*
+      Small late twinkle: gives the 4-second logo a final resolving shimmer,
+      without changing the ending silhouette.
+    */
+    const twStart = 3.05;
+    const twEnd = 3.42;
+    const twEnv = fadeWindow(t, twStart, twStart + 0.07, twEnd - 0.10, twEnd);
+    if (twEnv <= 0.0001) {
+      finalTwinkle.setAttribute("opacity", "0");
+      finalTwinkle.setAttribute("transform", "translate(220 173) scale(0)");
+    } else {
+      const u = clamp((t - twStart) / (twEnd - twStart), 0, 1);
+      const sc = 0.08 + 0.42 * Math.sin(Math.PI * u);
+      finalTwinkle.setAttribute("opacity", (0.78 * twEnv).toFixed(4));
+      finalTwinkle.setAttribute(
+        "transform",
+        "translate(220 173) rotate(" + (120 * u).toFixed(3) + ") scale(" + sc.toFixed(4) + ")"
+      );
+    }
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Heart Logo Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <rect width="512" height="512" fill="#ffffff"/>
+
+    <g id="heartGroup">
+      <path id="p1" d="M256 400 C 120 310, 96 220, 150 170 C 196 128, 244 150, 256 190 C 268 150, 316 128, 362 170 C 416 220, 392 310, 256 400 Z" fill="#e03131"/>
+      <path id="p2" d="M176 196 C 186 176, 206 168, 222 172" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+    </g>
+
+    <!-- Added glint elements, invisible at t=0 -->
+    <g id="glint" opacity="0" transform="translate(207 176) scale(1)">
+      <path d="M0 -18 L4 -4 L18 0 L4 4 L0 18 L-4 4 L-18 0 L-4 -4 Z" fill="#ffffff"/>
+      <path d="M-28 0 L-13 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <path d="M13 0 L28 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <path d="M0 -28 L0 -13" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <path d="M0 13 L0 28" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <script>
+    const heartGroup = document.getElementById("heartGroup");
+    const p2 = document.getElementById("p2");
+    const glint = document.getElementById("glint");
+
+    function clamp(x, a, b) {
+      return Math.max(a, Math.min(b, x));
+    }
+
+    function smoothstep(x) {
+      x = clamp(x, 0, 1);
+      return x * x * (3 - 2 * x);
+    }
+
+    function pulseShape(t, start) {
+      const u = t - start;
+      if (u < 0 || u > 0.42) return 0;
+
+      if (u < 0.11) {
+        return smoothstep(u / 0.11);          // fast swell
+      } else if (u < 0.22) {
+        return 1 - 1.22 * smoothstep((u - 0.11) / 0.11); // snap below rest
+      } else if (u < 0.42) {
+        return -0.22 * (1 - smoothstep((u - 0.22) / 0.20)); // settle
+      }
+      return 0;
+    }
+
+    function glintShape(t, start) {
+      const u = t - start;
+      if (u < 0 || u > 0.62) return 0;
+      if (u < 0.14) return smoothstep(u / 0.14);
+      if (u < 0.32) return 1;
+      return 1 - smoothstep((u - 0.32) / 0.30);
+    }
+
+    window.ksaRender = (t) => {
+      t = clamp(t, 0, 4.0);
+
+      // Two quick logo beats.
+      const b1 = pulseShape(t, 0.55);
+      const b2 = pulseShape(t, 1.03);
+      const beat = b1 + b2;
+
+      // Cartoon heart expansion with tiny squash/stretch follow-through.
+      const sx = 1 + beat * 0.085;
+      const sy = 1 + beat * 0.105;
+
+      // Pivot around the visual heart center.
+      const cx = 256;
+      const cy = 266;
+
+      if (Math.abs(sx - 1) < 0.0001 && Math.abs(sy - 1) < 0.0001) {
+        heartGroup.removeAttribute("transform");
+      } else {
+        heartGroup.setAttribute(
+          "transform",
+          `translate(${cx} ${cy}) scale(${sx.toFixed(5)} ${sy.toFixed(5)}) translate(${-cx} ${-cy})`
+        );
+      }
+
+      // The painted highlight catches light after the second beat.
+      const g = glintShape(t, 1.42);
+      const sweep = clamp((t - 1.42) / 0.62, 0, 1);
+      const gx = 184 + 44 * sweep;
+      const gy = 190 - 16 * Math.sin(Math.PI * sweep);
+      const gs = 0.35 + 0.85 * Math.sin(Math.PI * sweep);
+
+      glint.setAttribute("opacity", (0.88 * g).toFixed(4));
+      glint.setAttribute(
+        "transform",
+        `translate(${gx.toFixed(2)} ${gy.toFixed(2)}) rotate(${(35 + 100 * sweep).toFixed(2)}) scale(${gs.toFixed(4)})`
+      );
+
+      // Brief glimmer on the original highlight stroke, returning exactly to original.
+      const hl = 1 + 0.23 * g;
+      p2.setAttribute("stroke-width", (10 * hl).toFixed(3));
+      p2.setAttribute("opacity", "1");
+    };
+
+    window.ksaRender(0);
+  </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

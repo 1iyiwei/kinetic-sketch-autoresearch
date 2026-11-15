@@ -7,6 +7,12 @@ their owner shares them (Share menu on the page).
 | --- | --- | --- | --- |
 | Sat Nov 14, 13:50 | First results: loop vs. one-shot vs. best-of-6 on 10 cases. Headline judge scores, the pendulum search tree, all cases side by side, findings | [Kinetic Sketch Autoresearch](https://claude.ai/artifact/52zhVRsQdXewQp3pxPYqPH) | `runs/20261114-131334-{one_shot,best_of_6,loop_k2_b1_c2_r2}` |
 
+## Slides (committed)
+
+`open slides/index.html`: 12 slides with live animations from `results/`; see [`slides/README.md`](../slides/README.md).
+They follow the pitch below, and recording them full screen is the simplest way to make the 2-minute video, with no
+API calls.
+
 ## Local result pages
 
 Run outputs live in `runs/` (gitignored), so these pages exist only on the machine that ran the experiments. Open them

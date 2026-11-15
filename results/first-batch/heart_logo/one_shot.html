@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Heart Logo Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+  <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <rect width="512" height="512" fill="#ffffff"/>
+
+    <g id="heartGroup">
+      <path id="p1" d="M256 400 C 120 310, 96 220, 150 170 C 196 128, 244 150, 256 190 C 268 150, 316 128, 362 170 C 416 220, 392 310, 256 400 Z" fill="#e03131"/>
+      <path id="p2" d="M176 196 C 186 176, 206 168, 222 172" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+    </g>
+
+    <!-- Added animation accents, invisible at t=0 -->
+    <path id="glintStroke" d="M176 196 C 186 176, 206 168, 222 172" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" opacity="0"/>
+    <g id="sparkle" opacity="0">
+      <path d="M0 -12 L0 12" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <path d="M-12 0 L12 0" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <path d="M-7 -7 L7 7" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M7 -7 L-7 7" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <script>
+    const DURATION = 4.0;
+
+    const heartGroup = document.getElementById("heartGroup");
+    const p2 = document.getElementById("p2");
+    const glintStroke = document.getElementById("glintStroke");
+    const sparkle = document.getElementById("sparkle");
+
+    function clamp(x, a, b) {
+      return Math.max(a, Math.min(b, x));
+    }
+
+    function smoothstep(x) {
+      x = clamp(x, 0, 1);
+      return x * x * (3 - 2 * x);
+    }
+
+    function easeOutBack(x) {
+      x = clamp(x, 0, 1);
+      const c1 = 1.7;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+    }
+
+    function lerp(a, b, x) {
+      return a + (b - a) * x;
+    }
+
+    function heartbeatBeat(t, start) {
+      const u = (t - start) / 0.52;
+      if (u < 0 || u > 1) return 1;
+
+      if (u < 0.18) {
+        return lerp(1.0, 0.965, smoothstep(u / 0.18));
+      }
+      if (u < 0.42) {
+        return lerp(0.965, 1.14, easeOutBack((u - 0.18) / 0.24));
+      }
+      if (u < 0.68) {
+        return lerp(1.14, 0.985, smoothstep((u - 0.42) / 0.26));
+      }
+      return lerp(0.985, 1.0, smoothstep((u - 0.68) / 0.32));
+    }
+
+    function glintOpacity(t, start, dur) {
+      const u = (t - start) / dur;
+      if (u < 0 || u > 1) return 0;
+      return Math.sin(Math.PI * u);
+    }
+
+    window.ksaRender = (t) => {
+      t = clamp(t, 0, DURATION);
+
+      if (t === 0) {
+        heartGroup.setAttribute("transform", "");
+        p2.setAttribute("stroke-width", "10");
+        p2.setAttribute("opacity", "1");
+        glintStroke.setAttribute("opacity", "0");
+        sparkle.setAttribute("opacity", "0");
+        return;
+      }
+
+      const beat1 = heartbeatBeat(t, 0.45);
+      const beat2 = heartbeatBeat(t, 0.92);
+      const scale = beat1 * beat2;
+
+      const stretch = scale - 1;
+      const sx = 1 + stretch * 1.03;
+      const sy = 1 + stretch * 0.92;
+
+      const cx = 256;
+      const cy = 270;
+
+      heartGroup.setAttribute(
+        "transform",
+        `translate(${cx} ${cy}) scale(${sx.toFixed(5)} ${sy.toFixed(5)}) translate(${-cx} ${-cy})`
+      );
+
+      const glow1 = glintOpacity(t, 1.42, 0.7);
+      const glow2 = glintOpacity(t, 2.35, 0.55);
+      const glow = Math.max(glow1, glow2);
+
+      p2.setAttribute("stroke-width", String((10 + glow * 1.8).toFixed(3)));
+      p2.setAttribute("opacity", "1");
+
+      const glintStart = glow1 > glow2 ? 1.42 : 2.35;
+      const glintDur = glow1 > glow2 ? 0.7 : 0.55;
+      const gu = clamp((t - glintStart) / glintDur, 0, 1);
+
+      const dashOffset = lerp(76, -18, gu);
+      glintStroke.setAttribute("stroke-dasharray", "18 90");
+      glintStroke.setAttribute("stroke-dashoffset", dashOffset.toFixed(3));
+      glintStroke.setAttribute("opacity", (glow * 0.85).toFixed(3));
+
+      const x = lerp(178, 222, smoothstep(gu));
+      const y = 196 - 23 * Math.sin(Math.PI * smoothstep(gu)) - 5 * gu;
+      const sparkleScale = 0.55 + 0.35 * Math.sin(Math.PI * gu);
+      const sparkleRot = -25 + 90 * gu;
+
+      sparkle.setAttribute(
+        "transform",
+        `translate(${x.toFixed(3)} ${y.toFixed(3)}) rotate(${sparkleRot.toFixed(3)}) scale(${sparkleScale.toFixed(3)})`
+      );
+      sparkle.setAttribute("opacity", (glow * 0.9).toFixed(3));
+    };
+
+    window.ksaRender(0);
+  </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+{
+  "case": "pendulum",
+  "intent": "Textbook diagram: the pendulum is released from the drawn position and swings back and forth, slowly losing amplitude.",
+  "run": "20261114-131334-loop_k2_b1_c2_r2",
+  "best": "r2n1",
+  "best_score_by_round": [
+    3.0,
+    4.0,
+    4.25
+  ],
+  "nodes": [
+    {
+      "id": "r0n0",
+      "parent": null,
+      "round": 0,
+      "origin": "sample",
+      "score": 3.0,
+      "scores": {
+        "fidelity": 5.0,
+        "intent": 2.0,
+        "motion": 2.0,
+        "integrity": 3.0
+      },
+      "issues": [
+        "At 0.00s the pendulum is at the drawn right-hand release position, but by 0.08s-0.58s it moves farther right instead of swinging back left toward the vertical equilibrium line.",
+        "Across the overview frames 0.58s, 1.17s, 1.75s, 2.25s, 2.83s, 3.42s, and 4.00s, the bob stays on the right side of the dashed vertical line; it never completes a readable back-and-forth swing to the left side.",
+        "The amplitude does not slowly decrease. It initially increases dramatically, with the bob reaching the right edge by 0.58s, and later poses such as 1.75s, 2.25s, and 3.42s remain large rather than damping down."
+      ],
+      "fixes": [
+        "Reverse the initial angular velocity/direction: from the 0.00s release pose, animate the bob leftward toward the dashed vertical line first, not farther right.",
+        "Use a true pendulum angle function around the ceiling pivot, e.g. theta(t) = theta0 * exp(-damping*t) * cos(omega*t), with theta0 equal to the drawn release angle and decreasing over 4 seconds.",
+        "Ensure the bob crosses the dashed vertical line and reaches alternating left and right extrema, with each extreme slightly smaller than the previous one."
+      ],
+      "file": "r0n0.html"
+    },
+    {
+      "id": "r0n1",
+      "parent": null,
+      "round": 0,
+      "origin": "sample",
+      "score": 3.0,
+      "scores": {
+        "fidelity": 5.0,
+        "intent": 2.0,
+        "motion": 2.0,
+        "integrity": 3.0
+      },
+      "issues": [
+        "The pendulum is supposed to be released from the drawn right-side position and swing back and forth with decreasing amplitude, but in the overview it stays on the right side for the full 4.0 s. It never crosses the dashed centerline to the left side at any sampled time (#1 0.00s through #8 4.00s).",
+        "The amplitude does not visibly decay. The bob reaches a very large rightward angle at 0.58s, 1.17s, 2.25s, 2.83s, and 4.00s, with no clear reduction over time.",
+        "The timing is physically backwards for a release from the initial right-side extreme: in the consecutive strip from 0.00s to 0.58s, the bob moves farther right instead of accelerating back toward the center under gravity."
+      ],
+      "fixes": [
+        "Drive the bob angle with a damped oscillation starting from the drawn angle, e.g. theta(t)=theta0 * exp(-d*t) * cos(omega*t), with theta0 equal to the initial rightward angle and omega chosen so the bob passes through vertical roughly a quarter period after release.",
+        "Make the pendulum cross the dashed vertical centerline and reach a smaller left-side extreme before returning right; include at least one full back-and-forth cycle over 4.0 s.",
+        "Apply proper easing: near-zero velocity at each extreme, fastest motion through the vertical, and gradual amplitude loss each half-cycle."
+      ],
+      "file": "r0n1.html"
+    },
+    {
+      "id": "r1n0",
+      "parent": "r0n0",
+      "round": 1,
+      "origin": "revise",
+      "score": 4.0,
+      "scores": {
+        "fidelity": 5.0,
+        "intent": 4.0,
+        "motion": 3.0,
+        "integrity": 4.0
+      },
+      "issues": [
+        "The pendulum does swing back and forth from the drawn right-side release and loses amplitude over the 4.0 s overview, but the damping is uneven: it reaches a strong left extreme at 1.17s, then a much smaller right extreme at 2.25s, then a comparable left extreme again at 3.42s rather than steadily shrinking each half-cycle.",
+        "Timing reads too mechanically sinusoidal with little sense of release acceleration/ease: in the consecutive strip from 0.00s to 0.58s the bob moves almost uniformly toward vertical, with weak anticipation of gravity-driven acceleration from rest at the release point.",
+        "The rod/string changes curvature and thickness noticeably as it swings: e.g. it is a kinked/curved heavy stroke at 0.00s, straighter and darker vertical at 0.58s, then bends differently at 1.17s. This makes the pendulum feel like a flexible drawn line rather than a rigid pendulum rod or taut string."
+      ],
+      "fixes": [
+        "Drive the bob angle with a damped pendulum function such as theta(t)=theta0*exp(-d*t)*cos(omega*t), starting at the drawn right angle with zero initial velocity, so each successive left and right peak is smaller than the previous one.",
+        "Use proper easing from the release: slow at the right extreme, fastest through vertical, slow at the left extreme; verify this in consecutive frames rather than using near-linear interpolation.",
+        "Keep the pivot coordinate fixed exactly at the ceiling attachment for all frames, and rotate the rod/string and bob as one rigid transform around that point."
+      ],
+      "file": "r1n0.html"
+    },
+    {
+      "id": "r1n1",
+      "parent": "r0n0",
+      "round": 1,
+      "origin": "revise",
+      "score": 4.0,
+      "scores": {
+        "fidelity": 5.0,
+        "intent": 4.0,
+        "motion": 3.0,
+        "integrity": 4.0
+      },
+      "issues": [
+        "The pendulum does swing back and forth from the released right-side position and the amplitude is smaller by later samples, but the damping is not fully consistent: at 2.83s it reaches a fairly large left displacement, then at 3.42s it is almost centered, and by 4.00s it has grown back to a noticeable right displacement instead of continuing to settle smoothly.",
+        "The first consecutive strip from 0.00s to 0.58s shows a readable swing toward center, but the bob motion appears nearly linear in angle with limited easing; it does not linger convincingly at the release/extreme position around 0.00s, and the acceleration through the bottom is understated.",
+        "The string changes shape/straightness during the swing: for example at 0.17s and 0.25s it has a kinked or slightly segmented look, and at 1.17s in the overview it bends rather than remaining a taut straight rod/string from the fixed pivot to the bob."
+      ],
+      "fixes": [
+        "Drive the bob with a damped pendulum angle function such as theta(t)=theta0*exp(-d*t)*cos(omega*t), starting at the drawn right angle with near-zero initial velocity, so each successive extreme is smaller than the previous one.",
+        "Add proper pendulum timing: ease out of the release, accelerate toward the vertical, reach maximum speed near the bottom, then ease into each opposite extreme.",
+        "Render the string each frame as one straight taut segment from the fixed ceiling pivot to the bob center or attachment point; avoid interpolating/kinking separate line segments."
+      ],
+      "file": "r1n1.html"
+    },
+    {
+      "id": "r2n0",
+      "parent": "r1n0",
+      "round": 2,
+      "origin": "revise",
+      "score": 3.75,
+      "scores": {
+        "fidelity": 5.0,
+        "intent": 4.0,
+        "motion": 3.0,
+        "integrity": 3.0
+      },
+      "issues": [
+        "The pendulum does swing from the drawn right-side release through center to the left and back, and the overview shows decreasing amplitude by 4.00s, matching the basic intent.",
+        "Timing reads mechanically even: it reaches center by 0.58s, left extreme around 1.17s, center at 1.75s, right at 2.25s, etc. The endpoints do not show much visible slow-in/slow-out in the sampled overview, so the pendulum feels more like a linear rotation than gravity-driven oscillation.",
+        "The first consecutive strip from 0.00s to 0.58s confirms the motion is continuous, not jumping, but the bob path appears slightly too straight/vertical near the pivot rather than a clean circular arc; the rod length to the bob varies subtly as the bob approaches center."
+      ],
+      "fixes": [
+        "Drive the bob with a damped pendulum angle function, e.g. theta(t)=theta0*exp(-d*t)*cos(omega*t), and compute bob position from a fixed pivot and constant rod length to keep a true circular arc.",
+        "Add ease-in/ease-out naturally through the sinusoidal pendulum equation: slow at left/right extremes, fastest through the vertical center. Avoid linear interpolation of the angle between sampled poses.",
+        "Keep the bob outline as a rigid transformed drawing, or use consistent hand-drawn noise locked to the bob so it does not noticeably change shape frame to frame."
+      ],
+      "file": "r2n0.html"
+    },
+    {
+      "id": "r2n1",
+      "parent": "r1n0",
+      "round": 2,
+      "origin": "revise",
+      "score": 4.25,
+      "scores": {
+        "fidelity": 5.0,
+        "intent": 4.0,
+        "motion": 4.0,
+        "integrity": 4.0
+      },
+      "issues": [
+        "The pendulum does swing from the drawn right-hand release position through center to the left and back, and the amplitude generally decays, but the damping is not fully even: by 2.25s the right swing is much smaller, while the later left swing at 3.42s still reads comparatively large.",
+        "The timing reads mostly pendulum-like, with easing visible in the first consecutive frames from 0.00s to 0.58s, but the period/amplitude relationship feels slightly mechanical rather than natural; the swing loses energy abruptly after the first full pass instead of gradually over the whole 4.0s.",
+        "At vertical passes such as 0.58s, 1.75s, 2.83s, and 4.00s, the moving pendulum line overlaps the dashed center reference, making the string look thick or doubled and slightly muddy."
+      ],
+      "fixes": [
+        "Use a damped sinusoidal angle function with a smooth exponential decay so each successive peak decreases consistently: for example theta(t)=theta0*exp(-k*t)*cos(omega*t), starting at the drawn right angle.",
+        "Keep the oscillation period nearly constant while damping the amplitude; avoid making the 2.25s right peak much smaller than expected unless the following 3.42s left peak is reduced proportionally too.",
+        "Render the dashed center guide behind the pendulum string or mask it where the moving string crosses it, so the vertical passes do not create a doubled black line."
+      ],
+      "file": "r2n1.html"
+    }
+  ]
+}

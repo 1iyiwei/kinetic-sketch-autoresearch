@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sun Logo Intro</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 512px;
+      height: 512px;
+      background: #fff8e7;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+  <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <rect width="512" height="512" fill="#fff8e7"/>
+    <g id="logo">
+      <circle id="p1" cx="256" cy="256" r="86" fill="#f59f00"/>
+      <polygon id="p2" points="367.1,241.5 446.0,256.0 367.1,270.5" fill="#fab005"/>
+      <polygon id="p3" points="344.8,324.3 390.4,390.4 324.3,344.8" fill="#fab005"/>
+      <polygon id="p4" points="270.5,367.1 256.0,446.0 241.5,367.1" fill="#fab005"/>
+      <polygon id="p5" points="187.7,344.8 121.6,390.4 167.2,324.3" fill="#fab005"/>
+      <polygon id="p6" points="144.9,270.5 66.0,256.0 144.9,241.5" fill="#fab005"/>
+      <polygon id="p7" points="167.2,187.7 121.6,121.6 187.7,167.2" fill="#fab005"/>
+      <polygon id="p8" points="241.5,144.9 256.0,66.0 270.5,144.9" fill="#fab005"/>
+      <polygon id="p9" points="324.3,167.2 390.4,121.6 344.8,187.7" fill="#fab005"/>
+    </g>
+  </svg>
+
+  <script>
+    const DURATION = 4.0;
+
+    const logo = document.getElementById("logo");
+    const disc = document.getElementById("p1");
+
+    const rays = [
+      { id: "p2", angle:   0, delay: 0.92 },
+      { id: "p3", angle:  45, delay: 1.08 },
+      { id: "p4", angle:  90, delay: 1.24 },
+      { id: "p5", angle: 135, delay: 1.40 },
+      { id: "p6", angle: 180, delay: 1.56 },
+      { id: "p7", angle: 225, delay: 1.72 },
+      { id: "p8", angle: 270, delay: 1.88 },
+      { id: "p9", angle: 315, delay: 2.04 }
+    ].map(r => ({ ...r, el: document.getElementById(r.id) }));
+
+    function clamp01(x) {
+      return Math.max(0, Math.min(1, x));
+    }
+
+    function easeOutCubic(x) {
+      x = clamp01(x);
+      return 1 - Math.pow(1 - x, 3);
+    }
+
+    function easeOutBack(x) {
+      x = clamp01(x);
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+    }
+
+    function easeInOutSine(x) {
+      x = clamp01(x);
+      return -(Math.cos(Math.PI * x) - 1) / 2;
+    }
+
+    function scaleAbout(cx, cy, sx, sy) {
+      if (sy === undefined) sy = sx;
+      return `translate(${cx} ${cy}) scale(${sx} ${sy}) translate(${-cx} ${-cy})`;
+    }
+
+    function rotateScaleAbout(cx, cy, angle, sx, sy) {
+      if (sy === undefined) sy = sx;
+      return `translate(${cx} ${cy}) rotate(${angle}) scale(${sx} ${sy}) rotate(${-angle}) translate(${-cx} ${-cy})`;
+    }
+
+    function clearExactFinal() {
+      logo.removeAttribute("transform");
+      disc.removeAttribute("transform");
+      disc.removeAttribute("opacity");
+      rays.forEach(r => {
+        r.el.removeAttribute("transform");
+        r.el.removeAttribute("opacity");
+      });
+    }
+
+    window.ksaRender = (t) => {
+      t = Math.max(0, Math.min(DURATION, Number(t) || 0));
+
+      if (Math.abs(t - DURATION) < 1e-9) {
+        clearExactFinal();
+        return;
+      }
+
+      /* Center disc: grows from nothing with a small logo-like overshoot. */
+      const discU = clamp01(t / 0.85);
+      let discS = easeOutBack(discU);
+      if (t > 0.85 && t < 1.25) {
+        const settle = clamp01((t - 0.85) / 0.40);
+        discS = 1 + (discS - 1) * (1 - easeOutCubic(settle));
+      }
+      discS = Math.max(0, discS);
+
+      disc.setAttribute("transform", scaleAbout(256, 256, discS));
+      disc.setAttribute("opacity", discS <= 0.001 ? "0" : "1");
+
+      /* Rays: pop in one by one around the sun, scaling along their radial direction. */
+      rays.forEach((r) => {
+        const u = (t - r.delay) / 0.42;
+
+        if (u <= 0) {
+          r.el.setAttribute("opacity", "0");
+          r.el.setAttribute("transform", rotateScaleAbout(256, 256, r.angle, 0.08, 0.08));
+          return;
+        }
+
+        const pop = easeOutBack(u);
+        const s = Math.max(0, pop);
+        const opacity = clamp01(u * 3.2);
+
+        r.el.setAttribute("opacity", opacity.toFixed(4));
+
+        /*
+          The scale is centered on the logo hub so each triangular ray appears to shoot outward
+          from the sun before settling into its exact final point.
+        */
+        r.el.setAttribute("transform", rotateScaleAbout(256, 256, r.angle, s, s));
+      });
+
+      /*
+        Whole mark: after construction, a gentle settling pulse.
+        It returns to perfect identity by the final frame.
+      */
+      let logoTransform = "";
+      if (t >= 2.35 && t < 3.82) {
+        const u = clamp01((t - 2.35) / 1.47);
+        const envelope = Math.sin(Math.PI * u);
+        const pulse = 1 + 0.032 * envelope * Math.sin(2.15 * Math.PI * u);
+        logoTransform = scaleAbout(256, 256, pulse);
+      }
+
+      if (logoTransform) {
+        logo.setAttribute("transform", logoTransform);
+      } else {
+        logo.removeAttribute("transform");
+      }
+    };
+
+    window.ksaRender(0);
+  </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>
