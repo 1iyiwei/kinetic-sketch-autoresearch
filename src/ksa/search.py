@@ -35,6 +35,7 @@ class Node:
     critique: dict = field(default_factory=dict)
     render: dict = field(default_factory=dict)
     error: str | None = None
+    reference: dict | None = None  # the Exa search this revision was given: query and sources
 
 
 @dataclass
@@ -46,12 +47,13 @@ class SearchConfig:
     stop_at: float = 4.75  # good enough, stop early
     patience: int = 1  # rounds without improvement before stopping
     verbose: bool = False  # print the best score after each round (live demo)
+    exa: bool = False  # before revising, search the web (Exa) for how the motion really looks
 
     @property
     def method(self) -> str:
         if self.rounds == 0:
             return "one_shot" if self.k == 1 else f"best_of_{self.k}"
-        return f"loop_k{self.k}_b{self.beam}_c{self.children}_r{self.rounds}"
+        return f"loop_k{self.k}_b{self.beam}_c{self.children}_r{self.rounds}" + ("+exa" if self.exa else "")
 
 
 async def evaluate(case, renderer: Renderer, node: Node, program: str | None, raw: str, ndir: Path,
@@ -89,6 +91,15 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
     meter: dict = {}
     nodes: list[Node] = []
     method = cfg.method
+    refs: dict[str, asyncio.Task] = {}  # parent id -> one Exa search, shared by its children
+
+    async def reference(parent: Node) -> dict | None:
+        if not cfg.exa:
+            return None
+        if parent.id not in refs:
+            from . import exa
+            refs[parent.id] = asyncio.ensure_future(exa.motion_reference(case, parent.critique, cdir.parent, parent.id))
+        return await refs[parent.id]
 
     async def sample(i: int) -> Node:
         node = Node(id=f"r0n{i}", round=0, parent=None, origin="sample")
@@ -119,11 +130,16 @@ async def search(case: dict, svg: Path, png: Path, renderer: Renderer, cdir: Pat
         else:
             sheet = Path(parent.render["sheet"]) if parent.render.get("sheet") else None
             strip = Path(parent.render["strip"]) if parent.render.get("strip") else None
+            ref = await reference(parent)
+            if ref:
+                node.reference = {"query": ref["query"], "sources": [
+                    {"title": r["title"], "url": r["url"]} for r in ref["results"]], "error": ref["error"]}
             try:
                 program, raw = await generate.revise(
                     case, svg, png, program_path.read_text(), parent.critique,
                     parent.render.get("errors", []), sheet, strip, log, meter=meter,
-                    tags={"method": method, "node": node.id, "parent": parent.id}, playbook=playbook)
+                    tags={"method": method, "node": node.id, "parent": parent.id}, playbook=playbook,
+                    reference=ref["text"] if ref else "")
             except llm.FatalAPIError:
                 raise
             except Exception as e:  # noqa: BLE001

@@ -100,8 +100,9 @@ per machine, `uv sync && uv run playwright install chromium-headless-shell`.
 uv run ksa serve
 ```
 
-This opens the drawing page at http://127.0.0.1:8765. Draw, type what should happen, pick one-shot or loop, and press
-**Animate**. The page streams the run's progress, then plays the animation with the critic's score and notes, and
+This opens the drawing page at http://127.0.0.1:8765. Draw (or type a description in "Find a drawing" to pick an
+SVG from the web with Exa), type what should happen, pick one-shot or loop, and press **Animate**. With the loop,
+"web references (Exa)" searches the web before each revision; the page lists the sources Exa found as they come in. The page streams the run's progress, then plays the animation with the critic's score and notes, and
 links the run page and the program. It uses the models in `.env` (`KSA_GEN_MODEL`, `KSA_CRITIC_MODEL`), which the
 page names before you start. Output goes to `runs/animate/<time>-<name>/`.
 

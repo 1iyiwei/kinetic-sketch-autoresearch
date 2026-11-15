@@ -23,6 +23,8 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Playbook v2 on 8 train / 3 val / 7 test drawings | done: no reliable gain (see below) |
 | Open models on Tinker: Qwen generator and critic, Nemotron-VL judge (`tinker:` models in `llm.py`) | done: mixed result (see below) |
 | Distill the loop into an open model (Qwen on Tinker) | next |
+| Exa: web references for the reviser inside the loop (`--exa`), and finding a drawing on the web | done: `src/ksa/exa.py` |
+| Sketch pad with an Animate button, live progress and the program's code (`ksa serve`) | done: `src/ksa/serve.py`, `tools/draw.html` |
 | Parallel rendering and critique on Modal | next |
 
 ## Results (Sat 13:15, 10 cases)
@@ -193,6 +195,7 @@ uv run playwright install chromium-headless-shell
 export OPENAI_API_KEY=...            # or put it in .env
 uv run python benchmark/make_cases.py   # regenerate the benchmark SVGs (already committed)
 uv run ksa serve                        # drawing page with an Animate button: http://127.0.0.1:8765
+uv run ksa run --method loop --exa      # the loop, with web references (Exa) before each revision
 uv run ksa run --method oneshot         # one-shot baseline
 uv run ksa run --method bestof --k 6    # equal-compute baseline: sample 6, keep the critic's best
 uv run ksa run --method loop            # k=2 samples, then 2 rounds of revising the best into 2 children
@@ -220,6 +223,22 @@ uv run ksa run --method loop --split test --out runs/qwen/loop-test
 uv run ksa judge runs/qwen/loop-test/<run> --model tinker:nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16 --repeats 3
 uv run ksa report runs/qwen/*/*/ --split test --judge tinker:nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16
 ```
+
+### Exa: what the loop doesn't know
+
+The critic can say *that* a motion is wrong ("the flag does not wave", "the pendulum swings the wrong way"), but
+neither it nor the generator can look up how the thing really moves. With `--exa` (needs `EXA_API_KEY`), before
+revising a program the loop searches the web with [Exa](https://exa.ai) for the drawing's intent, steered by the
+critic's top motion issue, and gives the reviser short excerpts with their sources, for example that a flag's
+flutter is "a travelling wave growing in amplitude as it progresses towards the trailing edge". There is one search
+per revised program, shared by its children; every search (query, sources, excerpts) is saved to the run's
+`exa.jsonl`, and each revised node in `tree.json` records which search it was given. A failed search is logged and
+the loop goes on without it.
+
+The sketch pad uses Exa a second way: "Find a drawing" searches SVG Repo, Wikimedia Commons and Openclipart for a
+description. The server downloads each file, strips scripts, event handlers and external references, names
+unnamed shapes (`p1`, `p2`, …) so the generator can refer to parts, and fits it into a 512 × 512 drawing. You can
+draw on top of it before animating. Licences vary by file; the page links each source.
 
 ## Animation contract
 

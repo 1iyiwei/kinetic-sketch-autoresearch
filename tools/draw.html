@@ -37,6 +37,17 @@
   #code-box summary { cursor: pointer; font-weight: 600; }
   #code { margin: 8px 0 0; max-height: 420px; overflow: auto; background: #1c2230; color: #e6e9ef; border-radius: 6px;
           padding: 10px 12px; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre; tab-size: 2; }
+  #find { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  #find .row input { flex: 1; min-width: 0; }
+  #found { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  #found button { padding: 4px; display: grid; gap: 4px; font-size: 11px; color: var(--muted); text-align: left; min-width: 0; }
+  #found button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #find p { overflow-wrap: anywhere; }
+  #found img { width: 100%; aspect-ratio: 1; display: block; background: #fff; border-radius: 4px; }
+  #found button[aria-pressed="true"] { border-color: var(--accent); outline: 2px solid var(--accent); }
+  #refs { margin: 0; padding-left: 18px; font-size: 13px; }
+  #refs:empty { display: none; }
+  #refs a { color: var(--accent); }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -45,6 +56,12 @@
   <h1>Sketch Pad</h1>
   <p>Draw on the 512 × 512 canvas, describe the motion, then press <b>Animate</b> (needs <code>uv run ksa serve</code>),
      or save the SVG and run <code>uv run ksa animate drawing.svg</code>. Each stroke becomes a path with an id (s1, s2, …).</p>
+  <section id="find" aria-label="Find a drawing on the web" hidden>
+    <div class="row"><input id="q" placeholder="Or find a drawing on the web, e.g. a windmill" aria-label="Describe a drawing to find">
+      <button id="find-btn">Find (Exa)</button></div>
+    <span id="find-status" style="font-size:13px;color:var(--muted)"></span>
+    <div id="found"></div>
+  </section>
   <canvas id="pad" width="512" height="512" aria-label="Drawing canvas"></canvas>
   <div class="row" id="tools">
     <span>Ink</span>
@@ -73,9 +90,12 @@
       <label title="Which frame must match your drawing: the first (things move away from it) or the last (a build-up intro)">Drawing is the
         <select id="anchor"><option value="start" selected>first frame</option><option value="end">last frame</option></select></label>
       <label>Seconds <input id="duration" type="number" min="1" max="10" step="0.5" value="4" style="width:64px"></label>
+      <label id="exa-opt" hidden title="Before each revision, search the web (Exa) for how this motion really looks, and give the reviser what it finds">
+        <input type="checkbox" id="exa" checked> web references (Exa) while revising</label>
     </div>
     <div class="row"><button class="primary" id="animate">Animate</button><span id="status" role="status"></span></div>
     <pre id="log" hidden></pre>
+    <ul id="refs" aria-label="What Exa found"></ul>
     <div id="result" hidden>
       <div class="stage"><iframe id="player" title="Animation"></iframe></div>
       <div class="row"><span id="score"></span><a id="gallery" target="_blank" rel="noopener">run page</a>
@@ -93,6 +113,7 @@
 <script>
 const pad = document.getElementById("pad"), ctx = pad.getContext("2d");
 let strokes = [], cur = null, color = "#1d1d1f";
+let base = null, baseImg = null;  // an SVG found on the web, drawn under the strokes
 const widthSel = document.getElementById("width");
 
 function pos(e) {
@@ -101,6 +122,7 @@ function pos(e) {
 }
 function draw() {
   ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 512, 512);
+  if (baseImg) ctx.drawImage(baseImg, 0, 0, 512, 512);
   ctx.lineCap = "round"; ctx.lineJoin = "round";
   for (const s of strokes.concat(cur ? [cur] : [])) {
     ctx.strokeStyle = s.color; ctx.lineWidth = s.width; ctx.beginPath();
@@ -120,7 +142,15 @@ document.querySelectorAll(".sw").forEach(b => b.addEventListener("click", () => 
   color = b.dataset.c; document.querySelectorAll(".sw").forEach(o => o.setAttribute("aria-pressed", o === b));
 }));
 document.getElementById("undo").addEventListener("click", () => { strokes.pop(); draw(); });
-document.getElementById("clear").addEventListener("click", () => { strokes = []; draw(); });
+document.getElementById("clear").addEventListener("click", () => { strokes = []; setBase(null); });
+function setBase(svg) {
+  base = svg; baseImg = null;
+  document.querySelectorAll("#found button").forEach(b => b.setAttribute("aria-pressed", b.dataset.i === String(svg && svg.i)));
+  if (!svg) return draw();
+  const img = new Image();
+  img.onload = () => { baseImg = img; draw(); };
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.text);
+}
 
 function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function svgText() {
@@ -129,6 +159,10 @@ function svgText() {
     return `  <path id="s${i + 1}" d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`;
   }).join("\n");
   const intent = document.getElementById("intent").value.trim();
+  if (base) {  // the found drawing, with any strokes added on top (and the intent as its description)
+    const i = base.text.lastIndexOf("</svg>");
+    return base.text.slice(0, i) + (intent ? `  <desc>${esc(intent)}</desc>\n` : "") + paths + "\n</svg>\n";
+  }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">\n` +
     (intent ? `  <desc>${esc(intent)}</desc>\n` : "") +
     `  <rect width="512" height="512" fill="#ffffff"/>\n${paths}\n</svg>\n`;
@@ -153,13 +187,61 @@ if (!served) {
   $("animate").disabled = true;
   status("Start the server to animate here: uv run ksa serve");
 } else {
-  fetch("/api/config").then(r => r.json()).then(c =>
-    status(`Generator ${c.gen_model.replace("tinker:", "")}, critic ${c.critic_model.replace("tinker:", "")}.`)).catch(() => {});
+  fetch("/api/config").then(r => r.json()).then(c => {
+    status(`Generator ${c.gen_model.replace("tinker:", "")}, critic ${c.critic_model.replace("tinker:", "")}.`);
+    if (c.exa) { $("find").hidden = false; $("exa-opt").hidden = false; }
+  }).catch(() => {});
+  const syncExa = () => { $("exa").disabled = $("method").value !== "loop"; };
+  $("method").addEventListener("change", syncExa); syncExa();
+  $("q").addEventListener("keydown", e => { if (e.key === "Enter") $("find-btn").click(); });
+  $("find-btn").addEventListener("click", async () => {
+    const q = $("q").value.trim(); if (!q) return;
+    $("find-btn").disabled = true; $("find-status").textContent = "Searching with Exa…"; $("found").replaceChildren();
+    try {
+      const r = await fetch("/api/find", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ q }) });
+      const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText);
+      $("find-status").textContent = j.results.length
+        ? `${j.results.length} drawings found. Pick one; you can draw on top of it. Check each source page for its licence.`
+        : "Nothing found; try other words.";
+      j.results.forEach((f, i) => {
+        const b = document.createElement("button"); b.dataset.i = i; b.title = f.title; b.setAttribute("aria-pressed", "false");
+        const img = document.createElement("img"); img.alt = f.title;
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(f.svg);
+        const cap = document.createElement("span"); cap.textContent = f.source;
+        b.append(img, cap);
+        b.addEventListener("click", () => {
+          setBase({ i, text: f.svg }); strokes = [];
+          if (!$("name").value.trim() || $("name").value === "drawing") $("name").value = q.replace(/\W+/g, "_").slice(0, 30);
+          $("source-note") && $("source-note").remove();
+          const n = document.createElement("p"); n.id = "source-note";
+          n.append("Drawing from ", Object.assign(document.createElement("a"), { href: f.page, target: "_blank", rel: "noopener", textContent: f.page }));
+          $("find").append(n);
+        });
+        $("found").append(b);
+      });
+    } catch (e) { $("find-status").textContent = e.message; }
+    $("find-btn").disabled = false;
+  });
 }
 let polling = null;
+function showRefs(refs) {
+  $("refs").replaceChildren(...refs.map(r => {
+    const li = document.createElement("li");
+    li.append(`Exa, before revising ${r.node}: `);
+    if (r.error) li.append(`search failed (${r.error})`);
+    else if (!r.results.length) li.append("nothing useful found");
+    r.results.forEach((f, i) => {
+      if (i) li.append(" · ");
+      li.append(Object.assign(document.createElement("a"), { href: f.url, target: "_blank", rel: "noopener", textContent: f.title }));
+    });
+    return li;
+  }));
+}
 $("animate").addEventListener("click", async () => {
   const body = { svg: svgText(), intent: $("intent").value, name: $("name").value, method: $("method").value,
-                 category: $("category").value, anchor: $("anchor").value, duration: +$("duration").value };
+                 category: $("category").value, anchor: $("anchor").value, duration: +$("duration").value,
+                 exa: !$("exa-opt").hidden && $("exa").checked };
+  $("refs").replaceChildren();
   $("animate").disabled = true; $("result").hidden = true; $("log").hidden = false; $("log").textContent = "";
   status("Starting…");
   try {
@@ -175,6 +257,7 @@ function poll(job) {
     let s;
     try { s = await (await fetch(`/api/jobs/${job}`)).json(); } catch (e) { return; }
     $("log").textContent = s.log; $("log").scrollTop = $("log").scrollHeight;
+    showRefs(s.references || []);
     if (s.state === "running") { status(`Working… ${s.elapsed} s (a loop takes a few minutes)`); return; }
     clearInterval(polling); $("animate").disabled = false;
     if (!s.has_program) { status(s.state === "failed" ? "Failed: see the log." : "No program was produced: see the log.", true); return; }

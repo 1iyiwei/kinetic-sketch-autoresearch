@@ -115,12 +115,13 @@ Current program:
 
 async def revise(case: dict, svg_path: Path, png_path: Path, program: str, critique: dict,
                  errors: list[str], sheet: Path | None, strip: Path | None, log: Path,
-                 meter: dict | None = None, tags: dict | None = None, playbook: str = "") -> tuple[str | None, str]:
+                 meter: dict | None = None, tags: dict | None = None, playbook: str = "",
+                 reference: str = "") -> tuple[str | None, str]:
     images = [png_path] + ([sheet, strip] if sheet and strip else [])
     raw = await llm.call(
         role="generator", model=llm.GEN_MODEL, effort=llm.GEN_EFFORT, system=SYSTEM,
         text=build_revise_prompt(case, svg_path.read_text(), program, critique, errors, sheet is not None)
-        + (f"\n{playbook}\n" if playbook else ""),
+        + reference + (f"\n{playbook}\n" if playbook else ""),
         images=images, log=log, tags={"case": case["id"], "method": "revise", **(tags or {})}, meter=meter,
     )
     return llm.extract_block(raw, "html"), raw

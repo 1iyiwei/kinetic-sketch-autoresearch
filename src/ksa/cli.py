@@ -128,8 +128,12 @@ def config_from(args) -> SearchConfig:
         return SearchConfig(k=1, rounds=0)
     if args.method == "bestof":
         return SearchConfig(k=args.k, rounds=0)
+    if getattr(args, "exa", False):
+        from . import exa
+        if not exa.available():
+            raise SystemExit("--exa needs EXA_API_KEY in .env")
     return SearchConfig(k=args.k, beam=args.beam, children=args.children, rounds=args.rounds,
-                        patience=args.patience)
+                        patience=args.patience, exa=getattr(args, "exa", False))
 
 
 def run_meta(label: str, cfg: SearchConfig, cases: list[dict], **extra) -> dict:
@@ -260,6 +264,7 @@ def main():
     r.add_argument("--k", type=int, default=2, help="initial samples (bestof: K)")
     r.add_argument("--beam", type=int, default=1)
     r.add_argument("--children", type=int, default=2)
+    r.add_argument("--exa", action="store_true", help="loop: before revising, search the web (Exa) for how the motion looks")
     r.add_argument("--rounds", type=int, default=2)
     r.add_argument("--patience", type=int, default=2)
     r.add_argument("--cases", help="comma-separated case ids (default: all)")
@@ -295,6 +300,7 @@ def main():
     an.add_argument("--rounds", type=int, default=2)
     an.add_argument("--patience", type=int, default=2)
     an.add_argument("--playbook", help="playbook JSON (lessons are selected for this drawing)")
+    an.add_argument("--exa", action="store_true", help="loop only: before revising, search the web (Exa) for how the motion looks")
     an.add_argument("--lessons", choices=["all", "select"], default="select")
     an.add_argument("--category", default="sketch", choices=["sketch", "diagram", "cartoon", "logo"])
     an.add_argument("--anchor", default="start", choices=["start", "end"],

@@ -4,8 +4,10 @@
 
 GET  /                      tools/draw.html
 GET  /api/config            which generator and critic models will run (so the page can say what it costs)
-POST /api/animate           {svg, intent, name, category, anchor, method} -> {job}; runs `ksa animate` in the background
-GET  /api/jobs/<job>        {state, log, run_dir, score, rounds}
+POST /api/find              {q} -> {results: [{title, page, source, svg}]}: Exa search of open-licence SVG sites,
+                            each file downloaded, sanitized and fitted to 512x512 (see exa.py)
+POST /api/animate           {svg, intent, name, category, anchor, method, exa} -> {job}; runs `ksa animate` in the background
+GET  /api/jobs/<job>        {state, log, run_dir, score, rounds, references (what Exa found, live)}
 GET  /api/jobs/<job>/program   the best program, with a looping player (play it in an iframe)
 GET  /api/jobs/<job>/source    the best program exactly as generated (shown as code on the page)
 GET  /runs/...              files under runs/ (the run's gallery page, GIFs, frames)
@@ -27,7 +29,9 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import llm
+import asyncio
+
+from . import exa, llm
 from .export import playable
 from .paths import resolve
 
@@ -45,6 +49,9 @@ def _job_status(job: dict) -> dict:
            "elapsed": round(time.time() - job["started"])}
     if m:
         run_dir = Path(m.group(1).strip())
+        refs = run_dir / "exa.jsonl"
+        if refs.exists():
+            out["references"] = [json.loads(line) for line in refs.read_text().splitlines() if line.strip()]
         out["run_dir"] = str(run_dir.relative_to(RUNS)) if run_dir.is_relative_to(RUNS) else str(run_dir)
         res = run_dir / "results.json"
         if res.exists():
@@ -78,7 +85,7 @@ class Handler(BaseHTTPRequestHandler):
         if path in ("/", "/draw.html"):
             return self._send(200, (ROOT / "tools" / "draw.html").read_bytes(), "text/html; charset=utf-8")
         if path == "/api/config":
-            return self._json({"gen_model": llm.GEN_MODEL, "critic_model": llm.CRITIC_MODEL})
+            return self._json({"gen_model": llm.GEN_MODEL, "critic_model": llm.CRITIC_MODEL, "exa": exa.available()})
         m = re.fullmatch(r"/api/jobs/(\w+)(/program|/source)?", path)
         if m:
             job = JOBS.get(m.group(1))
@@ -100,7 +107,26 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "application/octet-stream")
         self._json({"error": "not found"}, 404)
 
+    def _find(self):
+        try:
+            q = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))["q"].strip()[:200]
+        except (ValueError, KeyError) as e:
+            return self._json({"error": f"bad request: {e}"}, 400)
+        if not q:
+            return self._json({"error": "Describe what to find."}, 400)
+
+        async def run():
+            found = await exa.find_svgs(q, 8)
+            svgs = await asyncio.gather(*(exa.fetch_svg(f["svg_url"]) for f in found), return_exceptions=True)
+            return [{**f, "svg": s} for f, s in zip(found, svgs) if isinstance(s, str)]
+        try:
+            return self._json({"results": asyncio.run(run())})
+        except exa.ExaError as e:
+            return self._json({"error": str(e)}, 502)
+
     def do_POST(self):
+        if self.path == "/api/find":
+            return self._find()
         if self.path != "/api/animate":
             return self._json({"error": "not found"}, 404)
         try:
@@ -110,7 +136,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": f"bad request: {e}"}, 400)
         if not intent:
             return self._json({"error": "Describe what should happen first."}, 400)
-        if "<path" not in svg:
+        if "<path" not in svg and 'id="found"' not in svg:
             return self._json({"error": "Draw something first."}, 400)
         name = re.sub(r"[^\w-]", "_", req.get("name") or "drawing")[:40] or "drawing"
         method = req.get("method") if req.get("method") in ("loop", "oneshot") else "loop"
@@ -124,6 +150,8 @@ class Handler(BaseHTTPRequestHandler):
         log = INBOX / f"{job_id}-{name}.log"
         cmd = [sys.executable, "-m", "ksa.cli", "animate", str(f), intent, "--no-open", "--method", method,
                "--category", category, "--anchor", anchor, "--duration", str(duration)]
+        if req.get("exa") and method == "loop":
+            cmd.append("--exa")
         env = {**os.environ, "PYTHONWARNINGS": "ignore::FutureWarning,ignore::DeprecationWarning",
                "TRANSFORMERS_VERBOSITY": "error"}  # keep the page's log to the run's own progress
         proc = subprocess.Popen(cmd, stdout=log.open("w"), stderr=subprocess.STDOUT, cwd=ROOT, env=env)
