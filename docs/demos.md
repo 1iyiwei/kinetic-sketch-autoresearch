@@ -47,7 +47,7 @@ below names the criterion it serves.
 | 1:50–2:00 | The repo, and a gallery of the best animations | "Kinetic Sketch Autoresearch: sketches in, animations out, and it learns." | — |
 
 **Record before Sunday 11:00:**
-- Screen capture of `uv run ksa run --method loop --cases pendulum` with the terminal's per-round scores, sped up.
+- Screen capture of `uv run ksa run --method loop --cases pendulum --verbose` with its per-round scores, sped up.
 - The pendulum GIFs r0n0, r1n0 and r2n1 side by side.
 - A scroll through the comparison page (the shared link above, or `runs/compare.html`).
 - The playbook JSON: its lessons and its `history`.
@@ -105,7 +105,7 @@ uv run ksa animate ~/Downloads/drawing.svg
 **2. Video shot: the loop fixing the pendulum** (about 3 minutes; screen-record the terminal, then speed it up)
 
 ```bash
-uv run ksa run --method loop --cases pendulum
+uv run ksa run --method loop --cases pendulum --verbose
 ```
 
 Then open the candidates in order (r0n0 is the first sample, r1n* are revisions, the best is listed in `tree.json`):

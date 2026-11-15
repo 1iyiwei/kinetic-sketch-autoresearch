@@ -141,6 +141,7 @@ def run_meta(label: str, cfg: SearchConfig, cases: list[dict], **extra) -> dict:
 async def run(args):
     cases = load_cases(args.cases, args.split)
     cfg = config_from(args)
+    cfg.verbose = args.verbose
     pb = pbk.load(Path(args.playbook)) if args.playbook else None
     label = cfg.method + (f"+{Path(args.playbook).stem}_{args.lessons}" if pb else "")  # e.g. one_shot+train-v2_select
     run_dir = Path(args.out).resolve() / f'{time.strftime("%Y%m%d-%H%M%S")}-{label}'
@@ -264,6 +265,7 @@ def main():
     r.add_argument("--cases", help="comma-separated case ids (default: all)")
     r.add_argument("--out", default=str(ROOT / "runs"))
     r.add_argument("--concurrency", type=int, default=8)
+    r.add_argument("--verbose", action="store_true", help="print the best score after each round")
     for sp in (r,):
         sp.add_argument("--split", choices=["train", "val", "test", "complex"], help="only cases in this split")
         sp.add_argument("--playbook", help="playbook JSON whose lessons the generator gets")
