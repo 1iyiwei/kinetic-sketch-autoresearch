@@ -51,7 +51,11 @@ async def main(args):
     rng = random.Random(args.seed)
 
     def make():  # sync-only SDK constructors
-        tc = tinker.ServiceClient().create_lora_training_client(base_model=args.base_model, rank=args.rank)
+        svc = tinker.ServiceClient()
+        if args.resume:
+            tc = svc.create_training_client_from_state_with_optimizer(args.resume)
+        else:
+            tc = svc.create_lora_training_client(base_model=args.base_model, rank=args.rank)
         tc = tc.result() if hasattr(tc, "result") else tc
         return tc, tc.get_tokenizer()
 
@@ -74,18 +78,25 @@ async def main(args):
     n_sft = max(1, len(data) // args.batch)
     if args.sft_steps:
         n_sft = min(n_sft, args.sft_steps)
+    if args.resume:
+        n_sft = 0
     for b in range(n_sft):
         fb = tc.forward_backward(data[b * args.batch:(b + 1) * args.batch], "cross_entropy")
         opt = tc.optim_step(tinker.AdamParams(learning_rate=args.sft_lr * (1 - b / n_sft)))
         await fb
         await opt
         print(f"  sft step {b + 1}/{n_sft}", flush=True)
-    ck = await tc.save_weights_for_sampler(name=f"{args.name}-sft")
-    ckpts = [{"step": 0, "path": ck.path}]
-    print(f"  checkpoint: {ck.path}", flush=True)
+    ckpts = []
+    if not args.resume:
+        ck = await tc.save_weights_for_sampler(name=f"{args.name}-sft")
+        st = await tc.save_state(name=f"{args.name}-state0")
+        ckpts.append({"step": 0, "path": ck.path, "state": st.path})
+        print(f"  checkpoint: {ck.path}\n  state: {st.path}", flush=True)
+    for _ in range(1, args.start_step):  # replay the drawing draws of the steps already done
+        rng.sample(cases, args.cases)
 
     async with Renderer(concurrency=args.concurrency) as renderer:
-        for step in range(1, args.steps + 1):
+        for step in range(args.start_step, args.steps + 1):
             sc = await tc.save_weights_and_get_sampling_client(name=f"{args.name}-s{step}")
             sc = await sc if hasattr(sc, "__await__") else sc
             batch = rng.sample(cases, args.cases)
@@ -104,7 +115,11 @@ async def main(args):
                                                 for i, p in enumerate(progs)))
                 return case, mi, seqs, [s for s, _ in scored]
 
-            outs = await asyncio.gather(*(rollout(c) for c in batch), return_exceptions=True)
+            outs = await asyncio.gather(*(asyncio.wait_for(rollout(c), args.rollout_timeout) for c in batch),
+                                        return_exceptions=True)
+            if any(isinstance(o, TimeoutError) for o in outs):
+                print("  rollout timed out; restarting the renderer", flush=True)
+                await renderer.restart()
             datums, rewards, skipped = [], [], 0
             for o in outs:
                 if isinstance(o, BaseException):
@@ -138,8 +153,9 @@ async def main(args):
             print(f"  rl step {step}/{args.steps} {rec}", flush=True)
             if step % args.save_every == 0 or step == args.steps:
                 ck = await tc.save_weights_for_sampler(name=f"{args.name}-rl{step}")
-                ckpts.append({"step": step, "path": ck.path})
-                print(f"  checkpoint: {ck.path}", flush=True)
+                st = await tc.save_state(name=f"{args.name}-state{step}")
+                ckpts.append({"step": step, "path": ck.path, "state": st.path})
+                print(f"  checkpoint: {ck.path}\n  state: {st.path}", flush=True)
     (out / "meta.json").write_text(json.dumps({**vars(args), "checkpoints": ckpts}, indent=2))
     print(f"done -> {out}")
 
@@ -164,6 +180,9 @@ def cli():
     ap.add_argument("--save-every", type=int, default=4)
     ap.add_argument("--concurrency", type=int, default=8)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--rollout-timeout", type=float, default=900, help="seconds before a drawing's rollout is dropped")
+    ap.add_argument("--resume", help="tinker state path (printed as 'state:') to continue training from")
+    ap.add_argument("--start-step", type=int, default=1, help="first RL step to run when resuming")
     asyncio.run(main(ap.parse_args()))
 
 

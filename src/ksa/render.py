@@ -44,6 +44,7 @@ class Renderer:
     """Owns one headless Chromium; render many programs concurrently through it."""
 
     def __init__(self, concurrency: int = 4):
+        self._concurrency = concurrency
         self._sem = asyncio.Semaphore(concurrency)
         self._pw = None
         self._browser: Browser | None = None
@@ -56,6 +57,15 @@ class Renderer:
     async def __aexit__(self, *exc):
         await self._browser.close()
         await self._pw.stop()
+
+    async def restart(self):
+        """Relaunch Chromium after a hang; pages stuck in the old browser are abandoned."""
+        old, self._browser = self._browser, await self._pw.chromium.launch()
+        self._sem = asyncio.Semaphore(self._concurrency)
+        try:
+            await asyncio.wait_for(old.close(), 10)
+        except Exception:  # noqa: BLE001 - the old browser is already broken
+            pass
 
     async def rasterize_svg(self, svg_path: Path, out_png: Path) -> Path:
         """Render an input SVG to PNG, for the vision models."""
