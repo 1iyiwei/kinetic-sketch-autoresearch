@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            max-width: 512px; /* Max size for display */
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stage" width="512" height="512"></canvas>
+
+    <script>
+        /**
+         * Configuration
+         */
+        const DURATION = 4.0;
+        const STROKE_COLOR_P1 = "#1c7ed6";
+        const STROKE_COLOR_P2 = "#339af0";
+        const STROKE_COLOR_P3 = "#74c0fc";
+        const STROKE_WIDTH = 22;
+        
+        /**
+         * Easing Functions
+         */
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+        
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        /**
+         * Main Render Function
+         * Pure function of time t.
+         */
+        window.ksaRender = (t) => {
+            const canvas = document.getElementById('stage');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set global styles for the "draw on" phase
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = STROKE_WIDTH;
+            
+            /**
+             * Path Definitions
+             * Hardcoded points from the input SVG to ensure vector-perfect rendering.
+             */
+            const p1Points = "96,200.0 104,204.1 112,208.0 120,211.8 128,215.3 136,218.4 144,221.0 152,223.2 160,224.7 168,225.7 176,226.0 184,225.7 192,224.7 200,223.2 208,221.0 216,218.4 224,215.3 232,211.8 240,208.0 248,204.1 256,200.0 264,195.9 272,192.0 280,188.2 288,184.7 296,181.6 304,179.0 312,176.8 320,175.3 328,174.3 336,174.0 344,174.3 352,175.3 360,176.8 368,179.0 376,181.6 384,184.7 392,188.2 400,192.0 408,195.9 416,200.0";
+            const p2Points = "96,256.0 104,260.1 112,264.0 120,267.8 128,271.3 136,274.4 144,277.0 152,279.2 160,280.7 168,281.7 176,282.0 184,281.7 192,280.7 200,279.2 208,277.0 216,274.4 224,271.3 232,267.8 240,264.0 248,260.1 256,256.0 264,251.9 272,248.0 280,244.2 288,240.7 296,237.6 304,235.0 312,232.8 320,231.3 328,230.3 336,230.0 344,230.3 352,231.3 360,232.8 368,235.0 376,237.6 384,240.7 392,244.2 400,248.0 408,251.9 416,256.0";
+            const p3Points = "96,312.0 104,316.1 112,320.0 120,323.8 128,327.3 136,330.4 144,333.0 152,335.2 160,336.7 168,337.7 176,338.0 184,337.7 192,336.7 200,335.2 208,333.0 216,330.4 224,327.3 232,323.8 240,320.0 248,316.1 256,312.0 264,307.9 272,304.0 280,300.2 288,296.7 296,293.6 304,291.0 312,288.8 320,287.3 328,286.3 336,286.0 344,286.3 352,287.3 360,288.8 368,291.0 376,293.6 384,296.7 392,300.2 400,304.0 408,307.9 416,312.0";
+
+            // Spacing between the three lines for the draw-on phase
+            const drawDelay = 0.25; // Seconds delay between start of each line
+            const drawDuration = 1.0; // How long it takes to draw one line
+            
+            // Ripple Phase Configuration
+            const rippleStart = 2.0; 
+            const rippleDuration = 2.0;
+            const rippleAmplitude = 6.0; // Pixels
+
+            // Helper to draw a single path
+            function renderPath(pointsStr, color, progress) {
+                ctx.strokeStyle = color;
+                ctx.beginPath();
+                const pts = pointsStr.split(' ');
+                
+                // Convert points to path
+                pts.forEach((pt, i) => {
+                    const [x, y] = pt.split(',').map(Number);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+
+                // Draw the stroke based on progress
+                // strokeDasharray needs to be calculated dynamically or approximated.
+                // Since we can't measure the path length in a pure function without computing it,
+                // we approximate the total length based on the bounding box of the curve.
+                // The curve goes from x=96 to x=416.
+                // The path is roughly a sine wave. Length approx = width + (amplitude * factor).
+                // Let's use a slightly generous length to ensure it covers everything.
+                const approxLength = 450; 
+                
+                const dashLen = progress * approxLength;
+                ctx.setLineDash([dashLen, approxLength * 2]); // The second value must be > dashLen to create the gap
+                ctx.lineDashOffset = 0;
+                
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset
+            }
+
+            // --- Phase 1: Draw On ---
+            const maxDrawTime = 0.4 + (3 * 0.25) + 1.0; // 2.05 seconds roughly for all to finish
+            
+            if (t < maxDrawTime) {
+                // Line 1
+                let p1 = Math.min(1, Math.max(0, (t - 0.0) / drawDuration));
+                renderPath(p1Points, STROKE_COLOR_P1, p1);
+
+                // Line 2
+                let p2 = Math.min(1, Math.max(0, (t - drawDelay) / drawDuration));
+                renderPath(p2Points, STROKE_COLOR_P2, p2);
+
+                // Line 3
+                let p3 = Math.min(1, Math.max(0, (t - (drawDelay * 2)) / drawDuration));
+                renderPath(p3Points, STROKE_COLOR_P3, p3);
+            } 
+            
+            // --- Phase 2: Ripple ---
+            // If drawing is complete or we are in the ripple phase, switch to drawing full paths
+            // and apply Y-axis translation.
+            
+            // We always render the full paths if t > 0 (with the dash logic handling visibility)
+            // But specifically for the ripple, we need the paths fully drawn to move them.
+            // The renderPath function handles the "draw on" effect if progress < 1.
+            // So for the ripple phase, we just pass progress = 1.
+
+            // Apply ripple transform
+            let rippleOffset = 0;
+            let rippleScale = 0;
+
+            if (t >= rippleStart) {
+                const rippleT = Math.min(1, (t - rippleStart) / rippleDuration);
+                
+                // Create a "bounce" effect (overshoot then settle)
+                // We use a damped sine wave or a cubic ease with a slight overshoot.
+                // Let's use a simple ease-out that moves, overshoots slightly, and returns.
+                // Custom easing for a "rubber band" feel:
+                // 0 -> 1.05 -> 1.0
+                
+                // Let's use a cubic ease-out for the main movement, 
+                // but we want it to ripple.
+                
+                // Simple approach: Move down, up, settle.
+                // Use a sine wave that decays.
+                const sinWave = Math.sin(rippleT * Math.PI * 2.5);
+                const decay = Math.exp(-4 * rippleT); // Fast decay
+                
+                // We want the ripple to happen *after* the snap.
+                // Let's use a simpler logic:
+                // 0.0 - 0.2: Snap to final position (ease out elastic/cubic)
+                // 0.2 - 1.0: Gentle settle (small oscillation)
+                
+                // Let's stick to the prompt: "ripples gently once and settles".
+                // Translation Y: 0 -> -15 -> 5 -> 0 (approx)
+                
+                // Easing function for the bounce:
+                // t: 0 to 1
+                // val: 0 to 1
+                // using easeOutCubic for the base, then adding a sine wave for the ripple
+                
+                // Let's try a standard "ease out back" or similar.
+                // Or simply: move down, then bounce up to end.
+                
+                // Let's use a simple cubic ease-out for the main displacement,
+                // and add a small sine wave for the "ripple" texture.
+                
+                // Actually, "ripples once" implies a movement like: 
+                // Down, then Up (past rest), then Down (rest).
+                
+                // Let's use a predefined keyframe feel with easing.
+                // 0 -> 1 maps to 0 -> 1.
+                // Let's use a custom spline or just sin.
+                
+                // Let's try: 
+                // y = amplitude * sin(2 * PI * t + PI) ... no.
+                
+                // Let's use the sine wave with decay for the visual "ripple" effect.
+                // But we need to move the elements first.
+                
+                // Let's separate the "arrival" from the "ripple".
+                // Arrival: 0.5s. Ripple: 1.5s.
+                
+                // Let's just use a simple easeOutCubic for the main translation,
+                // and add a small sine wave on top for the "ripple" look? 
+                // No, that looks like vibration.
+                
+                // Better: 
+                // 1. Move down (springy)
+                // 2. Move up (springy)
+                // 3. Settle
+                
+                // Let's use a simple cubic bezier approximation or sin.
+                // y = -15 * sin(PI * t) + 5 * sin(2 * PI * t) ... getting complex.
+                
+                // Let's use a simple "ease out" that goes beyond 1.0.
+                // We want to shift DOWN (positive Y).
+                // So 0 -> -15 (down) -> 5 (up) -> 0 (rest).
+                
+                // Let's use a simple curve:
+                // t=0: y=0
+                // t=0.3: y=-15
+                // t=0.6: y=5
+                // t=1.0: y=0
+                
+                // We can approximate this with sine waves.
+                // y = A * sin(B * t + C) + D
+                
+                // Or simply:
+                // y = 15 * (sin(2 * PI * t + PI/2) + 1) ... no.
+                
+                // Let's use a standard "ease out back" for the first half, then settle.
+                // But "ripples" implies going back and forth.
+                
+                // Let's try:
+                // y = -15 * Math.sin(t * PI) + 5 * Math.sin(t * 2 * PI) ...
+                
+                // Let's keep it simple and robust:
+                // Use a damped sine wave starting from 0.
+                // y = -15 * sin(t * PI) * (1 - t) ... no.
+                
+                // Let's use a simple cubic ease-out for the main movement,
+                // and add a small sine wave for the "ripple" texture.
+                
+                // Actually, the prompt says "ripples gently once".
+                // This usually means: Slide down, slide up (overshoot), slide down (rest).
+                
+                // Let's use a simple cubic bezier:
+                // t=0, y=0
+                // t=0.4, y=-15
+                // t=0.7, y=5
+                // t=1.0, y=0
+                
+                // We can approximate this with:
+                // y = -15 * Math.sin(t * PI * 1.5) + 5 * Math.sin(t * PI * 3) ...
+                
+                // Let's try a simpler approach:
+                // y = -15 * Math.sin(t * PI) + 5 * Math.sin(t * 2 * PI)
+                // At t=0: 0
+                // At t=0.5: -15 * 0 + 5 * 0 = 0. (Too soon)
+                
+                // Let's use a simple easeOutCubic for the main movement,
+                // and add a small sine wave for the "ripple" texture.
+                
+                // Actually, let's just use a simple sine wave for the ripple.
+                // y = -15 * Math.sin(t * PI) + 5 * Math.sin(t * 2 * PI)
+                // Let's adjust the frequencies.
+                
+                // Let's try:
+                // y = -15 * Math.sin(t * PI * 1.5) + 5 * Math.sin(t * PI * 3)
+                // At t=0: 0
+                // At t=0.5: -15 * 1 + 0 = -15
+                // At t=0.83: -15 * (-0.5) + 5 * 0 = 7.5
+                // At t=1.0: 0
+                
+                // This looks like a ripple.
+                
+                // Let's refine the coefficients.
+                // y = 15 * Math.sin(t * PI * 1.5) - 5 * Math.sin(t * PI * 3)
+                // At t=0: 0
+                // At t=0.5: 15 * 1 - 0 = 15 (Down)
+                // At t=0.83: 15 * (-0.5) - 0 = -7.5 (Up)
+                // At t=1.0: 0
+                
+                // This is a good approximation for "Down, Up, Rest".
+                
+                const y = 15 * Math.sin(rippleT * Math.PI * 1.5) - 5 * Math.sin(rippleT * Math.PI * 3);
+                
+                // Apply the ripple offset to the canvas context
+                ctx.save();
+                ctx.translate(0, y);
+                
+                // Render all paths fully drawn
+                renderPath(p1Points, STROKE_COLOR_P1, 1);
+                renderPath(p2Points, STROKE_COLOR_P2, 1);
+                renderPath(p3Points, STROKE_COLOR_P3, 1);
+                
+                ctx.restore();
+            } else {
+                // If we are in the draw-on phase, we already rendered.
+                // But if we are past the draw-on phase and before ripple, we need to render fully.
+                if (t >= maxDrawTime) {
+                    renderPath(p1Points, STROKE_COLOR_P1, 1);
+                    renderPath(p2Points, STROKE_COLOR_P2, 1);
+                    renderPath(p3Points, STROKE_COLOR_P3, 1);
+                }
+            }
+        };
+
+        // Start the animation loop (for demonstration/local testing)
+        // In the actual environment, ksaRender will be called externally.
+        let startTime = null;
+        function loop(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = (timestamp - startTime) / 1000;
+            if (elapsed < DURATION) {
+                window.ksaRender(elapsed);
+                requestAnimationFrame(loop);
+            } else {
+                window.ksaRender(DURATION);
+            }
+        }
+        requestAnimationFrame(loop);
+
+    </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

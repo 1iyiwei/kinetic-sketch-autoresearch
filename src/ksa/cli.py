@@ -247,7 +247,7 @@ async def judge(args):
     summary = {"run": run_dir.name, "method": data["meta"]["method"], "judge": model, "repeats": args.repeats,
                "mean": round(statistics.mean(means), 3), "mean_within_case_sd": round(noise, 3),
                "per_case": per_case}
-    out = run_dir / f'judge-{model}.json'
+    out = run_dir / f'judge-{model.replace("/", "_").replace(":", "_")}.json'
     out.write_text(json.dumps(summary, indent=2))
     print(f"judge {model}: mean {summary['mean']:.2f} / 5, within-case sd {noise:.2f} -> {out}")
 
@@ -317,6 +317,7 @@ def main():
     rp.add_argument("--cases", help="restrict to these case ids")
     rp.add_argument("--split", choices=["train", "val", "test", "complex"], help="restrict to cases in this split")
     rp.add_argument("--baseline", default="one_shot")
+    rp.add_argument("--judge", help="judge model whose scores to use (default gpt-5.4 when present)")
     ls = sub.add_parser("lessons", help="per-lesson effect on judged runs; optionally prune")
     ls.add_argument("--playbook", required=True)
     ls.add_argument("--baseline", nargs="+", required=True, help="judged runs without a playbook")
@@ -327,6 +328,7 @@ def main():
     ex.add_argument("run_dirs", nargs="+", help="run folders; append =label to rename a method")
     ex.add_argument("--name", required=True)
     ex.add_argument("--cases", help="only these case ids")
+    ex.add_argument("--judge", help="judge model whose scores to show (default gpt-5.4 when present)")
     et = sub.add_parser("export-tree", help="copy every candidate of one search into results/<name>, playable")
     et.add_argument("run_dir")
     et.add_argument("case")
@@ -339,7 +341,7 @@ def main():
         out = ROOT / "results" / args.name
         if args.cmd == "export":
             only = set(args.cases.split(",")) if args.cases else None
-            print(exp.export_runs(args.run_dirs, out, by_id, CASES_DIR, only))
+            print(exp.export_runs(args.run_dirs, out, by_id, CASES_DIR, only, args.judge))
         else:
             print(exp.export_tree(Path(args.run_dir), args.case, out, by_id, CASES_DIR))
         exp.write_pages(ROOT / "results", by_id)
@@ -366,7 +368,7 @@ def main():
     if args.cmd == "report":
         from .report import table
         keep = [c["id"] for c in load_cases(args.cases, args.split)] if (args.cases or args.split) else None
-        print(table([Path(d) for d in args.run_dirs], keep, args.baseline))
+        print(table([Path(d) for d in args.run_dirs], keep, args.baseline, args.judge))
         return
     asyncio.run({"run": run, "learn": learn, "judge": judge, "animate": animate}[args.cmd](args))
 

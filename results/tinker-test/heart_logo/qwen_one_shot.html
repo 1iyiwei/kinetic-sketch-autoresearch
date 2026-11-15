@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Animation: Heart Beat</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff; /* Fallback */
+            overflow: hidden;
+        }
+        canvas {
+            /* The stage is 512x512 CSS pixels */
+            width: 512px;
+            height: 512px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stage" width="512" height="512"></canvas>
+
+    <script>
+        /**
+         * Renders the animation frame at time t (seconds).
+         * Pure function: no side effects, no global state dependencies.
+         */
+        window.ksaRender = function(t) {
+            const canvas = document.getElementById('stage');
+            const ctx = canvas.getContext('2d');
+            const W = 512;
+            const H = 512;
+
+            // Clear and draw background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, W, H);
+
+            // --- Animation State Calculation ---
+            
+            const DURATION = 4.0;
+            const cycleTime = 2.0; // Two beats per 4 seconds
+            const beatTime = t % cycleTime;
+
+            // Easing for the heartbeat (squash & stretch)
+            // We want two distinct pulses. 
+            // Pulse 1: Fast rise, quick decay.
+            // Pulse 2: Fast rise, quick decay.
+            // We use a sine wave squared to create sharp peaks.
+            
+            // Helper for the double beat curve
+            // Returns 0 to 1.
+            function getBeatScale(time) {
+                // Normalize time to 0..1 for the cycle
+                let n = time / cycleTime; 
+                
+                // Two peaks at roughly 0.15 and 0.65
+                // Using Gaussian-like functions for smooth but sharp peaks
+                const p1 = Math.exp(-Math.pow((n - 0.15) * 12, 2));
+                const p2 = Math.exp(-Math.pow((n - 0.65) * 12, 2));
+                
+                // Sum them up. Max value around 1.0
+                return (p1 + p2) * 0.15; // 0.15 is the max scale expansion
+            }
+
+            const scale = 1.0 + getBeatScale(beatTime);
+            
+            // Rotation (wobble)
+            // The heart tilts slightly left/right as it beats
+            let angle = 0;
+            const beatVelocity = Math.cos(beatTime / cycleTime * Math.PI * 4); // Derivative approx
+            // Dampen the wobble so it settles
+            const beatIntensity = 1.0 - getBeatScale(beatTime); 
+            // Add a little extra wobble at the peaks
+            const peakWobble = (getBeatScale(beatTime) > 0.05) ? 0.05 : 0;
+            
+            // Oscillate angle based on the beat timing
+            // Phase shift to match the beat
+            angle = Math.sin(beatTime / cycleTime * Math.PI * 4) * (0.05 + peakWobble);
+
+            // --- Drawing ---
+
+            ctx.save();
+
+            // Translate to center (256, 256)
+            ctx.translate(W / 2, H / 2);
+
+            // Apply Scale (Squash & Stretch)
+            // We scale from the center
+            ctx.scale(scale, scale);
+
+            // Apply Rotation
+            ctx.rotate(angle);
+
+            // Translate back to center to draw the path (which is centered around 0,0 in our logic)
+            // The original SVG path is centered roughly at 256, 256. 
+            // We translated to 256, 256, so we draw relative to 0,0.
+            
+            // Draw Base Heart (p1)
+            ctx.beginPath();
+            // M256 400 -> M0 144 (relative to center 256, 256)
+            // C 120 310 -> C -136 54
+            // C 196 128 -> C -60 -128
+            // C 244 150 -> C -12 -106
+            // C 256 190 -> C 0 -66
+            // C 268 150 -> C 12 -106
+            // C 316 128 -> C 60 -128
+            // C 362 170 -> C 106 -86
+            // C 416 220 -> C 160 -36
+            // C 392 310 -> C 136 54
+            // C 120 310 -> C -136 54
+            // C 256 400 -> C 0 144
+            // Z
+            ctx.moveTo(0, 144);
+            ctx.bezierCurveTo(-136, 54, -136, -36, -60, -128);
+            ctx.bezierCurveTo(-12, -106, 0, -66, 0, -66);
+            ctx.bezierCurveTo(0, -66, 12, -106, 60, -128);
+            ctx.bezierCurveTo(136, -36, 136, 54, 0, 144);
+            ctx.closePath();
+            
+            ctx.fillStyle = '#e03131';
+            ctx.fill();
+
+            // Draw Highlight/Shine (p2)
+            // Original: M176 196 C 186 176, 206 168, 222 172
+            // Relative: M -80 -60 C -70 -80, -50 -88, -34 -84
+            ctx.beginPath();
+            ctx.moveTo(-80, -60);
+            ctx.bezierCurveTo(-70, -80, -50, -88, -34, -84);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Draw "Glint" / Flash
+            // A quick white flash that appears on the beat peaks
+            const currentBeat = getBeatScale(beatTime);
+            if (currentBeat > 0.05) {
+                // Flash intensity is proportional to the beat strength
+                // But we want it to be a sharp "glint"
+                const flashIntensity = Math.max(0, (currentBeat - 0.05) * 5); // Sharp cutoff
+                
+                if (flashIntensity > 0) {
+                    // Add a subtle white overlay to the whole heart or just a part
+                    // Let's do a radial gradient flash in the center
+                    ctx.save();
+                    ctx.rotate(-angle); // Counter-rotate to keep flash upright if desired, or rotate with it.
+                    // Usually glints are static to the object, so we keep rotate.
+                    
+                    ctx.beginPath();
+                    // Create a soft white glow
+                    const grad = ctx.createRadialGradient(0, -20, 0, 0, -20, 100);
+                    grad.addColorStop(0, `rgba(255, 255, 255, ${flashIntensity * 0.6})`);
+                    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    
+                    ctx.fillStyle = grad;
+                    // Draw a large rect covering the heart
+                    ctx.rect(-200, -200, 400, 400);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            ctx.restore();
+        };
+    </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

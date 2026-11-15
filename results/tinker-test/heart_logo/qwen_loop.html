@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Logo Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="512" height="512"></canvas>
+
+    <script>
+        /**
+         * Motion Designer / Creative Coder
+         * 
+         * Animation Plan:
+         * 1. Fidelity & Structure: The heart is drawn using the exact SVG paths provided, 
+         *    translated to the center of the canvas (256, 280) to ensure proper scaling 
+         *    and rotation around a visual center.
+         * 2. Heart Beat (Double Pulse): A specific envelope is applied to the scale. 
+         *    It mimics a "lub-dub" rhythm: a quick expansion, a slight relaxation, 
+         *    a second slightly smaller expansion, and a longer rest.
+         * 3. Highlight Glint: A small white path (representing a light reflection) is 
+         *    positioned at the top-left of the heart. It scales up and fades in sharply 
+         *    coincident with the first beat, then fades out.
+         * 4. Timing: The animation loops every 2 seconds. At t=0, the heart is at scale 1 
+         *    and the glint is invisible, perfectly matching the static input drawing.
+         */
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Easing function: Cubic Ease In-Out for smooth, mechanical logo motion
+        function easeInOutCubic(x) {
+            return x < 0.5
+                ? 4 * x * x * x
+                : 1 - Math.pow(-2 * x + 2, 3) / 2;
+        }
+
+        /**
+         * The main render function required by the prompt.
+         * Pure function of t.
+         */
+        window.ksaRender = (t) => {
+            // Clear canvas
+            ctx.clearRect(0, 0, 512, 512);
+
+            // --- Animation Timing (Loop: 2.0s) ---
+            const loopTime = t % 2.0;
+
+            // 1. Heart Beat Scaling (Double Pulse)
+            // The "beat" window is from 0.0 to 0.4 seconds within the loop.
+            const beatDuration = 0.4; 
+            let scale = 1.0;
+            let rotation = 0;
+
+            if (loopTime < beatDuration) {
+                const tBeat = loopTime / beatDuration; // 0 to 1
+                const eased = easeInOutCubic(tBeat);
+                
+                // "Lub" (0.0 -> 0.15)
+                if (tBeat < 0.15) {
+                    const p = tBeat / 0.15;
+                    scale = 1.0 + 0.08 * easeInOutCubic(p);
+                }
+                // "Rest" (0.15 -> 0.2)
+                else if (tBeat < 0.2) {
+                    scale = 1.08;
+                }
+                // "Dub" (0.2 -> 0.35)
+                else if (tBeat < 0.35) {
+                    const p = (tBeat - 0.2) / 0.15;
+                    scale = 1.08 - 0.04 * easeInOutCubic(p);
+                }
+                // "Return" (0.35 -> 0.4)
+                else {
+                    const p = (tBeat - 0.35) / 0.05;
+                    scale = 1.04 - 0.04 * easeInOutCubic(p);
+                }
+            } else {
+                // Resting state for the remainder of the loop
+                scale = 1.0;
+            }
+
+            // 2. Highlight Glint Animation
+            // The glint should flash during the first beat to add life to the logo.
+            let glintScale = 1.0;
+            let glintOpacity = 0.0;
+
+            // Flash window: 0.05 to 0.12 (coincident with the first beat peak)
+            if (loopTime > 0.05 && loopTime < 0.12) {
+                const flashDuration = 0.12 - 0.05;
+                const flashTime = (loopTime - 0.05) / flashDuration; // 0 to 1
+                
+                // Sharp peak in the middle
+                glintOpacity = Math.exp(-10 * Math.pow(flashTime - 0.5, 2)); 
+                glintScale = 1.0 + 0.5 * glintOpacity;
+            }
+
+            // --- Drawing ---
+
+            ctx.save();
+
+            // 1. Translate to the visual center of the heart.
+            // The heart's bounding box is roughly X: 96-416, Y: 128-400.
+            // Center X = 256. Center Y is visually around 280.
+            ctx.translate(256, 280);
+
+            // 2. Apply Heart Transformations
+            // We scale from the center.
+            ctx.scale(scale, scale);
+
+            // 3. Draw Heart Body
+            // We draw the original paths relative to the center (0,0).
+            // Original path: M256 400 ...
+            // Adjusted path (subtracting center 256, 280): M0 120 ...
+            ctx.beginPath();
+            ctx.moveTo(0, 120); // 400 - 280
+            ctx.bezierCurveTo(-136, 30, -160, -60, -106, -110); // 310-280, 220-280, 170-280
+            ctx.bezierCurveTo(-60, -152, -12, -130, 0, -90); // 128-280, 150-280, 190-280
+            ctx.bezierCurveTo(12, -130, 60, -152, 106, -110); // 150-280, 128-280, 170-280
+            ctx.bezierCurveTo(160, -60, 136, 30, 0, 120); // 220-280, 310-280, 400-280
+            ctx.closePath();
+            ctx.fillStyle = "#e03131";
+            ctx.fill();
+
+            // 4. Draw Highlight Glint
+            if (glintOpacity > 0.01) {
+                ctx.save();
+                ctx.translate(-60, -88); // Position at top left of heart (196, 192 relative to 256, 280)
+                ctx.scale(glintScale, glintScale);
+                ctx.globalAlpha = glintOpacity;
+                
+                // Glint Path: M176 196 C 186 176, 206 168, 222 172
+                // Adjusted: M-80 -84 C -70 -104, -50 -112, -34 -108
+                ctx.beginPath();
+                ctx.moveTo(-80, -84);
+                ctx.bezierCurveTo(-70, -104, -50, -112, -34, -108);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 10;
+                ctx.lineCap = "round";
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+
+            ctx.restore();
+        };
+
+        // Draw initial frame
+        window.ksaRender(0);
+
+    </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

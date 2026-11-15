@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Cloud Lightning Logo Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 512px;
+      height: 512px;
+      background: #f1f3f5;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#f1f3f5"/>
+
+  <defs>
+    <clipPath id="boltClip" clipPathUnits="userSpaceOnUse">
+      <rect id="boltClipRect" x="180" y="240" width="160" height="0"/>
+    </clipPath>
+  </defs>
+
+  <!-- flash accents, hidden on final frame -->
+  <g id="flashFx" opacity="0">
+    <circle id="flashCircle" cx="255" cy="290" r="88" fill="#fff3bf"/>
+    <path id="flashRay1" d="M258 216 L270 184 L282 216" fill="#fff3bf"/>
+    <path id="flashRay2" d="M185 294 L148 284 L184 272" fill="#fff3bf"/>
+    <path id="flashRay3" d="M322 308 L362 318 L323 330" fill="#fff3bf"/>
+  </g>
+
+  <g id="cloudGroup">
+    <path id="p1" d="M150 250 C 120 250, 110 200, 150 190 C 150 140, 220 130, 240 170 C 270 130, 350 150, 340 200 C 390 200, 390 250, 350 250 Z" fill="#868e96"/>
+  </g>
+
+  <g id="boltGroup" clip-path="url(#boltClip)">
+    <polygon id="p2" points="250,240 200,350 245,350 220,440 310,320 262,320 290,240" fill="#fcc419"/>
+  </g>
+</svg>
+
+<script>
+(function () {
+  const DURATION = 4.0;
+
+  const cloud = document.getElementById("cloudGroup");
+  const bolt = document.getElementById("boltGroup");
+  const boltClipRect = document.getElementById("boltClipRect");
+  const flash = document.getElementById("flashFx");
+  const flashCircle = document.getElementById("flashCircle");
+
+  function clamp(x, a, b) {
+    return Math.max(a, Math.min(b, x));
+  }
+
+  function smoothstep(x) {
+    x = clamp(x, 0, 1);
+    return x * x * (3 - 2 * x);
+  }
+
+  function easeOutCubic(x) {
+    x = clamp(x, 0, 1);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  function easeOutBack(x) {
+    x = clamp(x, 0, 1);
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+
+  function pulse(t, center, width) {
+    const d = Math.abs(t - center) / width;
+    return clamp(1 - d, 0, 1);
+  }
+
+  window.ksaRender = function (t) {
+    t = clamp(t, 0, DURATION);
+
+    /*
+      Final frame is forced to the exact source drawing:
+      no transform, no opacity change, no clipping, no visible extras.
+    */
+    if (t >= DURATION) {
+      cloud.setAttribute("transform", "");
+      cloud.setAttribute("opacity", "1");
+      bolt.setAttribute("transform", "");
+      bolt.setAttribute("opacity", "1");
+      bolt.removeAttribute("clip-path");
+      boltClipRect.setAttribute("height", "200");
+      flash.setAttribute("opacity", "0");
+      return;
+    }
+
+    /* ---------------- Cloud drift-in ---------------- */
+    const cloudIn = easeOutBack((t - 0.05) / 1.35);
+    const cloudX = -265 * (1 - cloudIn);
+    const cloudY = -8 * Math.sin(cloudIn * Math.PI) + 3 * pulse(t, 1.18, 0.22);
+
+    /*
+      Cartoon impact shake after bolt strike.
+      Damped oscillation around the cloud's logo position.
+    */
+    let shakeX = 0;
+    let shakeY = 0;
+    if (t > 1.35 && t < 2.65) {
+      const s = Math.exp(-(t - 1.35) * 3.4);
+      shakeX = Math.sin((t - 1.35) * 42) * 6 * s;
+      shakeY = Math.cos((t - 1.35) * 36) * 3 * s;
+    }
+
+    cloud.setAttribute("opacity", String(clamp((t - 0.05) / 0.5, 0, 1)));
+    cloud.setAttribute(
+      "transform",
+      "translate(" + (cloudX + shakeX).toFixed(3) + " " + (cloudY + shakeY).toFixed(3) + ")"
+    );
+
+    /* ---------------- Lightning strike ---------------- */
+    const strike = smoothstep((t - 1.08) / 0.48);
+    const settle = smoothstep((t - 1.45) / 1.0);
+
+    if (t < 1.05) {
+      bolt.setAttribute("opacity", "0");
+      bolt.setAttribute("clip-path", "url(#boltClip)");
+      boltClipRect.setAttribute("height", "0");
+      bolt.setAttribute("transform", "translate(0 -54)");
+    } else {
+      bolt.setAttribute("opacity", "1");
+      bolt.setAttribute("clip-path", "url(#boltClip)");
+
+      /*
+        Reveal descends from the cloud underside.
+        The bolt overshoots slightly, then settles back into the exact polygon.
+      */
+      const revealH = 200 * strike;
+      boltClipRect.setAttribute("height", revealH.toFixed(3));
+
+      const dropY = -56 * (1 - easeOutCubic((t - 1.05) / 0.62));
+      const stretch = 1 + 0.16 * pulse(t, 1.30, 0.20) - 0.06 * pulse(t, 1.58, 0.24);
+      const wobble = Math.sin((t - 1.45) * 18) * 2.8 * Math.exp(-Math.max(0, t - 1.45) * 3.2);
+      const sx = 1 - (stretch - 1) * 0.25;
+
+      if (t > 2.65) {
+        bolt.setAttribute("transform", "");
+      } else {
+        bolt.setAttribute(
+          "transform",
+          "translate(255 240) rotate(" + wobble.toFixed(3) + ") scale(" + sx.toFixed(4) + " " + stretch.toFixed(4) + ") translate(-255 -240) translate(0 " + dropY.toFixed(3) + ")"
+        );
+      }
+    }
+
+    if (t > 2.85) {
+      bolt.removeAttribute("clip-path");
+      boltClipRect.setAttribute("height", "200");
+    }
+
+    /* ---------------- Flash ---------------- */
+    const f =
+      0.95 * pulse(t, 1.20, 0.12) +
+      0.55 * pulse(t, 1.38, 0.16) +
+      0.25 * pulse(t, 1.72, 0.25);
+
+    flash.setAttribute("opacity", String(clamp(f, 0, 0.85)));
+    const fr = 72 + 44 * pulse(t, 1.20, 0.18) + 18 * pulse(t, 1.38, 0.20);
+    flashCircle.setAttribute("r", fr.toFixed(3));
+
+    /*
+      Near the end, fade any construction mechanics away and lock into logo.
+      At t=4 the branch above makes the drawing exactly match the source.
+    */
+    if (t > 3.35) {
+      const lock = smoothstep((t - 3.35) / 0.45);
+      flash.setAttribute("opacity", "0");
+      if (lock > 0.98) {
+        cloud.setAttribute("transform", "");
+        cloud.setAttribute("opacity", "1");
+        bolt.setAttribute("transform", "");
+        bolt.setAttribute("opacity", "1");
+        bolt.removeAttribute("clip-path");
+      }
+    }
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

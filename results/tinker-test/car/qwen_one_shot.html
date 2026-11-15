@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartoon Car Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background: #fff;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stage" width="512" height="512"></canvas>
+    <script>
+        /**
+         * Motion Designer: Creative Coder
+         * 
+         * Animation Plan:
+         * 1. The Car moves horizontally across the screen (x: 0 to 512).
+         * 2. The Wheels (s5, s6, s8, s9) rotate in sync with the car's speed.
+         * 3. The Car Body (s1-s4, s7, s10-s11) bobs up and down slightly (quadratic easing) 
+         *    to simulate suspension and cartoon weight.
+         * 4. The Road (s1) scrolls horizontally to match the car's speed.
+         * 5. Exhaust dust (new paths) fades in and out at the back of the car.
+         */
+
+        const canvas = document.getElementById('stage');
+        const ctx = canvas.getContext('2d');
+
+        // Configuration
+        const DURATION = 4.0;
+        const WHEEL_RADIUS = 32; // Approximate radius based on SVG paths
+        const CAR_SPEED = 512 / 3.5; // Covers screen + margin in 3.5 seconds
+        
+        // Helper to get the path data from the SVG source provided
+        // We parse these strings into arrays of points for rendering
+        function parsePathData(d) {
+            const commands = d.match(/[MmZzLlHhVvCcSsQqTtAa][^MmZzLlHhVvCcSsQqTtAa]*/g);
+            let points = [];
+            let x = 0, y = 0;
+            
+            commands.forEach(cmd => {
+                const type = cmd[0];
+                const parts = cmd.slice(1).trim().split(/[\s,]+/).map(Number);
+                
+                if (type === 'M') { x = parts[0]; y = parts[1]; points.push({x, y, type: 'M'}); }
+                else if (type === 'L') { x = parts[0]; y = parts[1]; points.push({x, y, type: 'L'}); }
+                else if (type === 'C') { x = parts[0]; y = parts[1]; points.push({x, y, type: 'C'}); } // Simplified
+                // Note: Full parsing of all SVG commands is complex, we'll stick to basic drawing logic
+                // or just use the raw string with transforms.
+            });
+            return d; // We will use the raw string and apply transforms via context
+        }
+
+        // Easing Functions
+        function easeOutQuad(t) {
+            return t * (2 - t);
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // The Render Function
+        window.ksaRender = (t) => {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Clamp t to duration for the loop
+            let progress = Math.min(Math.max(t, 0), DURATION);
+            
+            // --- 1. Calculate Transforms ---
+            
+            // Car Movement (Linear)
+            // Starts at x=0, ends at x=512 (off screen)
+            // We add a small buffer so it fully leaves
+            let carX = progress * (canvas.width + 100) - 50;
+            
+            // Car Bobbing (Suspension effect)
+            // Occurs during the drive (0 to 0.85), stops when it leaves
+            let bobAngle = 0;
+            if (progress < 0.85) {
+                // Use easeOutQuad for the "bump" feel
+                bobAngle = Math.sin(progress * Math.PI * 12) * (1 - progress) * 3;
+            }
+            
+            // Wheel Rotation
+            // Circumference approx 2 * PI * 32 = 200
+            // Rotation angle = distance / radius
+            let distance = carX; // Assuming start at 0
+            let wheelRotation = distance / WHEEL_RADIUS;
+
+            // Road Scrolling
+            // The road is static in the drawing, but we need it to scroll to simulate speed
+            // Road segments repeat roughly every 20px (visual average)
+            let roadOffset = carX;
+
+            // --- 2. Draw Elements ---
+
+            // Helper to apply transforms and draw a path
+            function drawTransformedPath(pathId, transformFn) {
+                // Find the path element in the DOM (or create if needed, but DOM exists)
+                // Since we can't easily access the SVG string data without parsing, 
+                // and the prompt says "reuse the given SVG paths verbatim", 
+                // we will draw the paths manually using the data from the prompt.
+                
+                // To strictly follow "return ONE complete HTML... no external resources",
+                // and "reuse paths verbatim", I will inline the drawing commands 
+                // inside this function using the path data from the prompt.
+                
+                const pathData = getPathData(pathId);
+                if (!pathData) return;
+
+                ctx.save();
+                transformFn(ctx);
+                
+                // Draw the path
+                ctx.beginPath();
+                // We need to parse the string 'd' from the prompt
+                // Since I can't parse complex SVG strings perfectly in this block without a library,
+                // I will use a trick: The SVG is embedded in the HTML body. 
+                // We can clone and append it, but transforms on SVG elements are tricky with clip-paths.
+                // Better approach: Extract points and draw lines.
+                
+                // Actually, the most robust way in a single file without external libs 
+                // to "reuse paths verbatim" is to use the SVG element itself via getBBox? No.
+                
+                // Let's use a simple parser for the specific paths in the prompt.
+                // They are mostly 'M' and 'L' commands.
+                
+                const d = pathData;
+                const regex = /([MmZzLlHhVvCcSsQqTtAa])([^MmZzLlHhVvCcSsQqTtAa]*)/g;
+                let match;
+                let startX = 0, startY = 0;
+                let currentX = 0, currentY = 0;
+                
+                while ((match = regex.exec(d)) !== null) {
+                    const cmd = match[1];
+                    const valStr = match[2];
+                    const val = valStr.trim() ? valStr.trim().split(/[\s,]+/).map(Number) : [];
+                    
+                    if (cmd === 'M') {
+                        currentX = val[0];
+                        currentY = val[1];
+                        ctx.moveTo(currentX, currentY);
+                        startX = currentX;
+                        startY = currentY;
+                    } else if (cmd === 'L') {
+                        currentX = val[0];
+                        currentY = val[1];
+                        ctx.lineTo(currentX, currentY);
+                    } else if (cmd === 'C') {
+                        // Cubic Bezier approximation with lines for simplicity in this context
+                        // or just skip if not critical (most are lines)
+                        // The prompt has 'C' in s3, s4. Let's do a simple line for now to keep code small
+                        ctx.lineTo(val[0], val[1]); 
+                    }
+                    // Z, H, V are handled or ignored for this sketch style
+                }
+                
+                ctx.closePath();
+                
+                // Apply stroke styles from the prompt
+                const styles = getPathStyles(pathId);
+                ctx.strokeStyle = styles.stroke;
+                ctx.lineWidth = styles.width;
+                ctx.lineCap = styles.cap;
+                ctx.lineJoin = styles.join;
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+
+            // Store path data in a local object to avoid re-parsing strings
+            const paths = {
+                s1: "M29.8,374.0 L49.4,373.9 L69.0,374.1 L88.3,374.3 L107.4,374.0 L127.1,373.5 L147.3,373.3 L167.5,374.1 L186.8,374.6 L207.0,374.8 L225.9,374.5 L245.9,374.1 L265.2,373.8 L284.6,374.3 L304.2,374.1 L324.3,374.7 L343.7,373.9 L364.2,374.4 L384.2,374.4 L403.4,373.8 L422.8,373.8 L441.9,374.1 L462.0,373.4 L482.2,373.5",
+                s2: "M110.6,336.0 L152.6,335.9 L194.3,335.9 L235.2,335.4 L276.5,335.4 L318.1,335.6 L360.1,335.5 L401.6,335.6 L402.3,328.7 L402.5,321.7 L402.0,313.6 L401.4,305.6 L400.8,298.5 L401.7,290.6 L402.0,284.0 L392.7,282.9 L383.1,282.1 L372.8,281.0 L363.1,281.3 L352.9,280.3 L343.1,279.2 L333.5,279.2 L328.6,271.3 L323.2,263.7 L318.8,257.2 L314.1,249.3 L308.9,241.9 L303.7,234.1 L298.9,227.5 L283.1,228.1 L268.1,228.0 L252.1,227.5 L236.8,228.1 L221.7,227.7 L205.8,227.0 L189.8,226.9 L185.0,234.0 L181.6,241.4 L177.3,249.2 L172.9,257.0 L168.6,264.5 L163.7,272.3 L159.8,280.1 L152.4,280.9 L145.8,282.0 L138.0,282.6 L130.5,283.8 L123.4,284.4 L116.0,285.2 L109.4,286.2 L109.1,293.2 L109.5,299.7 L110.2,306.2 L110.3,313.1 L110.9,320.8 L110.3,328.1 L110.8,335.9",
+                s3: "M196.2,240.2 L206.5,240.8 L216.4,240.8 L226.8,240.6 L236.2,240.6 L246.0,240.8 L246.3,248.8 L245.7,255.5 L246.4,263.4 L247.0,271.3 L247.5,278.2 L232.3,278.3 L218.1,277.7 L204.2,277.4 L189.1,277.4 L174.1,276.9 L177.9,268.9 L181.9,261.8 L186.9,254.8 L191.2,247.7 L195.1,240.6",
+                s4: "M257.9,239.5 L264.9,239.1 L272.5,239.1 L279.0,238.9 L285.7,239.7 L293.0,240.2 L298.1,247.6 L303.4,255.3 L307.6,263.6 L312.3,271.3 L317.2,279.3 L304.9,278.4 L292.4,278.2 L281.3,278.1 L270.0,277.6 L258.7,277.2 L259.1,269.3 L259.0,262.1 L259.5,254.5 L259.7,246.4 L259.9,239.1",
+                s5: "M208.7,333.8 L209.5,338.4 L209.9,342.7 L209.0,347.2 L207.7,351.9 L205.8,355.5 L203.8,360.2 L200.9,363.4 L197.0,367.1 L193.0,369.7 L188.1,371.7 L184.3,372.2 L179.4,372.6 L175.4,372.5 L170.1,370.7 L166.4,368.6 L163.0,366.1 L159.8,362.6 L157.2,359.1 L153.8,354.7 L151.3,350.4 L150.9,346.7 L151.0,341.8 L151.6,337.5 L152.9,333.6 L154.9,329.5 L156.8,324.8 L159.5,320.8 L163.3,317.3 L166.7,315.2 L170.3,312.8 L174.2,311.2 L178.5,311.4 L183.2,311.3 L188.0,312.4 L191.9,313.8 L195.9,316.4 L199.2,319.6 L202.7,324.0 L205.6,327.7 L207.2,331.7 L208.4,337.1 L209.7,341.3 L209.7,346.4",
+                s6: "M188.3,340.0 L188.5,343.4 L186.1,347.8 L183.2,350.5 L178.8,350.9 L175.4,348.8 L172.8,345.2 L172.5,340.3 L173.5,337.3 L176.8,334.8 L181.1,334.4 L185.1,336.1 L186.8,338.7 L187.1,342.6",
+                s7: "M158.7,342.0 L164.3,342.5 L170.3,342.3 L176.9,342.5 L182.8,342.3 L188.4,342.9 L195.5,343.2 L201.4,343.1",
+                s8: "M364.6,332.6 L365.2,337.8 L365.8,342.6 L364.9,347.4 L364.4,351.4 L362.2,356.4 L359.4,360.2 L357.1,364.0 L353.2,366.7 L348.8,368.4 L344.6,369.7 L339.8,371.4 L334.7,371.2 L329.6,371.2 L325.0,369.8 L321.0,368.4 L317.9,365.4 L314.2,361.7 L311.1,358.7 L308.5,354.7 L306.6,351.2 L306.1,347.2 L306.0,343.0 L306.6,337.5 L307.1,333.5 L309.1,329.4 L311.7,325.7 L314.3,321.4 L317.6,318.6 L321.9,316.0 L325.9,313.9 L330.3,312.2 L335.8,312.3 L341.0,312.4 L345.9,313.9 L349.7,316.3 L354.2,317.9 L357.0,320.3 L360.4,323.4 L362.3,326.9 L364.1,331.2 L365.4,335.6 L366.1,340.7 L365.6,346.3",
+                s9: "M343.8,339.7 L343.5,343.5 L342.0,347.0 L338.0,349.2 L334.0,349.0 L330.0,347.9 L328.3,344.5 L328.4,340.6 L329.7,337.0 L332.5,334.7 L336.7,333.7 L340.6,335.1 L343.3,339.3 L344.3,342.7",
+                s10: "M314.1,342.1 L321.0,341.7 L326.6,341.6 L332.6,342.2 L339.5,342.3 L346.1,342.1 L351.9,342.0 L358.4,341.8",
+                s11: "M404.5,299.9 L405.2,300.0 L407.0,299.8 L407.9,299.8 L409.7,300.3 L411.1,299.9 L412.3,300.1 L413.1,300.2 L413.7,300.7 L415.2,300.8 L416.9,301.0 L417.8,301.0 L418.4,301.0 L419.5,300.9"
+            };
+
+            const styles = {
+                s1: { stroke: '#1d1d1f', width: 4.0, cap: 'round', join: 'round' },
+                s2: { stroke: '#1d1d1f', width: 4.0, cap: 'round', join: 'round' },
+                s3: { stroke: '#1d1d1f', width: 3, cap: 'round', join: 'round' },
+                s4: { stroke: '#1d1d1f', width: 3, cap: 'round', join: 'round' },
+                s5: { stroke: '#1d1d1f', width: 4.0, cap: 'round', join: 'round' },
+                s6: { stroke: '#1d1d1f', width: 3, cap: 'round', join: 'round' },
+                s7: { stroke: '#1d1d1f', width: 2.5, cap: 'round', join: 'round' },
+                s8: { stroke: '#1d1d1f', width: 4.0, cap: 'round', join: 'round' },
+                s9: { stroke: '#1d1d1f', width: 3, cap: 'round', join: 'round' },
+                s10: { stroke: '#1d1d1f', width: 2.5, cap: 'round', join: 'round' },
+                s11: { stroke: '#1d1d1f', width: 3, cap: 'round', join: 'round' }
+            };
+
+            function getPathData(id) { return paths[id]; }
+            function getPathStyles(id) { return styles[id]; }
+
+            // --- 3. Draw Road (s1) ---
+            // The road is a long line. We draw it multiple times to simulate scrolling
+            ctx.save();
+            ctx.translate(-roadOffset % 50, 0); // Periodic repetition every 50px
+            // Draw 3 copies to cover the screen
+            drawTransformedPath('s1', (c) => { c.translate(0, 0); });
+            drawTransformedPath('s1', (c) => { c.translate(500, 0); });
+            drawTransformedPath('s1', (c) => { c.translate(1000, 0); });
+            ctx.restore();
+
+            // --- 4. Draw Car Body ---
+            // Group: s2 (main body), s3 (window), s4 (window), s7 (bumper), s10 (detail), s11 (exhaust)
+            // The body bobs vertically.
+            // Pivot point for the body is roughly the axle line (y=345).
+            // We translate Y up and down.
+            
+            ctx.save();
+            // Apply bobbing: The car moves right, so the transform is relative to the world.
+            // We need to move the context to the car's current X, then apply bob.
+            // The car's base Y is around 345.
+            
+            // Bobbing calculation:
+            // The car is driving, so it has a slight vertical oscillation.
+            // Using easeOutQuad for a snappy feel.
+            let bobY = Math.sin(progress * Math.PI * 10) * (1 - progress) * 2;
+            
+            // Rotate slightly for extra cartoon flair (nose up/down)
+            let bobRot = Math.sin(progress * Math.PI * 10) * (1 - progress) * 0.02;
+
+            ctx.translate(carX, 345); // Move to car's current position (axle height)
+            ctx.rotate(bobRot);
+            ctx.translate(-carX, -345); // Move back to world coords relative to car pivot
+            
+            // Now draw the body parts. They are defined relative to their local origin (0,0) in the SVG.
+            // But wait, the SVG paths are absolute. So we just translate the whole context by carX.
+            
+            // Reset transform to draw body parts at carX
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.translate(carX, bobY);
+            
+            // Draw Body Parts
+            // s2: Main outline
+            drawTransformedPath('s2', (c) => {});
+            // s3: Front window
+            drawTransformedPath('s3', (c) => {});
+            // s4: Back window
+            drawTransformedPath('s4', (c) => {});
+            // s7: Front bumper
+            drawTransformedPath('s7', (c) => {});
+            // s10: Side detail
+            drawTransformedPath('s10', (c) => {});
+            // s11: Exhaust pipe
+            drawTransformedPath('s11', (c) => {});
+
+            ctx.restore();
+
+            // --- 5. Draw Wheels ---
+            // Wheel 1 (Back): Center approx (180, 345)
+            // Wheel 2 (Front): Center approx (345, 345)
+            // These are relative to the car's origin (0,0) in the SVG? 
+            // No, the SVG paths are absolute.
+            // s5/s6 are the back wheel. s8/s9 are the front wheel.
+            
+            // Back Wheel
+            ctx.save();
+            // Translate to the wheel's center. 
+            // The wheel's center in the drawing is roughly (180, 345).
+            // We need to translate to the car's current position (carX) + local offset.
+            // Local offset for back wheel is 180 (from path start/end approx).
+            // Let's use the path's bounding box center if needed, but (180, 345) seems correct.
+            let backWheelX = carX + 180;
+            let backWheelY = 345 + bobY;
+            
+            ctx.translate(backWheelX, backWheelY);
+            ctx.rotate(wheelRotation);
+            ctx.translate(-backWheelX, -backWheelY);
+            
+            // Draw back wheel parts
+            drawTransformedPath('s5', (c) => {}); // Outer tire
+            drawTransformedPath('s6', (c) => {}); // Inner hubcap
+            ctx.restore();
+
+            // Front Wheel
+            ctx.save();
+            // Local offset for front wheel is approx (345, 345).
+            let frontWheelX = carX + 345;
+            let frontWheelY = 345 + bobY;
+            
+            ctx.translate(frontWheelX, frontWheelY);
+            ctx.rotate(wheelRotation);
+            ctx.translate(-frontWheelX, -frontWheelY);
+            
+            // Draw front wheel parts
+            drawTransformedPath('s8', (c) => {}); // Outer tire
+            drawTransformedPath('s9', (c) => {}); // Inner hubcap
+            ctx.restore();
+
+            // --- 6. Draw Exhaust Dust ---
+            // New element: small circles/puffs coming out of s11
+            // s11 ends around x=419 in local coords.
+            // So global x is carX + 419.
+            // Only draw when car is moving and at the start.
+            if (progress < 0.6) {
+                ctx.save();
+                ctx.translate(carX + 419, 300 + bobY);
+                ctx.fillStyle = '#cccccc';
+                ctx.globalAlpha = 0.5 * (1 - progress * 1.5); // Fade out
+                
+                ctx.beginPath();
+                ctx.arc(0, 0, 5, 0, Math.PI * 2);
+                ctx.arc(-10, -5, 8, 0, Math.PI * 2);
+                ctx.arc(-20, -2, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        };
+
+        // --- Initialization ---
+        // Draw the initial frame
+        window.ksaRender(0);
+
+    </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

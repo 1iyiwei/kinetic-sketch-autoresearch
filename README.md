@@ -21,6 +21,7 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 | Report across runs (grouped by method, paired wins) | done: `src/ksa/report.py` |
 | Per-drawing lesson selection; per-lesson credit (`ksa lessons`) | done: `src/ksa/playbook.py`, `src/ksa/lessons.py` |
 | Playbook v2 on 8 train / 3 val / 7 test drawings | done: no reliable gain (see below) |
+| Open models on Tinker: Qwen generator and critic, Nemotron-VL judge (`tinker:` models in `llm.py`) | done: mixed result (see below) |
 | Distill the loop into an open model (Qwen on Tinker) | next |
 | Parallel rendering and critique on Modal | next |
 
@@ -146,6 +147,36 @@ pruned on the 3 val drawings, and tested on the 7 test drawings (one-shot, 3 run
   winning on 6 of 7. To make improvements stick, the next step is to put them in the model's weights rather than
   its prompt: fine-tune an open model on the programs the loop found (see "Next: distill the loop into the model").
 
+### Open models on Tinker (Sun 10:45)
+
+The same pipeline now runs entirely on open models hosted on [Tinker](https://thinkingmachines.ai/tinker/), with no
+OpenAI calls: any model named `tinker:<base model>` goes through Tinker's sampler, with images spliced in as image
+chunks where the chat template puts them. We used `Qwen/Qwen3.6-35B-A3B` (thinking off) as the generator and the
+in-loop critic, and `nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16`, a different model family, as the held-out
+judge (3 repeats). To compare like with like, the earlier GPT runs on the same 7 test drawings were re-judged by
+Nemotron too.
+
+| Generator (critic) | One-shot (3 runs) | Loop (1 run) | Loop vs. one-shot, wins / losses | Tokens per case, one-shot / loop |
+| --- | --- | --- | --- | --- |
+| gpt-5.5 (gpt-5.5) | 4.33 | 4.31 | 4 / 3 | 9K / 74K |
+| Qwen3.6-35B-A3B (Qwen3.6-35B-A3B) | 3.28 | 3.41 | 3 / 4 | 8K / 50K |
+
+Held-out judge: Nemotron-3.5-Super-VL, mean of 3. Browse it at [`results/tinker-test/`](results/tinker-test/index.html).
+
+What this shows:
+
+- **The loop rescues broken programs.** Qwen's one-shot windmill crashed on its first frame (it called `.find` on a
+  DOM NodeList) and its spring–mass barely moved; the loop rendered, saw and fixed both (windmill 3.11 → 4.83,
+  spring–mass 1.87 → 3.53, one-shot averaged over 3 runs).
+- **A weak critic misleads it elsewhere.** The Qwen critic can be lenient (it rated one one-shot run 3.98 where the
+  judge gave 3.30), so the search often stopped early at a candidate the judge liked less (bolt logo 4.44 → 2.93).
+  The loop is only as good as its critic.
+- **The GPT loop's gain does not survive a second judge.** Under gpt-5.4 the GPT loop beat one-shot by +0.21 on these
+  7 drawings (6 of 7 wins); under Nemotron it ties (−0.02, 4 of 7). The two judges correlate only weakly per case
+  (Pearson 0.43 over 28 judged animations), and Nemotron is more lenient (mean 4.32 vs. 3.83) and noisier
+  (within-case sd 0.15–0.45 vs. 0.08–0.18). With 7 drawings, a +0.2 difference is within what the choice of judge
+  changes; the large, consistent effect is repairing failures, not polishing good programs.
+
 ### Next: distill the loop into the model (Tinker)
 
 Every loop run leaves training data: (drawing, intent) → the best program found, plus critic scores for every
@@ -180,6 +211,14 @@ Each run writes `runs/<stamp>-<method>/`, which holds:
 - `llm_calls.jsonl`, which logs every model call with its prompt, response, tokens and latency (the decision trace).
 
 Models are set with the env vars `KSA_GEN_MODEL`, `KSA_CRITIC_MODEL`, `KSA_GEN_EFFORT` and `KSA_CRITIC_EFFORT`.
+A model named `tinker:<base model>` runs on Tinker (needs `TINKER_API_KEY`); for example, entirely on open models:
+
+```bash
+export KSA_GEN_MODEL=tinker:Qwen/Qwen3.6-35B-A3B KSA_CRITIC_MODEL=tinker:Qwen/Qwen3.6-35B-A3B
+uv run ksa run --method loop --split test --out runs/qwen/loop-test
+uv run ksa judge runs/qwen/loop-test/<run> --model tinker:nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16 --repeats 3
+uv run ksa report runs/qwen/*/*/ --split test --judge tinker:nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16
+```
 
 ## Animation contract
 

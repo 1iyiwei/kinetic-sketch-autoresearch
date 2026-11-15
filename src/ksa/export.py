@@ -50,11 +50,12 @@ def playable(program: str, duration: float) -> str:
     return program[:i] + snippet + program[i:] if i >= 0 else program + snippet
 
 
-def judge_means(run_dir: Path) -> dict[str, float]:
-    j = sorted(run_dir.glob("judge-*.json"))
-    if not j:
+def judge_means(run_dir: Path, judge_model: str | None = None) -> dict[str, float]:
+    from .report import judge_file
+    j = judge_file(run_dir, judge_model)
+    if j is None:
         return {}
-    return {p["case"]: round(st.mean(p["overall"]), 2) for p in json.loads(j[-1].read_text())["per_case"]}
+    return {p["case"]: round(st.mean(p["overall"]), 2) for p in json.loads(j.read_text())["per_case"]}
 
 
 def _case_meta(case: dict, root: Path) -> dict:
@@ -67,16 +68,19 @@ def _load_manifest(out: Path) -> dict:
     return json.loads(p.read_text()) if p.exists() else {"cases": {}}
 
 
-def export_runs(run_dirs: list[str], out: Path, cases_by_id: dict, cases_dir: Path, only: set | None = None) -> Path:
+def export_runs(run_dirs: list[str], out: Path, cases_by_id: dict, cases_dir: Path, only: set | None = None,
+                judge_model: str | None = None) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     manifest = _load_manifest(out)
+    if judge_model:
+        manifest["judge"] = judge_model
     for spec in run_dirs:
         # "runs/<dir>=label" overrides the method label (e.g. two runs of one method, before/after a fix)
         d, _, label = str(spec).partition("=")
         d = Path(d)
         data = json.loads((d / "results.json").read_text())
         method = label or data["meta"]["method"]
-        judged = judge_means(d)
+        judged = judge_means(d, judge_model)
         for r in data["results"]:
             cid = r["case"]
             if only and cid not in only:
@@ -125,11 +129,14 @@ SET_INFO = {
     "test": ("Held-out test: 7 drawings", "Drawings never used for tuning. One-shot shows run 1 of 3; the playbook column uses playbook v2 with selected lessons; the loop ran once."),
     "complex": ("Complex: 5 drawings", "Multi-object interactions, an articulated character and a three-beat story; never used for learning. One-shot shows run 1 of 3; the loop ran once."),
     "pendulum-tree": ("One search: the pendulum", "Every candidate of one loop search: 2 first samples, then 2 rounds revising the best into 2 children."),
+    "tinker-test": ("Open models on Tinker: 7 test drawings", "GPT-5.5 and Qwen3.6-35B-A3B (on Tinker) as the generator, one-shot and loop, all scored by one held-out judge on Tinker. In the Qwen columns the in-loop critic is also Qwen; in the GPT columns it is gpt-5.5. One-shot columns show run 1 of 3; the loops ran once."),
     "anchor-fix": ("Anchor-frame fix: logo intros", "Loop results for two build-up logo intros, before and after each drawing named its anchor frame (the last frame for build-ups)."),
 }
 METHOD_NAMES = {"one_shot": "one-shot", "best_of_6": "best-of-6", "loop_k2_b1_c2_r2": "loop",
                 "one_shot+train-v2_select": "one-shot + playbook v2", "before_anchor_fix": "before the fix",
-                "after_anchor_fix": "after the fix"}
+                "after_anchor_fix": "after the fix",
+                "gpt_one_shot": "GPT one-shot", "gpt_loop": "GPT loop", "qwen_one_shot": "Qwen one-shot",
+                "qwen_loop": "Qwen loop"}
 
 PAGE_HEAD = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -184,7 +191,8 @@ def write_set_page(out: Path, cases_by_id: dict) -> Path:
     m = json.loads((out / "manifest.json").read_text())
     title, desc = SET_INFO.get(out.name, (out.name, ""))
     parts = [PAGE_HEAD.format(title=_e(title)), f'<p><a href="../index.html">← all results</a></p><h1>{_e(title)}</h1>',
-             f'<p class="muted">{_e(desc)} Score under each animation: held-out judge (gpt-5.4, mean of 3), then the in-loop critic. '
+             f'<p class="muted">{_e(desc)} Score under each animation: held-out judge '
+             f'({_e(m.get("judge", "gpt-5.4").removeprefix("tinker:").split("/")[-1])}, mean of 3), then the in-loop critic. '
              'Green: best judge score in the row (no highlight on ties).</p>']
     for cid, c in m["cases"].items():
         write_prompt(out / cid, cases_by_id[cid], (out / cid / "input.svg").read_text())

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=512, initial-scale=1.0" />
+  <title>Heart Logo Double Beat Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    canvas {
+      display: block;
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+<canvas id="stage" width="512" height="512"></canvas>
+
+<script>
+(() => {
+  const canvas = document.getElementById("stage");
+  const ctx = canvas.getContext("2d");
+
+  const heartPath = new Path2D(
+    "M256 400 C 120 310, 96 220, 150 170 C 196 128, 244 150, 256 190 C 268 150, 316 128, 362 170 C 416 220, 392 310, 256 400 Z"
+  );
+
+  const highlightPath = new Path2D(
+    "M176 196 C 186 176, 206 168, 222 172"
+  );
+
+  function clamp01(x) {
+    return Math.max(0, Math.min(1, x));
+  }
+
+  function easeOutCubic(x) {
+    x = clamp01(x);
+    return 1 - Math.pow(1 - x, 3);
+  }
+
+  function easeInCubic(x) {
+    x = clamp01(x);
+    return x * x * x;
+  }
+
+  function easeInOutSine(x) {
+    x = clamp01(x);
+    return 0.5 - 0.5 * Math.cos(Math.PI * x);
+  }
+
+  function lerp(a, b, u) {
+    return a + (b - a) * u;
+  }
+
+  function segment(t, a, b, va, vb, easeFn) {
+    if (t < a || t > b) return null;
+    return lerp(va, vb, easeFn((t - a) / (b - a)));
+  }
+
+  /*
+    Quick paired heartbeat:
+    - tiny anticipation
+    - first snap outward around 0.20s
+    - recoil by 0.32s
+    - second snap outward around 0.45s
+    - clean settle by 0.65s
+  */
+  function doubleBeatAmount(t) {
+    const segs = [
+      [0.00, 0.08,  0.000,  0.000, easeInOutSine],
+      [0.08, 0.14,  0.000, -0.030, easeInCubic],
+      [0.14, 0.20, -0.030,  0.145, easeOutCubic],
+      [0.20, 0.32,  0.145, -0.026, easeInOutSine],
+      [0.32, 0.38, -0.026, -0.012, easeOutCubic],
+      [0.38, 0.45, -0.012,  0.125, easeOutCubic],
+      [0.45, 0.56,  0.125, -0.020, easeInOutSine],
+      [0.56, 0.65, -0.020,  0.000, easeOutCubic]
+    ];
+
+    for (let i = 0; i < segs.length; i++) {
+      const s = segs[i];
+      const v = segment(t, s[0], s[1], s[2], s[3], s[4]);
+      if (v !== null) return v;
+    }
+    return 0;
+  }
+
+  function glintAmount(t) {
+    const u = (t - 1.82) / 0.55;
+    if (u < 0 || u > 1) return 0;
+    return Math.sin(Math.PI * u);
+  }
+
+  function glintU(t) {
+    return clamp01((t - 1.82) / 0.55);
+  }
+
+  function drawSparkle(cx, cy, r, alpha) {
+    if (alpha <= 0) return;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r);
+    ctx.lineTo(cx + r * 0.20, cy - r * 0.20);
+    ctx.lineTo(cx + r, cy);
+    ctx.lineTo(cx + r * 0.20, cy + r * 0.20);
+    ctx.lineTo(cx, cy + r);
+    ctx.lineTo(cx - r * 0.20, cy + r * 0.20);
+    ctx.lineTo(cx - r, cy);
+    ctx.lineTo(cx - r * 0.20, cy - r * 0.20);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.globalAlpha = alpha * 0.55;
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 1.45, cy);
+    ctx.lineTo(cx - r * 0.75, cy);
+    ctx.moveTo(cx + r * 0.75, cy);
+    ctx.lineTo(cx + r * 1.45, cy);
+    ctx.moveTo(cx, cy - r * 1.45);
+    ctx.lineTo(cx, cy - r * 0.75);
+    ctx.moveTo(cx, cy + r * 0.75);
+    ctx.lineTo(cx, cy + r * 1.45);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawGlint(t) {
+    const g = glintAmount(t);
+    if (g <= 0) return;
+
+    const u = glintU(t);
+
+    /*
+      A separate clean logo-style glint: a short diagonal white shine sweeps
+      across the existing highlight area, while the original highlight remains
+      fully intact beneath it.
+    */
+    const x = 178 + 48 * u;
+    const y = 194 - 20 * Math.sin(Math.PI * u) - 3 * u;
+
+    ctx.save();
+    ctx.clip(heartPath);
+
+    ctx.translate(x, y);
+    ctx.rotate(-0.62);
+
+    ctx.globalAlpha = 0.70 * g;
+    ctx.fillStyle = "#ffffff";
+
+    ctx.beginPath();
+    const w = 26 + 8 * g;
+    const h = 6;
+    const rr = 3;
+    ctx.moveTo(-w / 2 + rr, -h / 2);
+    ctx.lineTo(w / 2 - rr, -h / 2);
+    ctx.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + rr);
+    ctx.lineTo(w / 2, h / 2 - rr);
+    ctx.quadraticCurveTo(w / 2, h / 2, w / 2 - rr, h / 2);
+    ctx.lineTo(-w / 2 + rr, h / 2);
+    ctx.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - rr);
+    ctx.lineTo(-w / 2, -h / 2 + rr);
+    ctx.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + rr, -h / 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+
+    drawSparkle(198 + 30 * u, 181 - 8 * Math.sin(Math.PI * u), 7 + 4 * g, 0.90 * g);
+  }
+
+  window.ksaRender = (t) => {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, 512, 512);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 512, 512);
+
+    const pulse = doubleBeatAmount(t);
+
+    /*
+      Fixed logo pivot: centered slightly above the lower mass of the heart so
+      the beat reads as expansion from a stable mark rather than drifting.
+    */
+    const cx = 256;
+    const cy = 278;
+
+    const sx = 1 + pulse * 0.58;
+    const sy = 1 + pulse * 0.92;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(sx, sy);
+    ctx.translate(-cx, -cy);
+
+    ctx.fillStyle = "#e03131";
+    ctx.fill(heartPath);
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 10;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    ctx.stroke(highlightPath);
+
+    drawGlint(t);
+
+    ctx.restore();
+  };
+
+  window.ksaRender(0);
+})();
+</script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

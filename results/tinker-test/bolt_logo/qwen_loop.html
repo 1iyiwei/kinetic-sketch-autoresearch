@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud & Lightning Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f1f3f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            width: 512px;
+            height: 512px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stage" width="512" height="512"></canvas>
+
+    <script>
+        // --- Configuration ---
+        const DURATION = 4.0;
+
+        // --- Easing Functions ---
+        const Easing = {
+            // Ease out cubic for cloud entry
+            easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
+            
+            // Ease in-out for the bolt strike (accelerates down)
+            easeInOutCubic: (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+            
+            // Elastic ease out for settling
+            easeOutElastic: (t) => {
+                if (t === 0 || t === 1) return t;
+                return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * (2 * Math.PI) / 3) + 1;
+            },
+
+            // Quick flash fade
+            flashEase: (t) => {
+                // Fast rise, slower decay
+                return t < 0.1 ? t / 0.1 : Math.pow(1 - (t - 0.1) / 0.9, 2);
+            }
+        };
+
+        // --- Main Render Function ---
+        window.ksaRender = (t) => {
+            const canvas = document.getElementById('stage');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 512, 512);
+
+            // ------------------------------------------------
+            // 1. Background
+            // ------------------------------------------------
+            ctx.fillStyle = "#f1f3f5";
+            ctx.fillRect(0, 0, 512, 512);
+
+            // ------------------------------------------------
+            // 2. Cloud Animation
+            // ------------------------------------------------
+            // Sequence: Drift in, Overshoot, Settle.
+            // Timeline: 0.0s -> 1.5s (Settled)
+            
+            let cloudX = 0;
+            let cloudY = 0;
+            
+            if (t < 1.5) {
+                let p = t / 1.5; // 0 to 1
+                
+                // Phase 1: Drift in from left (-150) to center (0)
+                // Using a custom ease that overshoots slightly
+                if (p < 0.85) {
+                    let driftP = p / 0.85;
+                    // Move from -150 to +10 (overshoot)
+                    cloudX = -150 + (160 * Easing.easeOutCubic(driftP));
+                } else {
+                    // Phase 2: Settle from overshoot (+10) to final (0)
+                    let settleP = (p - 0.85) / 0.15;
+                    cloudX = 10 * (1 - Easing.easeOutElastic(settleP));
+                }
+                
+                // Slight vertical bob while drifting
+                if (p < 0.85) {
+                    cloudY = Math.sin(p * Math.PI * 2) * 5;
+                }
+            } else {
+                cloudX = 0;
+                cloudY = 0;
+            }
+
+            // Draw Cloud
+            ctx.save();
+            ctx.translate(cloudX, cloudY);
+            ctx.beginPath();
+            ctx.fillStyle = "#868e96";
+            // Original SVG Path
+            ctx.moveTo(150, 250);
+            ctx.bezierCurveTo(120, 250, 110, 200, 150, 190);
+            ctx.bezierCurveTo(150, 140, 220, 130, 240, 170);
+            ctx.bezierCurveTo(270, 130, 350, 150, 340, 200);
+            ctx.bezierCurveTo(390, 200, 390, 250, 350, 250);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // ------------------------------------------------
+            // 3. Lightning Bolt Animation
+            // ------------------------------------------------
+            // Sequence: Appear from top, strike cloud, settle.
+            // Timeline: Starts 1.2s, Impacts 1.6s, Settles 1.7s.
+            
+            let boltX = 0;
+            let boltY = -150; // Start above cloud
+            let boltScale = 1;
+
+            if (t >= 1.2) {
+                let p = (t - 1.2) / 0.5; // 0 to 1 over 0.5s
+                
+                if (p < 1) {
+                    // Falling motion
+                    // We want it to fall fast (gravity) and hit the cloud
+                    // The cloud bottom is roughly at y=250 in local coords.
+                    // We want to land at y=0 (relative to cloud anchor).
+                    let fallProgress = Easing.easeInOutCubic(p);
+                    
+                    boltY = -150 + (150 * fallProgress);
+                    
+                    // Squash effect just before impact (p close to 1)
+                    if (p > 0.9) {
+                        let squashP = (p - 0.9) / 0.1;
+                        boltScale = 1 + (squashP * 0.2); // Stretch/Squash vertical
+                    } else {
+                        boltScale = 1;
+                    }
+                } else {
+                    boltY = 0;
+                    boltScale = 1;
+                }
+            } else {
+                boltY = -150;
+            }
+
+            // Draw Bolt
+            ctx.save();
+            // Translate to the cloud's anchor point (which is where the bolt starts from)
+            // We apply cloudX/Y here so the bolt stays attached to the cloud
+            ctx.translate(cloudX, cloudY + boltY);
+            
+            ctx.beginPath();
+            ctx.fillStyle = "#fcc419";
+            // Original Polygon: 250,240 200,350 245,350 220,440 310,320 262,320 290,240
+            // Center of mass is approx (255, 300).
+            // Shifted points to center around 0,0:
+            // 250->-5, 240->-60
+            // 200->-55, 350->50
+            // 245->-10, 350->50
+            // 220->-35, 440->140
+            // 310->55, 320->20
+            // 262->7, 320->20
+            // 290->35, 240->-60
+            
+            ctx.moveTo(-5, -60);
+            ctx.lineTo(-55, 50);
+            ctx.lineTo(-10, 50);
+            ctx.lineTo(-35, 140);
+            ctx.lineTo(55, 20);
+            ctx.lineTo(7, 20);
+            ctx.lineTo(35, -60);
+            ctx.closePath();
+            
+            // Apply squash/stretch
+            ctx.scale(1, boltScale);
+            ctx.fill();
+            ctx.restore();
+
+            // ------------------------------------------------
+            // 4. Flash Effect
+            // ------------------------------------------------
+            // High opacity flash at moment of impact (t=1.6)
+            let flashAlpha = 0;
+            if (t >= 1.6 && t < 2.2) {
+                let p = (t - 1.6) / 0.6;
+                flashAlpha = Easing.flashEase(p) * 0.7; // Max 70% opacity
+            }
+            
+            if (flashAlpha > 0) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+                ctx.fillRect(0, 0, 512, 512);
+            }
+        };
+
+        // --- Animation Loop (for preview) ---
+        let startTime = null;
+        function loop(timestamp) {
+            if (!startTime) startTime = timestamp;
+            let elapsed = (timestamp - startTime) / 1000;
+            
+            // Loop the animation
+            let t = elapsed % DURATION;
+            
+            window.ksaRender(t);
+            
+            requestAnimationFrame(loop);
+        }
+        
+        requestAnimationFrame(loop);
+
+    </script>
+
+<script>
+/* ksa player: loops window.ksaRender(t) over the animation's duration, holding the last frame briefly.
+   ?t=<seconds> freezes it at that time. Added by `ksa export`; not part of the generated program. */
+(function () {
+  var D = 4.0, HOLD = 0.8;
+  var q = new URLSearchParams(location.search), fixed = q.get("t");
+  var t0 = null;
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    var t = fixed !== null ? parseFloat(fixed) : ((now - t0) / 1000) % (D + HOLD);
+    Promise.resolve(window.ksaRender(Math.min(t, D))).then(function () {
+      if (fixed === null) requestAnimationFrame(tick);
+    });
+  }
+  function start() { if (typeof window.ksaRender === "function") requestAnimationFrame(tick); }
+  if (document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

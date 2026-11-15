@@ -16,16 +16,33 @@ from collections import defaultdict
 from pathlib import Path
 
 
+def judge_file(d: Path, judge_model: str | None = None) -> Path | None:
+    """The run's judge-<model>.json for this judge; without one, gpt-5.4's if present, else the last."""
+    if judge_model:
+        f = d / f"judge-{judge_model.replace('/', '_').replace(':', '_')}.json"
+        return f if f.exists() else None
+    if (d / "judge-gpt-5.4.json").exists():
+        return d / "judge-gpt-5.4.json"
+    js = sorted(d.glob("judge-*.json"))
+    return js[-1] if js else None
+
+
+def method_label(meta: dict) -> str:
+    """Method label, plus the generator when it is not the default OpenAI one (e.g. one_shot@Qwen3.6-35B-A3B)."""
+    gen = meta.get("gen_model", "")
+    return meta["method"] + (f"@{gen.split('/')[-1]}" if gen.startswith("tinker:") else "")
+
+
 def collect(run_dirs: list[Path], judge_model: str | None = None) -> dict:
     """method -> case -> list of per-run judge means; plus tokens per method per run."""
     scores: dict = defaultdict(lambda: defaultdict(list))
     tokens: dict = defaultdict(list)
     for d in run_dirs:
-        judges = sorted(d.glob(f"judge-{judge_model}.json" if judge_model else "judge-*.json"))
-        if not judges:
+        jf = judge_file(d, judge_model)
+        if jf is None:
             continue
-        method = json.loads((d / "results.json").read_text())["meta"]["method"]
-        j = json.loads(judges[-1].read_text())
+        method = method_label(json.loads((d / "results.json").read_text())["meta"])
+        j = json.loads(jf.read_text())
         for p in j["per_case"]:
             scores[method][p["case"]].append(st.mean(p["overall"]))
         res = json.loads((d / "results.json").read_text())["results"]
@@ -34,8 +51,9 @@ def collect(run_dirs: list[Path], judge_model: str | None = None) -> dict:
     return {"scores": scores, "tokens": tokens}
 
 
-def table(run_dirs: list[Path], cases: list[str] | None = None, baseline: str | None = None) -> str:
-    data = collect(run_dirs)
+def table(run_dirs: list[Path], cases: list[str] | None = None, baseline: str | None = None,
+          judge_model: str | None = None) -> str:
+    data = collect(run_dirs, judge_model)
     scores = data["scores"]
     if not scores:
         return "(no judged runs)"
