@@ -1,0 +1,8 @@
+
+    {
+      "sources": {"W": "slides-recording-v1.mp4"},
+      "size": [3024, 1964], "fps": 30, "background": "0xf4f4f1",
+      "segments": [
+        {"src": "W", "in": 0, "out": 213, "speed": 1.75}
+      ]
+    }
