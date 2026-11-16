@@ -7,6 +7,11 @@ vision critic review it → revise) turn static drawings into better *stylized* 
 LLM generation? Inputs are rough sketches, textbook diagrams, cartoons and flat logos. The target is
 cartoon, whiteboard and motion-graphics motion, not photorealism.
 
+## Outcome
+<img src="demos/screenshot.png"></img>
+* [Video](https://youtu.be/q5HoxP6mZOM?si=mEu_O7n2ju2JX9fW)
+* [Slides](slides/index.html)
+
 ## Status
 
 | Piece | State |
