@@ -20,7 +20,7 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 </tr>
 <tr>
 <td align="center" width="100%">
-<a href="slides/index.html">
+<a href="slides/README.md">
 <img src="demos/screenshot.png" width="360" alt="Slides">
 </a>
 <br>Slides</br>
