@@ -8,9 +8,26 @@ LLM generation? Inputs are rough sketches, textbook diagrams, cartoons and flat 
 cartoon, whiteboard and motion-graphics motion, not photorealism.
 
 ## Outcome
-<img src="demos/screenshot.png"></img>
-* [Video](https://youtu.be/q5HoxP6mZOM?si=mEu_O7n2ju2JX9fW)
-* [Slides](slides/index.html)
+
+<table>
+<tr>
+<td align="center" width="100%">
+<a href="https://youtu.be/q5HoxP6mZOM">
+<img src="https://img.youtube.com/vi/q5HoxP6mZOM/hqdefault.jpg" width="480" alt="Video">
+</a>
+<br>Video</br>
+</td>
+</tr>
+<tr>
+<td align="center" width="100%">
+<a href="slides/index.html">
+<img src="demos/screenshot.png" width="480" alt="Slides">
+</a>
+<br>Slides</br>
+</a>
+</td>
+</tr>
+</table>
 
 ## Status
 
