@@ -14,16 +14,16 @@ cartoon, whiteboard and motion-graphics motion, not photorealism.
 <td align="center" width="100%">
 <a href="https://youtu.be/q5HoxP6mZOM">
 <img src="https://img.youtube.com/vi/q5HoxP6mZOM/hqdefault.jpg" width="360" alt="Video">
-</a>
 <br>Video</br>
+</a>
 </td>
 </tr>
 <tr>
 <td align="center" width="100%">
-<a href="slides/README.md">
+<a href="docs/demos.md">
 <img src="demos/screenshot.png" width="360" alt="Slides">
+<br>Demos</br>
 </a>
-<br>Slides</br>
 </a>
 </td>
 </tr>
