@@ -289,6 +289,33 @@ scores zero, and its errors are fed back.
   scored that as jarring; the loop lost on both intro logos. Each case now declares an *anchor* frame (the first
   frame, or the last for build-up intros). Sun went 2.75 → 4.25 and bolt 2.92 → 4.25 under the judge.
 
+### Open question: would a stronger model get it right in one shot?
+
+Hackathon judges asked whether we tried more advanced models (OpenAI Astra was named), the idea being that a
+strong enough model might write the correct program on the first attempt. We did not: the generator was `gpt-5.5`
+at *low* reasoning effort, or Qwen3.6-35B-A3B, and we never tried higher effort or a stronger model. What our
+results do say:
+
+- **The generator matters more than the loop.** On the 7 test drawings, under the same Nemotron-VL judge, `gpt-5.5`
+  one-shot scored 4.33 against Qwen's 3.28, a bigger gap than anything the loop added.
+- **The loop's gain shrinks as one-shot improves.** With Qwen, the loop rescued outright failures (a program that
+  crashed on its first frame, a spring–mass that barely moved). With `gpt-5.5` on the same drawings, the gain was
+  +0.21 under the `gpt-5.4` judge and −0.02 under Nemotron-VL. On drawings this simple, a stronger generator leaves
+  the loop little to fix.
+- **The hard cases are still hard.** On the 5 complex drawings (Newton's cradle, gears, dominoes, a cat and a box,
+  a three-beat story), one-shot scored 3.60 and the loop 3.52. These fail on multi-part physics and contact, which a
+  much stronger model might well get right in one shot.
+
+So a stronger model probably does get more programs right the first time, and the loop can wrap any generator. A
+model that writes code still can't see the animation it produced; rendering and looking is how you find out
+whether the first attempt was right, and when the critic scores it 4.75 or more, the loop stops without revising. The open question is
+where the loop still adds value as generators improve. Our evidence points to failures and harder drawings, not to
+polishing programs that are already good.
+
+To test it: on the test and complex drawings, compare one-shot with the strongest available model at high effort
+(the cheapest step is `KSA_GEN_EFFORT=high` with `gpt-5.5`) against the loop at equal compute, scored by a
+held-out judge, ideally one whose code is separate from the critic's (see [docs/design.md](docs/design.md)).
+
 Slides: [`slides/`](slides/README.md) (`open slides/index.html`). Replayable results: [`results/`](results/README.md). Design, metrics and team roles: [docs/design.md](docs/design.md). Shareable result pages and demo material: [docs/demos.md](docs/demos.md).
 
 ## Provenance
